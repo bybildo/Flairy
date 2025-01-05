@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+    
+    <Style/> Style="{DunamicResource Name}"
+    
+    var uri = new Uri(@"Themes/Light.xaml", UriKind.Relative);
+    ResourceDictionary? resourceDict = Application.LoadComponent(uri) as ResourceDictionary;
+    Application.Current.Resources.Clear();
+    Application.Current.Resources.MergedDictionaries.Add(resourceDict);
+    
+    -->
+</ResourceDictionary>
