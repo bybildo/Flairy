@@ -1,0 +1,285 @@
+﻿   <UserControl x:Class="CoursFlairy.View.UI.CustomDatePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CoursFlairy.View.UI"
+             xmlns:converter="clr-namespace:CoursFlairy.ViewModel.UI"
+             mc:Ignorable="d" d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             d:DesignHeight="150" d:DesignWidth="700" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <UserControl.Resources>
+        <converter:DatePickerBorderMonthConverter x:Key="DatePickerBorderMonthConverter"/>
+    </UserControl.Resources>
+
+    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=UserControl, Mode=FindAncestor}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.25*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="0.25*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="0.25*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="0.20*"/>
+            <ColumnDefinition Width="0.05*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <!--Полотно-->
+        <Border Background="{DynamicResource White}" Grid.Column="2" Grid.ColumnSpan="5" Grid.RowSpan="4" Margin="5" CornerRadius="10">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Direction="270" Opacity="0.3" />
+            </Border.Effect>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.9*"/>
+                    <ColumnDefinition Width="0.05*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="0*"/>
+                </Grid.RowDefinitions>
+
+                <!--Календар-->
+                <Grid Grid.Column="1" Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="0.3*"/>
+                        <RowDefinition Height="8*"/>
+                        <RowDefinition Height="0.5*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3"/>
+                        <ColumnDefinition Width="35"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="35"/>
+                        <ColumnDefinition Width="3"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!--Стрілка вліво-->
+                    <Grid Grid.Column="1" Grid.Row="1" MouseDown="LeftArrow_MouseDown" Visibility="{Binding LeftArrow}">
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="leftPath" Storyboard.TargetProperty="Opacity" To="0.75"/>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="leftRec" Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.8"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="leftPath" Storyboard.TargetProperty="Opacity" To="1"/>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="leftRec" Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="1.5*"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Rectangle Name="leftRec" Fill="{DynamicResource White}" Opacity="1" Stretch="Fill" RadiusX="2" RadiusY="2" Grid.RowSpan="3">
+                            <Rectangle.Effect>
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="Black" Direction="320" Opacity="0.4" />
+                            </Rectangle.Effect>
+                        </Rectangle>
+                        <Path Name="leftPath" Grid.Row="1" Data="{DynamicResource arrow}" Fill="{DynamicResource MainColor100}" HorizontalAlignment="Center" Stretch="Uniform" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!--Стрілка вправо-->
+                    <Grid Grid.Column="5" Grid.Row="1" MouseDown="RightArrow_MouseDown" Visibility="{Binding RightArrow}">
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="rightPath" Storyboard.TargetProperty="Opacity" To="0.75"/>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="rightRec" Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.8"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="rightPath" Storyboard.TargetProperty="Opacity" To="1"/>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="rightRec" Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="1.5*"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Rectangle Name="rightRec" Fill="{DynamicResource White}" Opacity="1" Stretch="Fill" RadiusX="2" RadiusY="2" Grid.RowSpan="3">
+                            <Rectangle.Effect>
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="Black" Direction="320" Opacity="0.4" />
+                            </Rectangle.Effect>
+                        </Rectangle>
+                        <Path Name="rightPath" Grid.Row="1" Data="{DynamicResource arrow}" Fill="{DynamicResource MainColor100}" HorizontalAlignment="Center" Stretch="Uniform" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="180"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+
+                    <!--Місяць-->
+                    <Grid Grid.Column="3" Grid.Row="1" MouseDown="Month_MouseDown">
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="monthPath" Storyboard.TargetProperty="Opacity" To="0.75"/>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="monthRec" Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.8"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="monthPath" Storyboard.TargetProperty="Opacity" To="1"/>
+                                        <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetName="monthRec" Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+
+                        <Rectangle Name="monthRec" Fill="{DynamicResource White}" Opacity="1" Stretch="Fill" Width="{Binding ActualWidth, ElementName=monthPath, Converter={StaticResource DatePickerBorderMonthConverter}}" RadiusX="2" RadiusY="2">
+                            <Rectangle.Effect>
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="Black" Direction="320" Opacity="0.4" />
+                            </Rectangle.Effect>
+                        </Rectangle>
+
+                        <StackPanel Name="monthPath" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding Month}" Foreground="{DynamicResource MainColor100}" FontSize="20" FontFamily="Bahnschrift SemiBold"/>
+                            <TextBlock Text="2025" Margin="0, 0,0,3.8" Foreground="{DynamicResource MainColor100}" FontSize="8" FontFamily="Bahnschrift SemiBold" VerticalAlignment="Bottom" Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!--Перелічення-->
+                    <Grid Grid.ColumnSpan="10" Grid.Row="3">
+                        <Grid.Resources>
+                            <Style x:Key="WeekDay" TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="{DynamicResource MainColor100}"/>
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="FontSize" Value="15"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Grid.Row" Value="1"/>
+                                <EventSetter Event="MouseDown" Handler="DayOfWeek_MouseDown"/>
+                                <Style.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Effect)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="2" Opacity="0.4"/>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Effect)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <DropShadowEffect Color="Transparent" BlurRadius="10" ShadowDepth="5" Opacity="0.5"/>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+                            <Style x:Key="Day" TargetType="{x:Type TextBlock}">
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0*"/>
+                            <RowDefinition Height="0.25*"/>
+                            <RowDefinition Height="0*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="0*"/>
+                        </Grid.RowDefinitions>
+
+                        <!--Дні тижня-->
+                        <UniformGrid Columns="7" Grid.Row="1" >
+                            <TextBlock Text="Пн" Grid.Column="0" Style="{StaticResource WeekDay}"/>
+                            <TextBlock Text="Вт" Grid.Column="1" Style="{StaticResource WeekDay}"/>
+                            <TextBlock Text="Ср" Grid.Column="2" Style="{StaticResource WeekDay}"/>
+                            <TextBlock Text="Чт" Grid.Column="3" Style="{StaticResource WeekDay}"/>
+                            <TextBlock Text="Пт" Grid.Column="4" Style="{StaticResource WeekDay}"/>
+                            <TextBlock Text="Сб" Grid.Column="5" Style="{StaticResource WeekDay}"/>
+                            <TextBlock Text="Нд" Grid.Column="6" Style="{StaticResource WeekDay}"/>
+                        </UniformGrid>
+
+                        <Line X1="0" X2="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}" Grid.Row="1" Stroke="{DynamicResource MainColor100}" StrokeThickness="1" VerticalAlignment="Bottom" Margin="8, 0 , 8, 0"/>
+
+                        <!--Перелічення днів-->
+                        <ItemsControl ItemsSource="{Binding PreviewDays}" Grid.Row="3" PreviewMouseDown="DayChecked_MouseDown" PreviewMouseMove="DayChecked_MouseMove" PreviewMouseUp="DayChecked_MouseUp">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="7"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0.05*"/>
+                                            <RowDefinition Height="1*"/>
+                                            <RowDefinition Height="0.05*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Border Grid.Row="1" Background="{Binding AdditionalBackground}" CornerRadius="5" Margin="{Binding AdditionalMargin}"/>
+                                        <Border Grid.Row="1" Background="{Binding CheckedBackground}" CornerRadius="5" Margin="{Binding CheckedMargin}"/>
+                                        <TextBlock Grid.RowSpan="3" Text="{Binding Text}" Foreground="{Binding DayForeground}" Style="{StaticResource Day}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

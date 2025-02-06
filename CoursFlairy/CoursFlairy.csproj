@@ -9,7 +9,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Images\CategoryOfPeople\**" />
+    <Compile Remove="Data\Images\Clouds\**" />
+    <EmbeddedResource Remove="Data\Images\CategoryOfPeople\**" />
+    <EmbeddedResource Remove="Data\Images\Clouds\**" />
+    <None Remove="Data\Images\CategoryOfPeople\**" />
+    <None Remove="Data\Images\Clouds\**" />
+    <Page Remove="Data\Images\CategoryOfPeople\**" />
+    <Page Remove="Data\Images\Clouds\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Images\adult 1.png" />
+    <None Remove="Data\Images\Arrow.svg" />
+    <None Remove="Data\Images\baby 1.png" />
+    <None Remove="Data\Images\child 1.png" />
+    <None Remove="Data\Images\pensioner 1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +45,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>En.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Images\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,216 @@
+﻿<Page x:Class="CoursFlairy.View.SearchPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:converter="clr-namespace:CoursFlairy.ViewModel.Converter.SearchPage"
+      xmlns:UI="clr-namespace:CoursFlairy.View.UI" Loaded="Page_Loaded"
+      mc:Ignorable="d" d:DesignHeight="850" d:DesignWidth="1600"
+      Title="SearchPage" PreviewMouseDown="Page_MouseDown">
+    <Page.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border 
+                             Background="Transparent" 
+                             BorderBrush="Transparent" 
+                             BorderThickness="0">
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <converter:TextToVisibilityConverter x:Key="TextToVisibilityConverter"/>
+        <converter:PeoplePickerToResourceConverter x:Key="PeoplePickerToResourceConverter"/>
+        <converter:PeoplePickerToMarginConverter x:Key="PeoplePickerToMarginConverter"/>
+        <converter:PeoplePickerToColorConverter x:Key="PeoplePickerToColorConverter"/>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_PreviewVerticalMouseWheel">
+        <Grid Height="1200" RenderTransformOrigin="0.5,0.5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="250"/>
+                <RowDefinition Height="220"/>
+                <RowDefinition Height="320"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="SearchBackground" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="{DynamicResource SearchPageGradient}">
+                <Canvas />
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" >
+                <TextBlock x:Name="maintxt" Text="Пошук Авіаквитків" FontSize="80" Foreground="{DynamicResource White}" FontFamily="Bleeker Cyrillic" />
+                <Path Fill="{DynamicResource White}" Data="{DynamicResource search}" Stretch="Uniform" Height="{Binding ElementName=maintxt, Path=FontSize}" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <!--Табличка пошуку-->
+            <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource White}" BorderThickness="2" CornerRadius="30">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Name="GridSet1"  Width="3*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Name="GridSet2" Width="2*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <UI:AiroportPicker x:Name="AiroportPicker" Visibility="Collapsed" Grid.ColumnSpan="10" Margin="0, -20, 0, -20" Grid.RowSpan="10" Panel.ZIndex="3" 
+                                       DepartureSelect="AiroportPicker_DepartureSelect" DepartureUnselect="AiroportPicker_DepartureUnselect"
+                                       ArrivalSelect="AiroportPicker_ArrivalSelect" ArrivalUnselect="AiroportPicker_ArrivalUnselect"/>
+
+                    <!--Країни-->
+                    <Border x:Name="CountryBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" CornerRadius="20" Margin="10" Panel.ZIndex="3">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <Line x:Name="CountryLine" X2="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}" VerticalAlignment="Bottom" Stroke="{DynamicResource MainColor20}" StrokeThickness="1.3"/>
+
+                            <!--Із-->
+                            <Grid PreviewMouseDown="AirportPickerDepartureShow">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="8*"/>
+                                    <ColumnDefinition Width="0.3*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Із" Grid.Column="1" FontSize="30" Margin="2,0,0,0" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DepartureTextBox, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                                <ScrollViewer  Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                    <TextBox Name="DepartureTextBox" Foreground="{DynamicResource Black}" MaxLength="200" FontFamily="Bahnschrift" FontSize="25" Text="{Binding ElementName=AiroportPicker, Path=SearchDepartureField, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </ScrollViewer>
+                            </Grid>
+
+                            <!--До-->
+                            <Grid Grid.Row="1" PreviewMouseDown="AirportPickerArrivalShow">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="8*"/>
+                                    <ColumnDefinition Width="0.3*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="До" Grid.Column="1" FontSize="30" Margin="2,0,0,0" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=ArrivalTextBox, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                                <ScrollViewer  Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                    <TextBox Name="ArrivalTextBox" Foreground="{DynamicResource Black}" MaxLength="200" FontFamily="Bahnschrift" FontSize="25" Text="{Binding ElementName=AiroportPicker, Path=SearchArrivalField, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </ScrollViewer>
+                            </Grid>
+
+                            <!--Зміна країн-->
+                            <Grid Height="65" Width="65" Margin="-32,0,0,0" Grid.RowSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" PreviewMouseDown="SwapArrows">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Ellipse Stroke="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=BorderBrush}" Fill="{DynamicResource White}" Grid.RowSpan="100" Grid.ColumnSpan="100"/>
+                                <Path x:Name="CountryArrowD" Grid.Column="1" Fill="{DynamicResource MainColor20}" Data="{DynamicResource swapArrow}" HorizontalAlignment="Center" Stretch="Uniform" VerticalAlignment="Center"/>
+                                <Path x:Name="CountryArrowA" Grid.Column="2" Fill="{DynamicResource MainColor20}" Data ="{DynamicResource swapArrow}" HorizontalAlignment="Center" Stretch="Uniform" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform Angle="180"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!--Пошук дати-->
+                    <UI:CustomDatePicker x:Name="DatePicker" Grid.ColumnSpan="10" Margin="0, -20, 0, -20" Grid.RowSpan="10" Panel.ZIndex="2" Visibility="Hidden" DaysSelect="DatePicker_Select" DaysUnselect="DatePicker_Unselect"/>
+
+                    <!--Дата-->
+                    <Border x:Name="DateBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="3" Grid.Row="1" CornerRadius="20" Margin="10" Panel.ZIndex="2" MouseDown="DatePickerShow">
+                        <Grid Margin="5, 0, 5, 0" PreviewMouseDown="DatePickerShow">
+                            <TextBlock Text="Туди" FontSize="23" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateA, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                <TextBlock x:Name="DateA" Grid.Column="1" Foreground="{DynamicResource Black}" Text="{Binding ElementName=DatePicker, Path=CheckedDays}" VerticalAlignment="Center" FontSize="25" FontFamily="Bahnschrift"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!--Дата назад-->
+                    <Border BorderBrush="{Binding ElementName=DateBorder, Path=BorderBrush}" Background="Transparent" BorderThickness="1" Grid.Column="3" Grid.Row="2" CornerRadius="20" Margin="10" Panel.ZIndex="2" PreviewMouseDown="DatePickerBackShow">
+                        <Grid Margin="5, 0, 5, 0">
+                            <TextBlock x:Name="BackHint" Text="Назад (не обов'язково)" FontSize="23" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateD, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                <TextBlock x:Name="DateD" Foreground="{DynamicResource Black}" Text="{Binding ElementName=DatePicker, Path=CheckedBackDays}" VerticalAlignment="Center" FontSize="25" FontFamily="Bahnschrift"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!--Пошук людей-->
+                    <UI:PeoplePicker x:Name="PeoplePicker" Grid.ColumnSpan="10" Margin="0, -20, 0, 0" Grid.RowSpan="10" Panel.ZIndex="3" Visibility="Collapsed" PeopleSelect="PeoplePicker_Select" PeopleUnselect="PeoplePicker_Unselect"/>
+
+                    <!--Кількість-->
+                    <Border x:Name="PeoplePickerBorder" BorderBrush="{DynamicResource MainColor100}" Background="Transparent" BorderThickness="1" Grid.Column="5" Grid.Row="1" CornerRadius="20" Margin="10" Panel.ZIndex="1" PreviewMouseDown="PeoplePickerShow">
+                        <Grid Margin="15, 0, 0, 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="3*"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Name="PeopleHint" Text="Хто" Grid.Row="1" FontSize="23" Margin="2,0,0,0" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="Hidden"/>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                <ItemsControl ItemsSource="{Binding ElementName=PeoplePicker, Path=Images}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Path Margin="{Binding Converter={StaticResource PeoplePickerToMarginConverter}}" Fill="{Binding Converter={StaticResource PeoplePickerToColorConverter}}" Stretch="Uniform" Data="{Binding Converter={StaticResource PeoplePickerToResourceConverter}}">
+                                                <Path.RenderTransform>
+                                                    <ScaleTransform ScaleY="-1" />
+                                                </Path.RenderTransform>
+                                                <Path.RenderTransformOrigin>0.5,0.5</Path.RenderTransformOrigin>
+                                            </Path>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!--Кнопка знайти-->
+                    <Border x:Name="SearchButton" Background="{DynamicResource MainColor20}" BorderThickness="1" Grid.Column="5" Grid.Row="2" CornerRadius="20" Margin="10" Panel.ZIndex="1" MouseDown="SearchButton_MouseDown" MouseEnter="SearchButton_AnimationEnter" MouseLeave="SearchButton_AnimationLeave">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Direction="270" Opacity="0" />
+                        </Border.Effect>
+                        <TextBlock Background="Transparent" Foreground="{DynamicResource White}" Text="Знайти" FontSize="30" FontFamily="Bahnschrift" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>
