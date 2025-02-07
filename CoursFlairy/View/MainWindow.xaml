@@ -90,7 +90,7 @@
                     <RowDefinition Height="2.4*"/>
                 </Grid.RowDefinitions>
 
-                <Path Grid.Row="1" Fill="{DynamicResource White}" Stretch="Uniform" Data="{DynamicResource cross}"/>
+                <Path Name="cross" Grid.Row="1" Fill="{DynamicResource White}" Stretch="Uniform" Data="{DynamicResource cross}"/>
                 <Grid Grid.RowSpan="3" Style="{DynamicResource Highlight}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDown">
@@ -98,7 +98,7 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Grid>
-                <Line X1="0" Y1="0" X2="13" Y2="0" Stroke="{DynamicResource White}" StrokeThickness="1.2" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Line Name="line" X1="0" Y1="0" X2="{Binding ElementName=cross, Path=ActualWidth}" Y2="0" Stroke="{DynamicResource White}" StrokeThickness="1.2" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Grid Grid.Row="2" Grid.RowSpan="3" Style="{DynamicResource Highlight}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDown">
@@ -111,7 +111,6 @@
 
         <!--Нижня Частина-->
         <Frame x:Name="PageManager" Grid.Row="1" NavigationUIVisibility="Hidden" Source="SearchPage.xaml"/>
-
-        <UI:ShowMessage Foreground="{DynamicResource MainColor100}" BorderBackground="{DynamicResource White}" x:Name="GlobalMessage" Visibility="Visible" Grid.ColumnSpan="10" Grid.RowSpan="10"/>
+        <UI:ShowMessage Visibility="Collapsed" Foreground="{DynamicResource MainColor100}" BorderBackground="{DynamicResource White}" x:Name="GlobalMessage" Grid.ColumnSpan="10" Grid.RowSpan="10"/>
     </Grid>
 </Window>

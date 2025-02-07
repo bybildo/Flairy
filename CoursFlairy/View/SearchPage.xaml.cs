@@ -19,6 +19,7 @@ namespace CoursFlairy.View
         public SearchPage()
         {
             InitializeComponent();
+            SearchGridScreenUpdate();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -45,6 +46,16 @@ namespace CoursFlairy.View
         #endregion
 
         #region Інтерфейс
+
+        private void SearchGridScreenUpdate()
+        {
+            SearchGrid.Height = SystemParameters.WorkArea.Height * 0.95;
+
+            SearchGrid.RowDefinitions.Clear();
+            SearchGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25, GridUnitType.Star) });
+            SearchGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(22, GridUnitType.Star) });
+            SearchGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(32, GridUnitType.Star) });
+        }
 
         private void SearchButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -157,7 +168,9 @@ namespace CoursFlairy.View
 
         private void ScrollViewer_PreviewVerticalMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            double speed = 4;
+
+            double speed = SystemParameters.WorkArea.Height * 0.03;
+
             var currentScrollViewer = (ScrollViewer)sender;
 
             if (FindVisualChildren<ScrollViewer>(currentScrollViewer).Any(sv => sv.IsMouseOver))
