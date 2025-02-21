@@ -48,12 +48,10 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid x:Name="SearchBackground" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="{DynamicResource SearchPageGradient}">
-                    <Canvas />
-                </Grid>
+                <Grid x:Name="SearchBackground" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="{DynamicResource SearchPageGradient}"/>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" >
-                    <TextBlock x:Name="maintxt" Text="Пошук Авіаквитків" FontSize="80" Foreground="{DynamicResource White}" FontFamily="pack://application:,,,/Themes/Fonts/#Bleeker Cyrillic" />
+                    <TextBlock x:Name="maintxt" Text="Пошук Авіаквитків" FontSize="80" Foreground="{DynamicResource White}" FontFamily="{DynamicResource Bleeker Cyrillic}"/>
                     <Path Fill="{DynamicResource White}" Data="{DynamicResource search}" Stretch="Uniform" Height="{Binding ElementName=maintxt, Path=FontSize}" Margin="10,0,0,0"/>
                 </StackPanel>
 
@@ -151,7 +149,7 @@
                         <!--Дата-->
                         <Border x:Name="DateBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="3" Grid.Row="1" CornerRadius="20" Margin="10" Panel.ZIndex="2" MouseDown="DatePickerShow">
                             <Grid Margin="5, 0, 5, 0" PreviewMouseDown="DatePickerShow">
-                                <TextBlock Text="Туди" FontSize="23" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateA, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                                <TextBlock Text="Туди" FontSize="23" Margin="6,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateA, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
                                 <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
                                     <TextBlock x:Name="DateA" Grid.Column="1" Foreground="{DynamicResource Black}" Text="{Binding ElementName=DatePicker, Path=CheckedDays}" VerticalAlignment="Center" FontSize="25" FontFamily="Bahnschrift"/>
                                 </ScrollViewer>
@@ -161,7 +159,7 @@
                         <!--Дата назад-->
                         <Border BorderBrush="{Binding ElementName=DateBorder, Path=BorderBrush}" Background="Transparent" BorderThickness="1" Grid.Column="3" Grid.Row="2" CornerRadius="20" Margin="10" Panel.ZIndex="2" PreviewMouseDown="DatePickerBackShow">
                             <Grid Margin="5, 0, 5, 0">
-                                <TextBlock x:Name="BackHint" Text="Назад (не обов'язково)" FontSize="23" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateD, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                                <TextBlock x:Name="BackHint" Text="Назад (не обов'язково)" FontSize="23" Margin="6,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateD, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
                                 <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
                                     <TextBlock x:Name="DateD" Foreground="{DynamicResource Black}" Text="{Binding ElementName=DatePicker, Path=CheckedBackDays}" VerticalAlignment="Center" FontSize="25" FontFamily="Bahnschrift"/>
                                 </ScrollViewer>
@@ -173,7 +171,7 @@
 
                         <!--Кількість-->
                         <Border x:Name="PeoplePickerBorder" BorderBrush="{DynamicResource MainColor100}" Background="Transparent" BorderThickness="1" Grid.Column="5" Grid.Row="1" CornerRadius="20" Margin="10" Panel.ZIndex="1" PreviewMouseDown="PeoplePickerShow">
-                            <Grid Margin="15, 0, 0, 0">
+                            <Grid Margin="13, 0, 0, 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition Height="3*"/>
@@ -206,7 +204,7 @@
                         <!--Кнопка знайти-->
                         <Border x:Name="SearchButton" Background="{DynamicResource MainColor20}" BorderThickness="1" Grid.Column="5" Grid.Row="2" CornerRadius="20" Margin="10" Panel.ZIndex="1" MouseDown="SearchButton_MouseDown" MouseEnter="SearchButton_AnimationEnter" MouseLeave="SearchButton_AnimationLeave">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Direction="270" Opacity="0" />
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="{DynamicResource Shadow}" Direction="270" Opacity="0" />
                             </Border.Effect>
                             <TextBlock Background="Transparent" Foreground="{DynamicResource White}" Text="Знайти" FontSize="30" FontFamily="Bahnschrift" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>

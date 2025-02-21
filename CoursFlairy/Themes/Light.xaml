@@ -13,6 +13,7 @@
         <GradientStop Color="#FF0F39CE" Offset="-0.2"/>
         <GradientStop Color="#FF116FF5" Offset="1"/>
     </LinearGradientBrush>
+
     <RadialGradientBrush x:Key="SearchPageGradient" GradientOrigin="0.5,0.7" Center="0.5,0.8" RadiusX="0.7" RadiusY="0.4" SpreadMethod="Pad" Opacity="1">
         <RadialGradientBrush.RelativeTransform>
             <TransformGroup>
@@ -27,6 +28,9 @@
         <GradientStop Color="#FF3A27B2" Offset="0.946"/>
         <GradientStop Color="#FF35249E" Offset="1"/>
     </RadialGradientBrush>
+
+    <Color x:Key="ForRegistrationGradient1">#253DD1</Color>
+    <Color x:Key="ForRegistrationGradient2">#6c8eb9</Color>
 
     <SolidColorBrush x:Key="Black" Color="Black"/>
     <SolidColorBrush x:Key="White" Color="White"/>

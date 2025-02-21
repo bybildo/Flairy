@@ -31,23 +31,24 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border Height="40" x:Name="Border" BorderBrush="Transparent" CornerRadius="5" Background="Transparent" MouseLeftButtonDown="Border_MouseLeftButtonDown">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
-                            </Border.Effect>
-
-                            <Grid>
+                        <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+                            <Border Height="40" x:Name="Border" BorderBrush="Transparent" CornerRadius="5" Background="Transparent">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                                </Border.Effect>
+                            </Border>
+                            <Grid Name="Grid" Background="Transparent">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="9*"/>
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
-                                
+
                                 <ScrollViewer x:Name="Viewer" Margin="10, 0, 10, 0" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
                                     <TextBlock Text="{Binding}" x:Name="TextContent" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                 </ScrollViewer>
                                 <TextBlock Grid.Column="1" Text="{Binding Code}" FontSize="12" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Grid>
-                        </Border>
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Border" Property="Background" Value="{Binding Path=Background, Source={x:Reference AirportsDisplay}}"/>

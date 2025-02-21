@@ -1,0 +1,348 @@
+﻿<UserControl x:Class="CoursFlairy.View.UI.UserPassportData"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converterUI="clr-namespace:CoursFlairy.ViewModel.UI"
+             xmlns:converter="clr-namespace:CoursFlairy.ViewModel.Converter.SearchPage"
+             xmlns:local="clr-namespace:CoursFlairy.View.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="362" d:DesignWidth="677">
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <EventSetter Event="PreviewKeyDown" Handler="KeyControl"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="numberStyle">
+            <Setter Property="Margin" Value="0, 0, 0, 0"/>
+            <Setter Property="FontFamily" Value="Bahnschrift"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="CaretBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="Transparent"/>
+                        <GradientStop Offset="0.109" Color="Transparent"/>
+                        <GradientStop Offset="0.11" Color="{DynamicResource Shadow}"/>
+                        <GradientStop Offset="0.79" Color="{DynamicResource Shadow}"/>
+                        <GradientStop Offset="0.791" Color="Transparent"/>
+                        <GradientStop Offset="1" Color="Transparent"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <EventSetter Event="PreviewTextInput" Handler="number_TextInput"/>
+            <EventSetter Event="PreviewKeyDown" Handler="KeyControl"/>
+            <EventSetter Event="GotFocus" Handler="highlightGot"/>
+            <EventSetter Event="LostFocus" Handler="highlightLost"/>
+        </Style>
+
+        <converterUI:PeoplePickerHalfOfWidthConverter x:Key="PeoplePickerHalfOfWidthConverter"/>
+        <converterUI:PeoplePickerLeftBorderRoundConverter x:Key="PeoplePickerLeftBorderRoundConverter"/>
+        <converterUI:PeoplePickerRightBorderRoundConverter x:Key="PeoplePickerRightBorderRoundConverter"/>
+        <converter:TextToVisibilityConverter x:Key="TextToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=UserControl, Mode=FindAncestor}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="8*"/>
+
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="8*"/>
+
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="8*"/>
+
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.RowSpan="100" Grid.ColumnSpan="100" Background="Transparent" MouseDown="MainGrid_MouseDown"/>
+
+        <Viewbox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left">
+            <TextBlock Text="Стать:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light"/>
+        </Viewbox>
+
+        <Border x:Name="border" Background="{DynamicResource White}" BorderThickness="1.5" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerHalfOfWidthConverter}}" Grid.Column="1" Grid.Row="3">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="3.5" ShadowDepth="0.3" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.5" />
+            </Border.Effect>
+        </Border>
+        <Grid Grid.Column="1" Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="WomanGrid" Grid.RowSpan="3" Grid.Column="0" PreviewMouseDown="Grid_PreviewMouseDown" MouseEnter="GridAnimation_MouseEnter" MouseLeave="GridAnimation_MouseLeave">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Border Background="{DynamicResource White}" Grid.RowSpan="3" Margin="1.4" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerLeftBorderRoundConverter}}">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="3.5" ShadowDepth="0.3" Color="{DynamicResource Shadow}" Direction="320" Opacity="0" />
+                    </Border.Effect>
+                </Border>
+
+                <Viewbox Grid.Row="1" Margin="5,0,-5,0">
+                    <TextBlock Text="♀" Foreground="HotPink"/>
+                </Viewbox>
+
+            </Grid>
+
+            <Grid x:Name="ManGrid" Grid.RowSpan="3" Grid.Column="1" PreviewMouseDown="Grid_PreviewMouseDown" MouseEnter="GridAnimation_MouseEnter" MouseLeave="GridAnimation_MouseLeave">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+
+                <Border Background="{DynamicResource White}" Margin="1.4" Grid.RowSpan="3" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerRightBorderRoundConverter}}">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="3.5" ShadowDepth="0.3" Color="{DynamicResource Shadow}" Direction="320" Opacity="0" />
+                    </Border.Effect>
+                </Border>
+
+                <Viewbox Grid.Row="1" Margin="-3,0,3,0">
+                    <TextBlock Text="♂" Foreground="{DynamicResource MainColor100}"/>
+                </Viewbox>
+            </Grid>
+
+            <Line Grid.ColumnSpan="2" HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}" Stroke="{DynamicResource MainColor10}" StrokeThickness="0.8" VerticalAlignment="Bottom"/>
+        </Grid>
+
+        <Viewbox Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left">
+            <TextBlock Text="Прізвище:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light"/>
+        </Viewbox>
+
+        <Border x:Name="surnameBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="7">
+            <Grid Margin="10, 0, 10, 0">
+                <TextBlock Text="Латинськими літерами" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=surnametb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                    <TextBox x:Name="surnametb" Text="{Binding Surname,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="surname_TextChanged" PreviewTextInput="name_TextInput" PreviewKeyDown="KeyControl"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Viewbox Grid.Column="1" Grid.Row="9" HorizontalAlignment="Left">
+            <TextBlock Text="Ім'я:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light"/>
+        </Viewbox>
+
+        <Border x:Name="nameBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="11">
+            <Grid Margin="10, 0, 10, 0">
+                <TextBlock Text="Латинськими літерами" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=nametb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                    <TextBox x:Name="nametb" Text="{Binding Namee,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="name_TextChanged" PreviewTextInput="name_TextInput"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Viewbox Grid.Column="1" Grid.Row="13" HorizontalAlignment="Left">
+            <TextBlock Text="Дата народження: " FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light"/>
+        </Viewbox>
+
+        <Border x:Name="personalDateBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="15" />
+        <Grid Grid.Row="15" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2.5*"/>
+                <RowDefinition Height="0.7*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="1" Grid.Column="0" Cursor="IBeam" Background="Transparent">
+                <TextBlock Text="ДД" FontSize="17" HorizontalAlignment="Center" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=personalDaytb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                <Viewbox StretchDirection="Both" Cursor="IBeam">
+                    <TextBox x:Name="personalDaytb" Text="{Binding PersonalDay,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="2" Style="{DynamicResource numberStyle}" />
+                </Viewbox>
+                <Grid Background="Transparent" MouseDown="GridChildrenFocus"/>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="1" Cursor="IBeam" Background="Transparent">
+                <TextBlock Text="ММ" FontSize="17" HorizontalAlignment="Center" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=personalMonthtb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                <Viewbox>
+                    <TextBox x:Name="personalMonthtb" Text="{Binding PersonalMonth,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource numberStyle}"/>
+                </Viewbox>
+                <Grid Background="Transparent" MouseDown="GridChildrenFocus"/>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="2" Cursor="IBeam" Background="Transparent">
+                <TextBlock Text="РРРР" FontSize="17" HorizontalAlignment="Center" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=personalYeartb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                <Viewbox>
+                    <TextBox x:Name="personalYeartb" Text="{Binding PersonalYear,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="4" Style="{DynamicResource numberStyle}"/>
+                </Viewbox>
+                <Grid Background="Transparent" MouseDown="GridChildrenFocus"/>
+            </Grid>
+
+            <Line Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}" Stroke="{Binding ElementName=personalDateBorder, Path=BorderBrush}" StrokeThickness="0.8" VerticalAlignment="Bottom"/>
+            <Line Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}" Stroke="{Binding ElementName=personalDateBorder, Path=BorderBrush}" StrokeThickness="0.8" VerticalAlignment="Bottom"/>
+        </Grid>
+
+        <Border BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="3" Grid.Row="1" Grid.RowSpan="16"/>
+        <Grid  Grid.Column="3" Grid.Row="1" Grid.RowSpan="15" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="1.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="27*"/>
+
+                <RowDefinition Height="11*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="7*"/>
+
+                <RowDefinition Height="11*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="7*"/>
+
+                <RowDefinition Height="11*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="12*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Viewbox Grid.Row="1" Grid.ColumnSpan="3">
+                    <TextBlock Text="Документ" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                </Viewbox>
+            </Grid>
+
+            <Viewbox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                <TextBlock Text="Громадянство:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+            </Viewbox>
+
+            <Border Name="CitizenshipBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="3">
+                <Grid Margin="10, 0, 10, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="0.1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Англійською мовою" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=citizenshiptb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                    <ScrollViewer Margin="0,0,0,-2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                        <Grid>
+                            <TextBlock Text="{Binding CitizenshipHint,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource HintColor}" FontSize="19" FontFamily="Bahnschrift" Opacity="0.6" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                            <TextBox Name="citizenshiptb" Text="{Binding Citizenship,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100"/>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <Path x:Name="citizenshipButton" Visibility="Hidden" Grid.Column="2" Data="{DynamicResource tabButton}" Fill="{DynamicResource MainColor100}" Stretch="Uniform" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Viewbox Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left">
+                <TextBlock Text="Номер закордонного паспорта:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light"/>
+            </Viewbox>
+
+            <Border x:Name="passportBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="7">
+                <Grid Margin="10, 0, 10, 0">
+                    <TextBlock Text="№" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=passporttb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                        <TextBox x:Name="passporttb" Text="{Binding Passport,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="12" PreviewKeyDown="KeyControl" PreviewTextInput="passport_PreviewTextInput"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <Viewbox Grid.Column="1" Grid.Row="9" HorizontalAlignment="Left">
+                <TextBlock Text="Дійсний до: " FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light"/>
+            </Viewbox>
+
+            <Border x:Name="passportDateBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="11" />
+            <Grid Grid.Row="11" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2.5*"/>
+                    <RowDefinition Height="0.7*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1" Grid.Column="0" Cursor="IBeam" Background="Transparent">
+                    <TextBlock Text="ДД" FontSize="17" HorizontalAlignment="Center" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=passportDaytb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                    <Viewbox StretchDirection="Both" Cursor="IBeam">
+                        <TextBox x:Name="passportDaytb" Text="{Binding PassportDay,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="2" Style="{DynamicResource numberStyle}"/>
+                    </Viewbox>
+                    <Grid Background="Transparent" MouseDown="GridChildrenFocus"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.Column="1" Cursor="IBeam" Background="Transparent">
+                    <TextBlock Text="ММ" FontSize="17" HorizontalAlignment="Center" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=passportMonthtb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                    <Viewbox>
+                        <TextBox x:Name="passportMonthtb" Text="{Binding PassportMonth,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="2"  Style="{DynamicResource numberStyle}"/>
+                    </Viewbox>
+                    <Grid Background="Transparent" MouseDown="GridChildrenFocus"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.Column="2" Cursor="IBeam" Background="Transparent">
+                    <TextBlock Text="РРРР" FontSize="17" HorizontalAlignment="Center" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=passportYeartb, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                    <Viewbox>
+                        <TextBox x:Name="passportYeartb" Text="{Binding PassportYear,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="4"  Style="{DynamicResource numberStyle}"/>
+                    </Viewbox>
+                    <Grid Background="Transparent" MouseDown="GridChildrenFocus"/>
+                </Grid>
+
+                <Line Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}" Stroke="{Binding ElementName=passportDateBorder, Path=BorderBrush}" StrokeThickness="0.8" VerticalAlignment="Bottom"/>
+                <Line Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}" Stroke="{Binding ElementName=passportDateBorder, Path=BorderBrush}" StrokeThickness="0.8" VerticalAlignment="Bottom"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -228,9 +228,9 @@ namespace CoursFlairy.View.UI
             }
         }
 
-        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is Border border && VisualTreeHelper.GetParent(border) is ListBoxItem item && item.Content is AirportStruct airport)
+            if (sender is Grid border && VisualTreeHelper.GetParent(border) is ListBoxItem item && item.Content is AirportStruct airport)
             {
                 if (!item.IsSelected)
                 {

@@ -47,6 +47,13 @@ namespace CoursFlairy.View
 
         #region Інтерфейс
 
+        private void SearchButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(AiroportPicker.DepartureAirport != null && AiroportPicker.ArrivalAirport != null && !string.IsNullOrEmpty(DatePicker.CheckedDays) && PeoplePicker.Images.Count > 0)) {BorderShackingAnimation(SearchButton); return; }
+
+            MessageBox.Show($"із: {AiroportPicker.DepartureAirport} \nдо: {AiroportPicker.ArrivalAirport} \nколи: {DatePicker.CheckedDays}\nколи назад: {DatePicker.CheckedBackDays} \nкількість: {PeoplePicker.Images.Count} \nхто: {PeoplePicker.Images.Aggregate((current, next) => current + ", " + next)}");
+        }
+
         private void SearchGridScreenUpdate()
         {
             SearchGrid.Height = SystemParameters.WorkArea.Height * 0.95;
@@ -55,12 +62,6 @@ namespace CoursFlairy.View
             SearchGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25, GridUnitType.Star) });
             SearchGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(22, GridUnitType.Star) });
             SearchGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(32, GridUnitType.Star) });
-        }
-
-        private void SearchButton_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (!(AiroportPicker.DepartureAirport != null && AiroportPicker.ArrivalAirport != null && !string.IsNullOrEmpty(DatePicker.CheckedDays) && PeoplePicker.Images.Count > 0)) return;
-            MessageBox.Show($"із: {AiroportPicker.DepartureAirport} \nдо: {AiroportPicker.ArrivalAirport} \nколи: {DatePicker.CheckedDays}\nколи назад: {DatePicker.CheckedBackDays} \nкількість: {PeoplePicker.Images.Count} \nхто: {PeoplePicker.Images.Aggregate((current, next) => current + ", " + next)}");
         }
 
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
@@ -168,8 +169,20 @@ namespace CoursFlairy.View
 
         private void ScrollViewer_PreviewVerticalMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            double screenHeight = SystemParameters.WorkArea.Height;
 
-            double speed = SystemParameters.WorkArea.Height * 0.03;
+            double speedFactor = 0.03;
+            double minScreenHeight = 900;
+
+            double speed = screenHeight * speedFactor;
+            if (screenHeight < minScreenHeight)
+            {
+                speed *= 0.25;
+            }
+            else if (screenHeight > minScreenHeight * 2)
+            {
+                speed *= 1.5;
+            }
 
             var currentScrollViewer = (ScrollViewer)sender;
 
@@ -182,6 +195,27 @@ namespace CoursFlairy.View
         #endregion
 
         #region Анімація
+
+        private void BorderShackingAnimation(Border border)
+        {
+            if (border == null) return;
+
+            ThicknessAnimationUsingKeyFrames animation = new ThicknessAnimationUsingKeyFrames
+            {
+                Duration = TimeSpan.FromMilliseconds(500),
+                RepeatBehavior = new RepeatBehavior(1)
+            };
+
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(13, 10, 7, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(50))));
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(7, 10, 13, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(100))));
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(12, 10, 8, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(150))));
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(8, 10, 12, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200))));
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(11, 10, 9, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(250))));
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(9, 10, 11, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(300))));
+            animation.KeyFrames.Add(new DiscreteThicknessKeyFrame(new Thickness(10, 10, 10, 10), KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(350))));
+
+            border.BeginAnimation(Border.MarginProperty, animation);
+        }
 
         private void BorderAnimation(Border border, bool start = true, Color startColor = default)
         {

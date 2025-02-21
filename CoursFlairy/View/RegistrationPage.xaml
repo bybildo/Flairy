@@ -1,0 +1,532 @@
+﻿<Page x:Class="CoursFlairy.View.RegistrationPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CoursFlairy.View"
+      xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+      xmlns:converter="clr-namespace:CoursFlairy.ViewModel.Converter.SearchPage"
+      xmlns:converter2="clr-namespace:CoursFlairy.ViewModel.Converter.RegistrationPage"
+      mc:Ignorable="d" 
+      xmlns:UI="clr-namespace:CoursFlairy.View.UI"
+      d:DesignWidth="1450" d:DesignHeight="824"
+      Title="RegistrationPage">
+
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBox">
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="30"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                <ScrollViewer x:Name="PART_ContentHost" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
+            <DashStyle x:Key="DottedUnderline" Dashes="9, 7"/>
+
+            <Style TargetType="PasswordBox">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            </Style>
+
+            <converter:TextToVisibilityConverter x:Key="TextToVisibilityConverter"/>
+            <converter2:OpacityToVisiblityConverter x:Key="OpacityToVisiblityConverter"/>
+        </Grid.Resources>
+
+        <Path Width="70" Height="70" VerticalAlignment="Bottom" HorizontalAlignment="Left" Stretch="Uniform" Data="{DynamicResource pashalko}" Fill="{DynamicResource Black}"/>
+        <Canvas x:Name="AnimationCanvas">
+            <Canvas.Background>
+                <LinearGradientBrush x:Name="AnimatedGradient" StartPoint="0,0" EndPoint="1,1">
+                    <LinearGradientBrush.RelativeTransform>
+                        <RotateTransform x:Name="GradientRotateTransform" Angle="50" CenterX="0.5" CenterY="0.5"/>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="{DynamicResource ForRegistrationGradient1}" Offset="0.00"/>
+                    <GradientStop Color="{DynamicResource ForRegistrationGradient2}" Offset="0.95"/>
+                    <GradientStop Color="Transparent" Offset="1.7"/>
+                </LinearGradientBrush>
+            </Canvas.Background>
+
+            <Canvas.Triggers>
+                <EventTrigger RoutedEvent="Canvas.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetName="GradientRotateTransform" Storyboard.TargetProperty="Angle" From="50" To="410" Duration="0:2:0" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                            <DoubleAnimation Storyboard.TargetName="WhiteBorder" Storyboard.TargetProperty="Opacity" From="0.15" To="0.3" Duration="0:0:35"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Canvas.Triggers>
+        </Canvas>
+        <Border x:Name="WhiteBorder" Background="{DynamicResource White}" Opacity="0.15"/>
+
+        <Grid Name="MainGrid" DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.7*"/>
+                <!--1.6-->
+                <ColumnDefinition Width="1.6*"/>
+                <!--2.4-->
+                <ColumnDefinition Width="2.4*"/>
+                <!--1.7-->
+                <ColumnDefinition Width="1.7*"/>
+                <ColumnDefinition Width="0*"/>
+                <!--Бізнес-->
+                <ColumnDefinition Width="0*"/>
+                <ColumnDefinition Width="0.7*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="6*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Column="1" Grid.Row="1" >
+                <UI:AccountControl x:Name="LogIn" Visibility="Collapsed"/>
+            </Grid>
+
+            <Border MouseDown="Border_MouseDown" Background="White" CornerRadius="10" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="1" RenderTransform="{Binding ElementName=Registration, Path=RenderTransform}" Visibility="{Binding ElementName=Registration, Path=Visibility}">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                </Border.Effect>
+            </Border>
+            <Grid Name="Registration" Grid.Column="3" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="21*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="15*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="15*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="17*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Viewbox Grid.Row="1" Grid.ColumnSpan="3">
+                    <TextBlock Text="Реєстрація" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                </Viewbox>
+
+                <Viewbox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Логін:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+                </Viewbox>
+
+                <Border x:Name="loginBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="5" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.09*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Оберіть ім'я користувача" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=login, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <TextBox x:Name="login" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="login_TextChanged" PreviewKeyDown="KeyControl"/>
+                        </ScrollViewer>
+                        <Grid Background="Transparent" Visibility="{Binding ElementName=dangerLogin, Path=Opacity, Converter={StaticResource OpacityToVisiblityConverter}}" ToolTip="Логін зайнятий" Grid.Column="1">
+                            <ToolTipService.InitialShowDelay>200</ToolTipService.InitialShowDelay>
+                            <Path x:Name="dangerLogin" Fill="{DynamicResource HintColor}" Opacity="0" Data="{DynamicResource danger}" VerticalAlignment="Center" Stretch="Uniform"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Email:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+                </Viewbox>
+
+                <Border x:Name="emailBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="9" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.09*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Text="Вкажіть пошту" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=email, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <TextBox x:Name="email" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="emailAnimation" PreviewKeyDown="KeyControl"/>
+                        </ScrollViewer>
+                        <Grid Background="Transparent" Visibility="{Binding ElementName=dangerEmail, Path=Opacity, Converter={StaticResource OpacityToVisiblityConverter}}" ToolTip="Email зайнятий" Grid.Column="1">
+                            <ToolTipService.InitialShowDelay>200</ToolTipService.InitialShowDelay>
+                            <Path x:Name="dangerEmail" Fill="{DynamicResource HintColor}" Opacity="0" Data="{DynamicResource danger}" VerticalAlignment="Center" Stretch="Uniform"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Пароль:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                </Viewbox>
+
+                <Border Name="passwordBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="13" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <TextBlock Text="Створіть пароль (мінімум 8 символів)" Name="PasswordHint" FontSize="16.7" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <PasswordBox x:Name="password" Foreground="{DynamicResource Black}" FontSize="15" FontFamily="Bahnschrift" VerticalAlignment="Center" MaxLength="20" PasswordChanged="password_PasswordChanged" PreviewKeyDown="KeyControl"/>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Row="15" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Повторіть пароль:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                </Viewbox>
+
+                <Border Name="confirmPasswordBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="17" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <TextBlock Text="Повторіть створений пароль" Name="ConfirmPasswordHint" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <PasswordBox x:Name="confirmPassword" Foreground="{DynamicResource Black}" FontSize="15" FontFamily="Bahnschrift" VerticalAlignment="Center" MaxLength="20"  PasswordChanged="password_PasswordChanged" PreviewKeyDown="KeyControl"/>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Column="1" Grid.Row="19">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.Resources>
+                            <TransformGroup x:Key="ArrowTransform">
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="180"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </StackPanel.Resources>
+
+                        <TextBlock x:Name="additionalOptionText" Text="Додаткові опції реєстрації" FontFamily="Bahnschrift" Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" MouseEnter="TextBlock_MouseEnterAnimation" MouseLeave="TextBlock_MouseLeaveAnimation" MouseDown="ToBigInterface_MouseDown"/>
+                        <Path x:Name="arrowa" Fill="{Binding ElementName=additionalOptionText, Path=Foreground}" Stretch="Uniform" Data="{DynamicResource arrow}" Opacity="0.6" Height="10" Margin="4,0,0,0" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" RenderTransform="{StaticResource ArrowTransform}"/>
+                        <Path Data="{DynamicResource arrow}" Fill="{Binding ElementName=additionalOptionText, Path=Foreground}" Stretch="Uniform" Opacity="0.6" Height="10" Margin="0,0,0,0" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" RenderTransform="{StaticResource ArrowTransform}"/>
+                    </StackPanel>
+                </Viewbox>
+
+                <Border x:Name="RegistrationButton" Background="{DynamicResource MainColor20}" Grid.Column="1" Grid.Row="21" CornerRadius="8" PreviewMouseDown="RegistrationUser_MouseDown">
+                    <TextBlock Background="Transparent" Foreground="{DynamicResource White}" Text="Зареєструватися" FontSize="22" FontFamily="Bahnschrift" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <Viewbox Grid.Row="23" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Вже маєте акаунт? " Foreground="{DynamicResource HintColor}" Opacity="0.8"/>
+                        <TextBlock Text="Увійти" Foreground="{DynamicResource HintColor}" Background="Transparent" Opacity="0.8" MouseEnter="TextBlock_MouseEnterAnimation" MouseLeave="TextBlock_MouseLeaveAnimation" MouseDown="LogIn_MouseDown">
+                            <TextBlock.TextDecorations>
+                                <TextDecoration Location="Underline">
+                                    <TextDecoration.Pen>
+                                        <Pen Brush="{DynamicResource HintColor}" Thickness="1" DashStyle="{StaticResource DottedUnderline}"/>
+                                    </TextDecoration.Pen>
+                                </TextDecoration>
+                            </TextBlock.TextDecorations>
+                        </TextBlock>
+                    </StackPanel>
+                </Viewbox>
+            </Grid>
+
+            <Grid x:Name="Bussiness" Grid.Column="5" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="30*"/>
+                    <RowDefinition Height="7*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="23*"/>
+                    <RowDefinition Height="3.5*"/>
+                    <RowDefinition Height="9*"/>
+                    <RowDefinition Height="17.5*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border MouseDown="Border_MouseDown" Background="White" CornerRadius="10" Grid.ColumnSpan="100" Grid.RowSpan="100">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                    </Border.Effect>
+                </Border>
+
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="1" Grid.ColumnSpan="3">
+                        <TextBlock Text="Бізнес" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                    </Viewbox>
+
+                    <Viewbox Grid.Row="0" Grid.ColumnSpan="3">
+                        <TextBlock Text="Реєстрація" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                    </Viewbox>
+                </Grid>
+
+                <Grid Grid.Row="3" Grid.Column="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Viewbox HorizontalAlignment="Center" Margin="2, 0, 0, 0">
+                        <TextBlock Text="Лого:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+                    </Viewbox>
+
+                    <Viewbox HorizontalAlignment="Left" Grid.Column="2" Margin="2, 0, 0, 0">
+                        <TextBlock Text="Ім'я:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+                    </Viewbox>
+                </Grid>
+
+                <Grid Grid.Row="5" Grid.Column="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name="logoBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" CornerRadius="8" PreviewMouseDown="SvgChoose_MouseDown">
+                        <Grid>
+                            <Viewbox>
+                                <TextBlock x:Name="plus" Text="+" Foreground="Navy" FontFamily="Bahnschrift" Margin="-1, -1, -1, -2" MouseEnter="TextBlock_MouseEnterAnimation" MouseLeave="TextBlock_MouseLeaveAnimation"/>
+                            </Viewbox>
+                            <Viewbox Margin="3">
+                                <svg:SvgViewbox Name="icon" Visibility="Hidden"/>
+                            </Viewbox>
+                        </Grid>
+                    </Border>
+
+                    <Border x:Name="firmNameBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="2" Grid.Row="0" CornerRadius="8">
+                        <Grid Margin="10, 0, 10, 0">
+                            <TextBlock Text="Оберіть ім'я фірми" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=firmName, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                <TextBox x:Name="firmName" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="firmName_TextChanged" PreviewKeyDown="KeyBussControl"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Viewbox Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Країна:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+                </Viewbox>
+
+                <Border Name="countryBorder" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1"  CornerRadius="8" Grid.Column="1" Grid.Row="9">
+                    <Grid Margin="10, 0, 10, 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="7*"/>
+                            <ColumnDefinition Width="0.1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Англійською мовою" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=country, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                        <ScrollViewer Margin="0,0,0,-2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <Grid>
+                                <TextBlock Text="{Binding CountryHint,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource HintColor}" FontSize="19" FontFamily="Bahnschrift" Opacity="0.6" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                <TextBox Name="country" Text="{Binding Country,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" PreviewKeyDown="KeyBussControl"/>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <Path x:Name="countryButton" Visibility="Hidden" Grid.Column="2" Data="{DynamicResource tabButton}" Fill="{DynamicResource MainColor100}" Stretch="Uniform" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Email:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}" />
+                </Viewbox>
+
+                <Border x:Name="emailBussBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="13" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.09*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Text="Вкажіть пошту" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=emailBuss, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <TextBox x:Name="emailBuss" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="emailAnimation" PreviewKeyDown="KeyBussControl"/>
+                        </ScrollViewer>
+                        <Grid Background="Transparent" Visibility="{Binding ElementName=dangerBussEmail, Path=Opacity, Converter={StaticResource OpacityToVisiblityConverter}}" ToolTip="Email зайнятий" Grid.Column="1">
+                            <ToolTipService.InitialShowDelay>200</ToolTipService.InitialShowDelay>
+                            <Path x:Name="dangerBussEmail" Fill="{DynamicResource HintColor}" Opacity="0" Data="{DynamicResource danger}" VerticalAlignment="Center" Stretch="Uniform"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Row="15" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Пароль:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                </Viewbox>
+
+                <Border Name="passwordBussBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="17" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <TextBlock Text="Створіть пароль (мінімум 8 символів)" Name="PasswordBussHint" FontSize="16.7" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <PasswordBox x:Name="passwordBuss" Foreground="{DynamicResource Black}" FontSize="15" FontFamily="Bahnschrift" VerticalAlignment="Center" MaxLength="20" PasswordChanged="password_PasswordChanged" PreviewKeyDown="KeyBussControl"/>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Viewbox Grid.Row="19" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                    <TextBlock Text="Повторіть пароль:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                </Viewbox>
+
+                <Border Name="confirmPasswordBussBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="21" CornerRadius="8">
+                    <Grid Margin="10, 0, 10, 0">
+                        <TextBlock Text="Повторіть створений пароль" Name="ConfirmPasswordBussHint" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                            <PasswordBox x:Name="confirmBussPassword" Foreground="{DynamicResource Black}" FontSize="15" FontFamily="Bahnschrift" VerticalAlignment="Center" MaxLength="20"  PasswordChanged="password_PasswordChanged" PreviewKeyDown="KeyBussControl"/>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Border x:Name="RegistrationBussButton" Background="{DynamicResource MainColor20}" Grid.Column="1" Grid.Row="23" CornerRadius="8" PreviewMouseDown="RegistrationBussUser_MouseDown">
+                    <TextBlock Background="Transparent" Foreground="{DynamicResource White}" Text="Зареєструватися" FontSize="22" FontFamily="Bahnschrift" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <Viewbox Grid.Row="25" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="До звичайної реєстрації" Foreground="{DynamicResource HintColor}" Background="Transparent" Opacity="0.8" MouseEnter="TextBlock_MouseEnterAnimation" MouseLeave="TextBlock_MouseLeaveAnimation" MouseDown="FromBussToLogin_MouseDown">
+                        <TextBlock.TextDecorations>
+                            <TextDecoration Location="Underline">
+                                <TextDecoration.Pen>
+                                    <Pen Brush="{DynamicResource HintColor}" Thickness="1" DashStyle="{StaticResource DottedUnderline}"/>
+                                </TextDecoration.Pen>
+                            </TextDecoration>
+                        </TextBlock.TextDecorations>
+                    </TextBlock>
+                </Viewbox>
+            </Grid>
+
+            <!--Додаткова реєстрація-->
+            <Grid Grid.Column="4" Grid.Row="1" >
+                <Grid.RowDefinitions>
+                    <!--131 160-->
+                    <RowDefinition Height="43*"/>
+                    <RowDefinition Height="160*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="16*"/>
+                    <RowDefinition Height="34*"/>
+                    <RowDefinition Height="3.5*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="16.5*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.1*"/>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition Width="0.6*"/>
+                </Grid.ColumnDefinitions>
+
+                <UI:UserPassportData x:Name="UserPassport" Grid.Row="1" Grid.Column="2" DataChanged="UserPassport_DataChanged"/>
+
+                <Grid Grid.Row="4" Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="20*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                        <TextBlock Text="Номер телефону:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                    </Viewbox>
+
+                    <Border x:Name="phoneBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="1" Grid.Row="9" CornerRadius="8">
+                        <Grid Margin="10, 0, 10, 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="0.09*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Не обов'язково" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=phone, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                <TextBox x:Name="phone" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="PhoneAnimation" PreviewTextInput="phone_PreviewTextInput" PreviewKeyDown="KeyControl"/>
+                            </ScrollViewer>
+                            <Grid Background="Transparent" Visibility="{Binding ElementName=dangerPhone, Path=Opacity, Converter={StaticResource OpacityToVisiblityConverter}}" ToolTip="Номер телефону зайнятий" Grid.Column="1">
+                                <ToolTipService.InitialShowDelay>200</ToolTipService.InitialShowDelay>
+                                <Path x:Name="dangerPhone" Fill="{DynamicResource HintColor}" Opacity="0" Data="{DynamicResource danger}" VerticalAlignment="Center" Stretch="Uniform"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Viewbox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Margin="2, 0, 0, 0">
+                        <TextBlock Text="Реферальний код:" FontFamily="{DynamicResource BlackerSans Pro It Variable}" FontWeight="Light" Foreground="{DynamicResource Black}"/>
+                    </Viewbox>
+
+                    <Border x:Name="referralCodeBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="3" Grid.Row="2" CornerRadius="8">
+                        <Grid Margin="10, 0, 10, 0">
+                            <TextBlock Text="Тільки при повній реєстрації" FontSize="17" Margin="2,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=referralCode, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
+                                <TextBox x:Name="referralCode" IsEnabled="False" Foreground="{DynamicResource Black}" FontSize="19" FontFamily="Bahnschrift" MaxLength="100" TextChanged="referalAnimation" PreviewKeyDown="KeyControl"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Viewbox Grid.Row="6" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Хочете стати партнером? " Foreground="{DynamicResource HintColor}" Opacity="0.8"/>
+                        <TextBlock Text="Створити бізнес акаунт" Foreground="{DynamicResource HintColor}" Background="Transparent" Opacity="0.8" MouseEnter="TextBlock_MouseEnterAnimation" MouseLeave="TextBlock_MouseLeaveAnimation" MouseDown="ToBussiness_MouseDown">
+                            <TextBlock.TextDecorations>
+                                <TextDecoration Location="Underline">
+                                    <TextDecoration.Pen>
+                                        <Pen Brush="{DynamicResource HintColor}" Thickness="1" DashStyle="{StaticResource DottedUnderline}"/>
+                                    </TextDecoration.Pen>
+                                </TextDecoration>
+                            </TextBlock.TextDecorations>
+                        </TextBlock>
+                    </StackPanel>
+                </Viewbox>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

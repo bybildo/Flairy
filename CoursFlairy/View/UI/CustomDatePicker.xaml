@@ -33,7 +33,7 @@
         <!--Полотно-->
         <Border Background="{DynamicResource White}" Grid.Column="2" Grid.ColumnSpan="5" Grid.RowSpan="4" Margin="5" CornerRadius="10">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Direction="270" Opacity="0.3" />
+                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
             </Border.Effect>
 
             <Grid>
@@ -99,7 +99,7 @@
 
                         <Rectangle Name="leftRec" Fill="{DynamicResource White}" Opacity="1" Stretch="Fill" RadiusX="2" RadiusY="2" Grid.RowSpan="3">
                             <Rectangle.Effect>
-                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="Black" Direction="320" Opacity="0.4" />
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.4" />
                             </Rectangle.Effect>
                         </Rectangle>
                         <Path Name="leftPath" Grid.Row="1" Data="{DynamicResource arrow}" Fill="{DynamicResource MainColor100}" HorizontalAlignment="Center" Stretch="Uniform" VerticalAlignment="Center"/>
@@ -135,7 +135,7 @@
 
                         <Rectangle Name="rightRec" Fill="{DynamicResource White}" Opacity="1" Stretch="Fill" RadiusX="2" RadiusY="2" Grid.RowSpan="3">
                             <Rectangle.Effect>
-                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="Black" Direction="320" Opacity="0.4" />
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.4" />
                             </Rectangle.Effect>
                         </Rectangle>
                         <Path Name="rightPath" Grid.Row="1" Data="{DynamicResource arrow}" Fill="{DynamicResource MainColor100}" HorizontalAlignment="Center" Stretch="Uniform" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
@@ -174,7 +174,7 @@
 
                         <Rectangle Name="monthRec" Fill="{DynamicResource White}" Opacity="1" Stretch="Fill" Width="{Binding ActualWidth, ElementName=monthPath, Converter={StaticResource DatePickerBorderMonthConverter}}" RadiusX="2" RadiusY="2">
                             <Rectangle.Effect>
-                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="Black" Direction="320" Opacity="0.4" />
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.4" />
                             </Rectangle.Effect>
                         </Rectangle>
 
