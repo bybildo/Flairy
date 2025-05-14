@@ -4,6 +4,7 @@ namespace CoursFlairy.Model.UI
 {
     public record AirportStruct : INotifyPropertyChanged
     {
+        private int _id { get; set; }
         private string _country { get; set; }
         private string _city { get; set; }
         private string _name { get; set; }
@@ -33,8 +34,23 @@ namespace CoursFlairy.Model.UI
             set { _code = value; OnPropertyChanged(nameof(Code)); }
         }
 
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; OnPropertyChanged(nameof(Id)); }
+        }
+
         public AirportStruct(string country, string city, string name, string code)
         {
+            Country = country;
+            City = city;
+            Name = name;
+            Code = code;
+        }
+
+        public AirportStruct(int id, string country, string city, string name, string code)
+        {
+            Id = id;
             Country = country;
             City = city;
             Name = name;

@@ -18,11 +18,11 @@ namespace CoursFlairy.ViewModel.Converter.SearchPage
             switch (lastsymbol)
             {
                 default:
-                    return MainColor30;
+                    return EconomColor;
                 case '2':
-                    return MainColor50;
+                    return BusinessColor;
                 case '3':
-                    return MainColor100;
+                    return FirstColor;
             }
         }
 

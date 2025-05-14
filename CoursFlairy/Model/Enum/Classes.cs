@@ -2,6 +2,6 @@
 {
     public enum Classes
     {
-       Econom, Bussiness, First
+        None, First, Bussiness, Econom, Suitcase
     }
 }

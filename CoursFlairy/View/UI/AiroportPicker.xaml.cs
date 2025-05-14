@@ -141,7 +141,7 @@ namespace CoursFlairy.View.UI
             List<AirportStruct> result = new List<AirportStruct>();
             string[] words = text.Replace(".", "").Replace(",", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            string query = @"SELECT TOP 4 c.Name, a.City, a.Name, a.ICAO FROM Airport a JOIN Country c ON a.CountryID = c.ID ";
+            string query = @"SELECT TOP 4 a.ID, c.Name, a.City, a.Name, a.ICAO FROM Airport a JOIN Country c ON a.CountryID = c.ID ";
 
             if (words.Length > 0)
             {
@@ -163,10 +163,11 @@ namespace CoursFlairy.View.UI
                         while (reader.Read())
                         {
                             result.Add(new AirportStruct(
-                                reader.IsDBNull(0) ? "" : reader.GetString(0),
+                                reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
                                 reader.IsDBNull(1) ? "" : reader.GetString(1),
                                 reader.IsDBNull(2) ? "" : reader.GetString(2),
-                                reader.IsDBNull(3) ? "" : reader.GetString(3)
+                                reader.IsDBNull(3) ? "" : reader.GetString(3),
+                                reader.IsDBNull(4) ? "" : reader.GetString(4)
                             ));
                         }
                     }
@@ -324,6 +325,26 @@ namespace CoursFlairy.View.UI
             SearchField = temp;
         }
 
+        public void TriggerUpdate()
+        {
+            if (!_isDeparture)
+            {
+                ToDeparture();
+                ToArrival();
+            }
+            else
+            {
+                ToArrival();
+                ToDeparture();
+            }
+        }
+
+        public void ToRouteGrid()
+        {
+            MainGrid.ColumnDefinitions[5].Width = new GridLength(0, GridUnitType.Star);
+            MainGrid.ColumnDefinitions[6].Width = new GridLength(0, GridUnitType.Star);
+            MainGrid.ColumnDefinitions[7].Width = new GridLength(0, GridUnitType.Star);
+        }
         #endregion
 
         #endregion

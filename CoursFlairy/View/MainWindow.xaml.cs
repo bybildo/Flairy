@@ -22,6 +22,7 @@ namespace CoursFlairy.View
             DataBase.Open();
             MainWindowVM viewModel = new MainWindowVM();
             this.DataContext = viewModel;
+            CurrentAccount.Load();
         }
 
         private void AutoScreen()
@@ -49,7 +50,7 @@ namespace CoursFlairy.View
                 Duration = TimeSpan.FromMilliseconds(200)
             };
 
-            AccountUI.BeginAnimation(AccountControl.OpacityProperty, fadeInAnimation);
+            AccountUI.BeginAnimation(LogIn.OpacityProperty, fadeInAnimation);
         }
 
         private async void AccountHide(object sender, System.Windows.Input.MouseEventArgs e)
@@ -63,7 +64,7 @@ namespace CoursFlairy.View
                 Duration = TimeSpan.FromMilliseconds(200)
             };
 
-            AccountUI.BeginAnimation(AccountControl.OpacityProperty, fadeInAnimation);
+            AccountUI.BeginAnimation(LogIn.OpacityProperty, fadeInAnimation);
         }
 
         private void AccountUI_RegistonUser_MouseDown(object sender, EventArgs e)
@@ -74,7 +75,7 @@ namespace CoursFlairy.View
                 Duration = TimeSpan.FromMilliseconds(200)
             };
 
-            AccountUI.BeginAnimation(AccountControl.OpacityProperty, fadeInAnimation);
+            AccountUI.BeginAnimation(LogIn.OpacityProperty, fadeInAnimation);
         }
     }
 }

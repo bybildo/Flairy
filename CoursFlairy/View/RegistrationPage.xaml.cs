@@ -1,5 +1,6 @@
 ﻿using CoursFlairy.Data;
 using CoursFlairy.Model.Enum;
+using CoursFlairy.Model;
 using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
 using System.ComponentModel;
@@ -15,6 +16,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using static CoursFlairy.ViewModel.ResourceColor;
+using CoursFlairy.View.Bussiness;
+using CoursFlairy.ViewModel;
 
 namespace CoursFlairy.View
 {
@@ -97,6 +100,7 @@ namespace CoursFlairy.View
             UpdateCanvasSize();
             await CreateAnimatedEllipsesAsync();
         }
+
         #region Методи 
         #region Взаємодії
         #region MouseDown
@@ -765,13 +769,13 @@ namespace CoursFlairy.View
                 AnimateElement(bussinessTransform, 0, bussinessTransform.X + moveDistance / 2, easing, () => { });
 
                 MainGrid.ColumnDefinitions.Clear();
-                MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.7, GridUnitType.Star) });
+                MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.3, GridUnitType.Star) });
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.6, GridUnitType.Star) });
-                MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2.4, GridUnitType.Star) });
+                MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3.2, GridUnitType.Star) });
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.7, GridUnitType.Star) });
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
-                MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.7, GridUnitType.Star) });
+                MainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.3, GridUnitType.Star) });
 
                 AnimateElement(registrationTransform, moveDistance, 0, easing, () => { });
                 AnimateElement(bussinessTransform, moveDistance, 0, easing, () => { });
@@ -816,19 +820,19 @@ namespace CoursFlairy.View
             if (pageState != PageState.BigInterface)
             {
                 // Етап 1
-                storyboard.Children.Add(AddAnimation(columns[2], 2.4, 2.3, currentTime[0], timeForAnimation[0]));
-                storyboard.Children.Add(AddAnimation(columns[5], 0.7, 0.8, currentTime[0], timeForAnimation[0]));
+                storyboard.Children.Add(AddAnimation(columns[2], 3.2, 3.1, currentTime[0], timeForAnimation[0]));
+                storyboard.Children.Add(AddAnimation(columns[5], 0.3, 0.4, currentTime[0], timeForAnimation[0]));
 
                 // Етап 2
-                storyboard.Children.Add(AddAnimation(columns[2], 2.3, 2.5, currentTime[1], timeForAnimation[1]));
-                storyboard.Children.Add(AddAnimation(columns[5], 0.8, 0.6, currentTime[1], timeForAnimation[1]));
+                storyboard.Children.Add(AddAnimation(columns[2], 3.1, 3.3, currentTime[1], timeForAnimation[1]));
+                storyboard.Children.Add(AddAnimation(columns[5], 0.4, 0.2, currentTime[1], timeForAnimation[1]));
 
                 // Етап 3
-                storyboard.Children.Add(AddAnimation(columns[0], 0.7, 1.0, currentTime[2], timeForAnimation[2]));
+                storyboard.Children.Add(AddAnimation(columns[0], 0.2, 1.0, currentTime[2], timeForAnimation[2]));
                 storyboard.Children.Add(AddAnimation(columns[1], 1.6, 0, currentTime[2], timeForAnimation[2]));
                 storyboard.Children.Add(AddAnimation(columns[2], 2.5, 0, currentTime[2], timeForAnimation[2]));
                 storyboard.Children.Add(AddAnimation(columns[4], 0, 3, currentTime[2], timeForAnimation[2]));
-                storyboard.Children.Add(AddAnimation(columns[5], 0.6, 1.4, currentTime[2], timeForAnimation[2]));
+                storyboard.Children.Add(AddAnimation(columns[5], 0.2, 1.4, currentTime[2], timeForAnimation[2]));
 
                 // Етап 4
                 storyboard.Children.Add(AddAnimation(columns[0], 1.0, 1.2, currentTime[3], timeForAnimation[3]));
@@ -840,16 +844,16 @@ namespace CoursFlairy.View
 
                 // Етап 6
                 storyboard.Children.Add(AddAnimation(columns[0], 1.4, 1.3, currentTime[5], timeForAnimation[5]));
-                storyboard.Children.Add(AddAnimation(columns[5], 1.1, 1.2, currentTime[5], timeForAnimation[5]));
+                storyboard.Children.Add(AddAnimation(columns[5], 1.1, 1.3, currentTime[5], timeForAnimation[5]));
 
                 // Етап 7
-                storyboard.Children.Add(AddAnimation(columns[5], 1.2, 1.1, currentTime[6], timeForAnimation[6]));
+                storyboard.Children.Add(AddAnimation(columns[5], 1.3, 1.2, currentTime[6], timeForAnimation[6]));
                 storyboard.Children.Add(AddAnimation(columns[0], 1.3, 1.2, currentTime[6], timeForAnimation[6]));
             }
             else
             {
                 // Етап 7
-                storyboard.Children.Add(AddAnimation(columns[0], 1.2, 1.3, currentTime[0], timeForAnimation[6]));
+                storyboard.Children.Add(AddAnimation(columns[0], 1.2, 1.2, currentTime[0], timeForAnimation[6]));
                 storyboard.Children.Add(AddAnimation(columns[5], 1.1, 1.2, currentTime[0], timeForAnimation[6]));
 
                 // Етап 6
@@ -865,19 +869,19 @@ namespace CoursFlairy.View
                 storyboard.Children.Add(AddAnimation(columns[0], 1.2, 1.0, currentTime[3], timeForAnimation[3]));
 
                 // Етап 3
-                storyboard.Children.Add(AddAnimation(columns[5], 1.4, 0.6, currentTime[4], timeForAnimation[2]));
+                storyboard.Children.Add(AddAnimation(columns[5], 1.4, 0.2, currentTime[4], timeForAnimation[2]));
                 storyboard.Children.Add(AddAnimation(columns[4], 3, 0, currentTime[4], timeForAnimation[2]));
                 storyboard.Children.Add(AddAnimation(columns[2], 0, 2.5, currentTime[4], timeForAnimation[2]));
                 storyboard.Children.Add(AddAnimation(columns[1], 0, 1.6, currentTime[4], timeForAnimation[2]));
-                storyboard.Children.Add(AddAnimation(columns[0], 1.0, 0.7, currentTime[4], timeForAnimation[2]));
+                storyboard.Children.Add(AddAnimation(columns[0], 1.0, 0.2, currentTime[4], timeForAnimation[2]));
 
                 // Етап 2
-                storyboard.Children.Add(AddAnimation(columns[5], 0.6, 0.8, currentTime[5], timeForAnimation[1]));
-                storyboard.Children.Add(AddAnimation(columns[2], 2.5, 2.3, currentTime[5], timeForAnimation[1]));
+                storyboard.Children.Add(AddAnimation(columns[5], 0.2, 0.4, currentTime[5], timeForAnimation[1]));
+                storyboard.Children.Add(AddAnimation(columns[2], 3.3, 3.1, currentTime[5], timeForAnimation[1]));
 
                 // Етап 1
-                storyboard.Children.Add(AddAnimation(columns[5], 0.8, 0.7, currentTime[6], timeForAnimation[0]));
-                storyboard.Children.Add(AddAnimation(columns[2], 2.3, 2.4, currentTime[6], timeForAnimation[0]));
+                storyboard.Children.Add(AddAnimation(columns[5], 0.4, 0.3, currentTime[6], timeForAnimation[0]));
+                storyboard.Children.Add(AddAnimation(columns[2], 3.1, 3.2, currentTime[6], timeForAnimation[0]));
             }
 
             storyboard.Begin();
@@ -931,12 +935,12 @@ namespace CoursFlairy.View
             storyboard.Children.Add(AddAnimation(columns[6], 0, 1.7, currentTime[4], timeForAnimation[2]));
 
             // Етап 2
-            storyboard.Children.Add(AddAnimation(columns[5], 0.6, 0.8, currentTime[5], timeForAnimation[1]));
-            storyboard.Children.Add(AddAnimation(columns[2], 2.5, 2.3, currentTime[5], timeForAnimation[1]));
+            storyboard.Children.Add(AddAnimation(columns[5], 0.6, 0.4, currentTime[5], timeForAnimation[1]));
+            storyboard.Children.Add(AddAnimation(columns[2], 2.5, 3.1, currentTime[5], timeForAnimation[1]));
 
             // Етап 1
-            storyboard.Children.Add(AddAnimation(columns[5], 0.8, 0.7, currentTime[6], timeForAnimation[0]));
-            storyboard.Children.Add(AddAnimation(columns[2], 2.3, 2.4, currentTime[6], timeForAnimation[0]));
+            storyboard.Children.Add(AddAnimation(columns[5], 0.4, 0.3, currentTime[6], timeForAnimation[0]));
+            storyboard.Children.Add(AddAnimation(columns[2], 3.1, 3.2, currentTime[6], timeForAnimation[0]));
 
             storyboard.Begin();
             pageState = PageState.Bussiness;
@@ -1104,6 +1108,25 @@ namespace CoursFlairy.View
                 query = @"INSERT INTO [dbo].[User] ([Login], [Name], [Surname], [Gender] , [Citizenship], [BirthDate], [Passport], [PassportDate], [Email], [Phone], [PasswordHash]) VALUES (@login, @name, @surname, @gender, @citizenship, @birthDate, @passport, @passportDate, @email, @phone, @password)";
             }
 
+            int lastID = -1;
+            using (SqlCommand command = new SqlCommand("SELECT TOP 1 ID FROM [dbo].[User] ORDER BY ID DESC", DataBase.GetConnection()))
+            {
+                try
+                {
+                    var result = command.ExecuteScalar();
+                    if (result != null)
+                    {
+                        lastID = Convert.ToInt32(result);
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Помилка", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error); }
+            }
+            if (lastID == -1)
+            {
+                MessageBox.Show("Помилка отримання Bussiness ID", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error);
+                lastID = 0;
+            }
+
             using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
             {
                 command.Parameters.AddWithValue("@login", login.Text);
@@ -1129,6 +1152,9 @@ namespace CoursFlairy.View
                 try
                 {
                     command.ExecuteNonQuery();
+                    CurrentAccount.Set(Model.Enum.AccountType.User, lastID + 1);
+                    var mainWindow = (MainWindow)Application.Current.MainWindow;
+                    mainWindow.PageManager.Navigate(new SearchPage());
                 }
                 catch (Exception ex)
                 {
@@ -1147,6 +1173,25 @@ namespace CoursFlairy.View
                 logo = File.ReadAllText(logoPath);
             }
 
+            int lastID = -1;
+            using (SqlCommand command = new SqlCommand("SELECT TOP 1 ID FROM [dbo].[Airline] ORDER BY ID DESC", DataBase.GetConnection()))
+            {
+                try
+                {
+                    var result = command.ExecuteScalar();
+                    if (result != null)
+                    {
+                        lastID = Convert.ToInt32(result);
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Помилка", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error); }
+            }
+            if (lastID == -1)
+            {
+                MessageBox.Show("Помилка отримання Bussiness ID", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error);
+                lastID = 0;
+            }
+
             string query = @"INSERT INTO [dbo].[Airline] ([Name], [CountryID], [Email], [Logo], [PasswordHash]) VALUES (@firmName, @country, @email, @logo, @password)";
             using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
             {
@@ -1158,6 +1203,9 @@ namespace CoursFlairy.View
                 try
                 {
                     command.ExecuteNonQuery();
+                    CurrentAccount.Set(Model.Enum.AccountType.Bussines, lastID + 1);
+                    var mainWindow = (MainWindow)Application.Current.MainWindow;
+                    mainWindow.PageManager.Navigate(new BussinessControlPage());
                 }
                 catch (Exception ex)
                 {
@@ -1298,41 +1346,4 @@ namespace CoursFlairy.View
         }
         #endregion
     }
-
-    public class GridLengthAnimation : AnimationTimeline
-    {
-        public override Type TargetPropertyType => typeof(GridLength);
-
-        public static readonly DependencyProperty FromProperty =
-            DependencyProperty.Register(nameof(From), typeof(GridLength), typeof(GridLengthAnimation));
-
-        public static readonly DependencyProperty ToProperty =
-            DependencyProperty.Register(nameof(To), typeof(GridLength), typeof(GridLengthAnimation));
-
-        public GridLength From
-        {
-            get => (GridLength)GetValue(FromProperty);
-            set => SetValue(FromProperty, value);
-        }
-
-        public GridLength To
-        {
-            get => (GridLength)GetValue(ToProperty);
-            set => SetValue(ToProperty, value);
-        }
-
-        public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
-        {
-            if (animationClock.CurrentProgress == null) return From;
-
-            double fromValue = From.Value;
-            double toValue = To.Value;
-            double progress = animationClock.CurrentProgress.Value;
-
-            return new GridLength(fromValue + (toValue - fromValue) * progress, GridUnitType.Star);
-        }
-
-        protected override Freezable CreateInstanceCore() => new GridLengthAnimation();
-    }
-
 }

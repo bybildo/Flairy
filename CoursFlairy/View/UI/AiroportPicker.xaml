@@ -32,7 +32,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
                         <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
-                            <Border Height="40" x:Name="Border" BorderBrush="Transparent" CornerRadius="5" Background="Transparent">
+                            <Border Height="40" x:Name="Border" BorderBrush="Transparent" CornerRadius="5" Background="Transparent" Margin="3, 2, 3, 0">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
                                 </Border.Effect>
@@ -41,6 +41,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="9*"/>
                                     <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="0.3*"/>
                                 </Grid.ColumnDefinitions>
 
                                 <ScrollViewer x:Name="Viewer" Margin="10, 0, 10, 0" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
@@ -51,13 +52,13 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{Binding Path=Background, Source={x:Reference AirportsDisplay}}"/>
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor100}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource White}"/>
                             </Trigger>
 
                             <Trigger Property="IsSelected" Value="False">
                                 <Setter TargetName="Border" Property="Background" Value="{DynamicResource White}"/>
-                                <Setter Property="Foreground" Value="{Binding Path=Background, Source={x:Reference AirportsDisplay}}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource MainColor100}"/>
                                 <Setter TargetName="Border" Property="BorderThickness" Value="0"/>
                             </Trigger>
 
@@ -112,7 +113,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=UserControl, Mode=FindAncestor}}">
+    <Grid Name="MainGrid" DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=UserControl, Mode=FindAncestor}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.25*"/>
             <ColumnDefinition Width="2.5*"/>
@@ -133,7 +134,7 @@
 
         <Border Background="{DynamicResource White}" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="4" Margin="5" CornerRadius="10">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                <DropShadowEffect BlurRadius="6" ShadowDepth="0.7" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
             </Border.Effect>
         </Border>
 
