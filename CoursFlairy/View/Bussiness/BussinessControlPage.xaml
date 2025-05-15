@@ -138,7 +138,7 @@
                     <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
                 </Border.Effect>
             </Border>
-            <Frame x:Name="PageManager" Margin="-5" Grid.Row="1" Grid.Column="5" Source="FlightPage.xaml"/>
+            <Frame x:Name="PageManager" Margin="-5" Grid.Row="1" Grid.Column="5" Source="ProfilePage.xaml"/>
         </Grid>
     </Grid>
 </Page>

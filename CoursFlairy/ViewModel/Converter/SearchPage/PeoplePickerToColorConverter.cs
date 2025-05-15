@@ -9,7 +9,7 @@ namespace CoursFlairy.ViewModel.Converter.SearchPage
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            char lastsymbol = '1';
+            char lastsymbol = '4';
             if (value is string text)
             {
                 lastsymbol = text.Last();
@@ -17,12 +17,12 @@ namespace CoursFlairy.ViewModel.Converter.SearchPage
 
             switch (lastsymbol)
             {
-                default:
-                    return EconomColor;
                 case '2':
                     return BusinessColor;
-                case '3':
+                case '1':
                     return FirstColor;
+                default:
+                    return EconomColor;
             }
         }
 
