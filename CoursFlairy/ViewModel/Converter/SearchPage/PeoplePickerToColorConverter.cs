@@ -19,7 +19,7 @@ namespace CoursFlairy.ViewModel.Converter.SearchPage
             {
                 case '2':
                     return BusinessColor;
-                case '1':
+                case '3':
                     return FirstColor;
                 default:
                     return EconomColor;

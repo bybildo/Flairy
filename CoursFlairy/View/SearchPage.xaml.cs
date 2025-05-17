@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Media.Effects;
+using CoursFlairy.Model;
 
 namespace CoursFlairy.View
 {
@@ -49,9 +50,15 @@ namespace CoursFlairy.View
 
         private void SearchButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!(AiroportPicker.DepartureAirport != null && AiroportPicker.ArrivalAirport != null && !string.IsNullOrEmpty(DatePicker.CheckedDays) && PeoplePicker.Images.Count > 0)) {BorderShackingAnimation(SearchButton); return; }
+            if (!(AiroportPicker.DepartureAirport != null && AiroportPicker.ArrivalAirport != null && !string.IsNullOrEmpty(DatePicker.CheckedDays) && PeoplePicker.Images.Count > 0)) { BorderShackingAnimation(SearchButton); return; }
 
-            MessageBox.Show($"із: {AiroportPicker.DepartureAirport} \nдо: {AiroportPicker.ArrivalAirport} \nколи: {DatePicker.CheckedDays}\nколи назад: {DatePicker.CheckedBackDays} \nкількість: {PeoplePicker.Images.Count} \nхто: {PeoplePicker.Images.Aggregate((current, next) => current + ", " + next)}");
+            int[] personClasses = new int[PeoplePicker.Images.Count()];
+            for (int i = 0; i < PeoplePicker.Images.Count(); i++) personClasses[i] = (int)PeoplePicker.Class;
+
+            FlightStruct filter = new FlightStruct(AiroportPicker.DepartureAirport, AiroportPicker.ArrivalAirport, DatePicker.GetSelectedDays(), personClasses);
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow.PageManager.Navigate(new SelectPage(filter));
+            //MessageBox.Show($"із: {AiroportPicker.DepartureAirport} \nдо: {AiroportPicker.ArrivalAirport} \nколи: {DatePicker.CheckedDays}\nколи назад: {DatePicker.CheckedBackDays} \nкількість: {PeoplePicker.Images.Count} \nхто: {PeoplePicker.Images.Aggregate((current, next) => current + ", " + next)}");
         }
 
         private void SearchGridScreenUpdate()
@@ -365,7 +372,7 @@ namespace CoursFlairy.View
 
         private void SearchButton_AnimationEnter(object sender, MouseEventArgs e)
         {
-            if  (!(AiroportPicker.DepartureAirport != null && AiroportPicker.ArrivalAirport != null && !string.IsNullOrEmpty(DatePicker.CheckedDays) && PeoplePicker.Images.Count > 0)) return;
+            if (!(AiroportPicker.DepartureAirport != null && AiroportPicker.ArrivalAirport != null && !string.IsNullOrEmpty(DatePicker.CheckedDays) && PeoplePicker.Images.Count > 0)) return;
 
             var dropShadowEffect = SearchButton.Effect as DropShadowEffect;
             if (dropShadowEffect != null)
