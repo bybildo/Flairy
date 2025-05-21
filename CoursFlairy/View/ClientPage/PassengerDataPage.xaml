@@ -4,11 +4,135 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:CoursFlairy.View.ClientPage"
+      xmlns:ui="clr-namespace:CoursFlairy.View.UI"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="PassengerDataPage" d:DataContext="{Binding RelativeSource={RelativeSource Self}}">
+      d:DesignHeight="800" d:DesignWidth="1200"
+      Title="PassengerDataPage">
 
-    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
-        
-    </Grid>
+    <ScrollViewer Grid.Column="1" VerticalAlignment="Top" VerticalScrollBarVisibility="Hidden" Focusable="False">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.4*"/>
+                <ColumnDefinition Width="0.2*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical" Grid.Column="1">
+                <Grid Height="200" Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="8*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Background="White" CornerRadius="10" Grid.Row="1" Grid.Column="1">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="6" ShadowDepth="0.4" Color="{DynamicResource Shadow}" Opacity="0.5"/>
+                        </Border.Effect>
+                    </Border>
+
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                <Run Text="{Binding DepartureCity, StringFormat={}{0:U}}" FontSize="24" FontWeight="Bold"/>
+                <Run Text=" - " FontSize="24" FontWeight="Bold"/>
+                <Run Text="{Binding ArrivalCity, StringFormat={}{0:U}}" FontSize="24" FontWeight="Bold"/>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0,5,0,0">
+                <Run Text="{Binding DepartureIcao, StringFormat={}{0:l}}" FontSize="16" Foreground="#666666"/>
+                <Run Text=" - " FontSize="16" Foreground="#666666"/>
+                <Run Text="{Binding ArrivalIcao, StringFormat={}{0:l}}" FontSize="16" Foreground="#666666"/>
+                            </TextBlock>
+                            <Grid Margin="0,10,0,0" HorizontalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Departure Time -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding DepartureTime, StringFormat={}{0:HH:mm}}" FontSize="20" FontWeight="SemiBold"/>
+                                    </TextBlock>
+                                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding DepartureTime, StringFormat={}{0:dd.MM.yyyy}}" FontSize="16" Foreground="#666666"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                                <!-- Arrow or Separator -->
+                                <TextBlock Grid.Column="1" 
+                           Text="-" 
+                           FontSize="20" 
+                           Margin="15,0,15,0" 
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Center"
+                           Foreground="#666666"/>
+
+                                <!-- Arrival Time -->
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding ArrivalTime, StringFormat={}{0:HH:mm}}" FontSize="20" FontWeight="SemiBold"/>
+                                    </TextBlock>
+                                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding ArrivalTime, StringFormat={}{0:dd.MM.yyyy}}" FontSize="16" Foreground="#666666"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Passengers}" Margin="0, 20, 0, 0" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Border Margin="3,0,3,30" 
+                    Background="White" 
+                    CornerRadius="15"
+                    Padding="20">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="6" ShadowDepth="0.4" Color="{DynamicResource Shadow}" Opacity="0.5" />
+                                    </Border.Effect>
+                                </Border>
+                                <StackPanel Margin="0,0,0,30">
+                                    <TextBlock FontSize="18" 
+                              FontWeight="SemiBold" 
+                              Margin="23,23,0,5">
+                                        <Run Text="Пасажир "/>
+                                        <Run Text="{Binding PassengerNumber}"/>
+                                        <Run Text=" • "/>
+                                        <Run Text="{Binding PassengerClass}" 
+                                             Foreground="{DynamicResource MainColor100}"/>
+                                    </TextBlock>
+                                    <ui:UserPassportData Height="400" 
+                                                        Margin="23" 
+                                                        x:Name="PassportData"
+                                                        DataContext="{Binding}"
+                                                        Loaded="UserPassportData_Loaded"/>
+                                    <TextBlock Text="{Binding FormattedPrice}"
+                                             FontSize="16"
+                                             FontWeight="SemiBold"
+                                             Foreground="{DynamicResource MainColor100}"
+                                             Margin="23,0,23,23"
+                                             HorizontalAlignment="Right"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

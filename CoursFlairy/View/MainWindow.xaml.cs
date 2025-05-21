@@ -1,4 +1,5 @@
 ﻿using CoursFlairy.Data;
+using CoursFlairy.View.ClientPage;
 using CoursFlairy.View.UI;
 using CoursFlairy.ViewModel;
 using System.Windows;
@@ -23,6 +24,8 @@ namespace CoursFlairy.View
             MainWindowVM viewModel = new MainWindowVM();
             this.DataContext = viewModel;
             CurrentAccount.Load();
+            
+            PageManager.Navigate(new ChoosingSeatsPage());
         }
 
         private void AutoScreen()

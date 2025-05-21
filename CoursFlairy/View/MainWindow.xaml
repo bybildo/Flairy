@@ -112,7 +112,7 @@
         </Grid>
 
         <!--Нижня Частина-->
-        <Frame x:Name="PageManager" Grid.Row="1" NavigationUIVisibility="Hidden" Source="SelectPage.xaml"/>
+        <Frame x:Name="PageManager" Grid.Row="1" NavigationUIVisibility="Hidden" Source="SearchPage.xaml"/>
         <Grid Visibility="{Binding ElementName=AccountUI, Path=Opacity, Converter={StaticResource OpacityToVisiblityConverter}}" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*"/>

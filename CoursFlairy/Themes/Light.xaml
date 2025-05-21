@@ -40,6 +40,8 @@
     <SolidColorBrush x:Key="MainColor30" Color="DeepSkyBlue"/>
     <SolidColorBrush x:Key="MainColor20" Color="LightBlue"/>
     <SolidColorBrush x:Key="MainColor10" Color="LightGray"/>
+    <SolidColorBrush x:Key="PriceBackgroundColor" Color="#F5F8FA"/>
+    <SolidColorBrush x:Key="PriceHoverColor" Color="#EDF1F5"/>
     <SolidColorBrush x:Key="HighlightingSelectionMainWindow" Color="#25ADD8E6"/>
     <SolidColorBrush x:Key="HintColor" Color="LightSlateGray"/>
     <SolidColorBrush x:Key="DatePickerGray" Color="Gray"/>

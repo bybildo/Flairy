@@ -22,5 +22,6 @@ namespace CoursFlairy.ViewModel
         public static readonly SolidColorBrush EnterColor = (SolidColorBrush)Application.Current.Resources["EnterColor"];
         public static readonly SolidColorBrush WCColor = (SolidColorBrush)Application.Current.Resources["WCColor"];
         public static readonly SolidColorBrush EmptyColor = (SolidColorBrush)Application.Current.Resources["EmptyColor"];
+        public static readonly SolidColorBrush SelectedSeatColor = new SolidColorBrush(Colors.LimeGreen);
     }
 }

@@ -35,6 +35,19 @@ namespace CoursFlairy.View.UI
         private string _passportYear = "";
 
         public event EventHandler DataChanged;
+        public event EventHandler<DateTime?> BirthDateChanged;
+
+        private void RaiseBirthDateChanged()
+        {
+            if (DateTime.TryParse($"{_personalDay}/{_personalMonth}/{_personalYear}", out DateTime birthDate))
+            {
+                BirthDateChanged?.Invoke(this, birthDate);
+            }
+            else
+            {
+                BirthDateChanged?.Invoke(this, null);
+            }
+        }
 
         #region Властивості
         public string CitizenshipHint
@@ -132,6 +145,7 @@ namespace CoursFlairy.View.UI
             {
                 _personalDay = value;
                 OnPropertyChanged(nameof(PersonalDay));
+                RaiseBirthDateChanged();
             }
         }
 
@@ -142,6 +156,7 @@ namespace CoursFlairy.View.UI
             {
                 _personalMonth = value;
                 OnPropertyChanged(nameof(PersonalMonth));
+                RaiseBirthDateChanged();
             }
         }
 
@@ -152,6 +167,7 @@ namespace CoursFlairy.View.UI
             {
                 _personalYear = value;
                 OnPropertyChanged(nameof(PersonalYear));
+                RaiseBirthDateChanged();
             }
         }
 

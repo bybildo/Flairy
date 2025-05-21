@@ -1,6 +1,8 @@
 ﻿using CoursFlairy.Model;
 using CoursFlairy.Model.Enum;
 using CoursFlairy.Model.UI;
+using CoursFlairy.View.Bussiness;
+using CoursFlairy.View.ClientPage;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +16,30 @@ namespace CoursFlairy.View
     public partial class SelectPage : Page, INotifyPropertyChanged
     {
         private FlightStruct filters;
+        public int CurentPage { get; set; } = 2;
+
+        private int _flightId;
+        private Classes _currentClass;
+        private List<Classes> _passengerClasses;
+
+        public int flightId
+        {
+            get { return _flightId; }
+            set { _flightId = value; }
+        }
+
+        public Classes currentClass
+        {
+            get { return _currentClass; }
+            set { _currentClass = value; }
+        }
+
+        public List<Classes> passengerClasses
+        {
+            get { return _passengerClasses; }
+            set { _passengerClasses = value; }
+        }
+
 
         public SelectPage()
         {
@@ -24,8 +50,9 @@ namespace CoursFlairy.View
         {
             InitializeComponent();
             filters = filterStruct;
-            MessageBox.Show($"із: {filters.DepartureAirport} \nдо: {filters.ArrivalAirport} \nколи: {filters.DateFlight[0].ToString()}\nкількість: {filters.PersonClasses.Count()} \nхто: {((Classes)filters.PersonClasses[0]).ToString()}");
-
+            PageManager.Navigate(new FlightClientPage(filters));
+            FillPath(2);
+            //MessageBox.Show($"із: {filters.DepartureAirport} \nдо: {filters.ArrivalAirport} \nколи: {filters.DateFlight[0].ToString()}\nкількість: {filters.PersonClasses.Count()} \nхто: {((Classes)filters.PersonClasses[0]).ToString()}");
         }
 
         #region PropertyChanged
@@ -41,25 +68,63 @@ namespace CoursFlairy.View
         {
             if (sender is Grid clickedArea)
             {
-                ResetAllPaths();
-
                 int clickedIndex = int.Parse(clickedArea.Name.Substring(9));
-
-                for (int i = 1; i <= clickedIndex; i++)
+                if (clickedIndex > CurentPage)
                 {
-                    Path path = FindName($"Path{i}") as Path;
-                    TextBlock text = FindName($"Text{i}") as TextBlock;
+                    var mainWindow = (MainWindow)Application.Current.MainWindow;
+                    mainWindow.GlobalMessage.Show("Ви не можете перейти до наступного етапу не пройшовши цей", 1);
+                    return;
+                }
 
-                    if (path != null)
-                    {
-                        path.Fill = (SolidColorBrush)FindResource("MainColor100");
-                        path.StrokeThickness = 1.7;
-                    }
+                ResetAllPaths();
+                FillPath(clickedIndex);
+                switch (clickedIndex)
+                {
+                    case 1:
+                        var mainWindow = Application.Current.MainWindow as MainWindow;
+                        if (mainWindow != null)
+                        {
+                            mainWindow.PageManager.Navigate(new SearchPage());
+                        }
+                        break;
+                    case 2:
+                        CurentPage = 2;
+                        PageManager.Navigate(new FlightClientPage(filters));
+                        break;
+                    case 3:
+                        CurentPage = 3;
+                        PageManager.Navigate(new ChoosingSeatsPage(flightId, currentClass));
+                        break;
+                    case 4:
+                        CurentPage = 4;
+                        PageManager.Navigate(new PassengerDataPage(flightId, passengerClasses));
+                        break;
+                    case 5:
+                        if (CurentPage == 5) return;
+                        CurentPage = 5;
+                        MessageBox.Show("Оплата - в розробці");
+                        break;
+                }
+            }
+        }
 
-                    if (text != null)
-                    {
-                        text.Foreground = (SolidColorBrush)FindResource("White");
-                    }
+        public void FillPath(int clickedIndex)
+        {
+            for (int i = 1; i <= clickedIndex; i++)
+            {
+                Path path = FindName($"Path{i}") as Path;
+                TextBlock text = FindName($"Text{i}") as TextBlock;
+
+                if (path != null)
+                {
+                    path.Fill = (SolidColorBrush)FindResource("MainColor100");
+                    path.StrokeThickness = 1.7;
+                    path.Stroke = MainColor100;
+                }
+
+                if (text != null)
+                {
+                    text.Foreground = (SolidColorBrush)FindResource("White");
                 }
             }
         }
@@ -75,6 +140,7 @@ namespace CoursFlairy.View
                 {
                     path.Fill = (SolidColorBrush)FindResource("White");
                     path.StrokeThickness = 1.7;
+                    path.Stroke = MainColor10;
                 }
 
                 if (text != null)

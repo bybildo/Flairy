@@ -2,6 +2,10 @@
 {
     public enum Classes
     {
-        Econom, Bussiness, First, None, Suitcase
+        Econom = 1,
+        Bussiness = 2,
+        First = 3,
+        None = 4,
+        Suitcase = 5
     }
 }
