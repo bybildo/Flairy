@@ -33,8 +33,24 @@ namespace CoursFlairy.Data
 
         public static SqlConnection GetConnection()
         {
+            EnsureConnectionOpen();
             return sqlConnection;
         }
-    }
 
+        private static void EnsureConnectionOpen()
+        {
+            try
+            {
+                if (sqlConnection.State != ConnectionState.Open)
+                {
+                    sqlConnection.Open();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка підключення до бази даних: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
+        }
+    }
 }

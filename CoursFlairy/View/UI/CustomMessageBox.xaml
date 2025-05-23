@@ -1,0 +1,38 @@
+<Window x:Class="CoursFlairy.View.UI.CustomMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Message" 
+        Height="150" 
+        Width="300"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False">
+    
+    <Border Background="White"
+            BorderBrush="{StaticResource MainColor20}"
+            BorderThickness="1"
+            CornerRadius="10"
+            Margin="10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" 
+                            ShadowDepth="0" 
+                            Opacity="0.2"/>
+        </Border.Effect>
+        
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock x:Name="MessageText"
+                     Text="{Binding Message}"
+                     FontFamily="Bahnschrift"
+                     FontSize="16"
+                     Foreground="{StaticResource MainColor100}"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"/>
+        </Grid>
+    </Border>
+</Window> 

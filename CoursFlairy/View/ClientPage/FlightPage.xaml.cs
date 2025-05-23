@@ -113,7 +113,7 @@ namespace CoursFlairy.View.ClientPage
                         }
                     }
 
-                    if (_filter.DateFlight != null && _filter.DateFlight.Count > 0)
+                    if (_filter.DateFlight != null && _filter.DateFlight.Count > 0 && _filter.DateFlight[0] != DateTime.MinValue)
                     {
                         var dateConditions = new List<string>();
                         for (int i = 0; i < _filter.DateFlight.Count; i++)

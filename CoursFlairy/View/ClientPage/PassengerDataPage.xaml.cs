@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,13 +12,16 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CoursFlairy.Data;
+using CoursFlairy.Model;
 using CoursFlairy.Model.Enum;
 using Microsoft.Data.SqlClient;
 using CoursFlairy.View.UI;
+using static CoursFlairy.ViewModel.ResourceColor;
 
 namespace CoursFlairy.View.ClientPage
 {
@@ -38,6 +42,8 @@ namespace CoursFlairy.View.ClientPage
         private string _arrivalCity;
         private string _departureIcao;
         private string _arrivalIcao;
+        private string _email = "";
+        private decimal _totalSum;
 
         public string DepartureCity { get => _departureCity; set { _departureCity = value; OnPropertyChanged(nameof(DepartureCity)); } }
         public string ArrivalCity { get => _arrivalCity; set { _arrivalCity = value; OnPropertyChanged(nameof(ArrivalCity)); } }
@@ -58,6 +64,26 @@ namespace CoursFlairy.View.ClientPage
             {
                 _passengers = value;
                 OnPropertyChanged(nameof(Passengers));
+            }
+        }
+
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                _email = value;
+                OnPropertyChanged(nameof(Email));
+            }
+        }
+
+        public double TotalSum
+        {
+            get => (double)_totalSum;
+            set
+            {
+                _totalSum = (decimal)value;
+                OnPropertyChanged(nameof(TotalSum));
             }
         }
 
@@ -98,81 +124,83 @@ namespace CoursFlairy.View.ClientPage
         {
             try
             {
-                using (var connection = Data.DataBase.GetConnection())
+                var connection = Data.DataBase.GetConnection();
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT 
+                        f.DTime,
+                        DATEADD(MINUTE, r.AmountTime, f.DTime) as ArrivalTime,
+                        depAir.City as DepCity,
+                        arrAir.City as ArrCity,
+                        depAir.ICAO as DepICAO,
+                        arrAir.ICAO as ArrICAO,
+                        pe.Adult as EconomyAdult,
+                        pe.Child as EconomyChild,
+                        pe.Baby as EconomyBaby,
+                        pe.Pensioner as EconomyPensioner,
+                        pb.Adult as BusinessAdult,
+                        pb.Child as BusinessChild,
+                        pb.Baby as BusinessBaby,
+                        pb.Pensioner as BusinessPensioner,
+                        pf.Adult as FirstAdult,
+                        pf.Child as FirstChild,
+                        pf.Baby as FirstBaby,
+                        pf.Pensioner as FirstPensioner
+                    FROM Flight f
+                    JOIN Route r ON f.RouteID = r.ID
+                    JOIN Airport depAir ON r.DepartureID = depAir.ID
+                    JOIN Airport arrAir ON r.ArrivalID = arrAir.ID
+                    JOIN Price pe ON r.ID = pe.RouteID AND pe.ClassGroup = 1
+                    JOIN Price pb ON r.ID = pb.RouteID AND pb.ClassGroup = 2
+                    JOIN Price pf ON r.ID = pf.RouteID AND pf.ClassGroup = 3
+                    WHERE f.ID = @flightId";
+
+                command.Parameters.AddWithValue("@flightId", _flightId);
+
+                using (var reader = command.ExecuteReader())
                 {
-                    var command = connection.CreateCommand();
-                    command.CommandText = @"
-                        SELECT 
-                            f.DTime,
-                            DATEADD(MINUTE, r.AmountTime, f.DTime) as ArrivalTime,
-                            depAir.City as DepCity,
-                            arrAir.City as ArrCity,
-                            depAir.ICAO as DepICAO,
-                            arrAir.ICAO as ArrICAO,
-                            pe.Adult as EconomyAdult,
-                            pe.Child as EconomyChild,
-                            pe.Baby as EconomyBaby,
-                            pe.Pensioner as EconomyPensioner,
-                            pb.Adult as BusinessAdult,
-                            pb.Child as BusinessChild,
-                            pb.Baby as BusinessBaby,
-                            pb.Pensioner as BusinessPensioner,
-                            pf.Adult as FirstAdult,
-                            pf.Child as FirstChild,
-                            pf.Baby as FirstBaby,
-                            pf.Pensioner as FirstPensioner
-                        FROM Flight f
-                        JOIN Route r ON f.RouteID = r.ID
-                        JOIN Airport depAir ON r.DepartureID = depAir.ID
-                        JOIN Airport arrAir ON r.ArrivalID = arrAir.ID
-                        JOIN Price pe ON r.ID = pe.RouteID AND pe.ClassGroup = 1
-                        JOIN Price pb ON r.ID = pb.RouteID AND pb.ClassGroup = 2
-                        JOIN Price pf ON r.ID = pf.RouteID AND pf.ClassGroup = 3
-                        WHERE f.ID = @flightId";
-
-                    command.Parameters.AddWithValue("@flightId", _flightId);
-
-                    using (var reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        DepartureTime = reader.GetDateTime(0);
+                        ArrivalTime = reader.GetDateTime(1);
+                        DepartureCity = reader.GetString(2);
+                        ArrivalCity = reader.GetString(3);
+                        DepartureIcao = reader.GetString(4);
+                        ArrivalIcao = reader.GetString(5);
+
+                        var prices = new Dictionary<Classes, PriceCategories>();
+                        prices[Classes.Econom] = new PriceCategories(
+                            reader.GetDecimal(6),  // Adult
+                            reader.GetDecimal(7),  // Child
+                            reader.GetDecimal(8),  // Baby
+                            reader.GetDecimal(9)   // Pensioner
+                        );
+                        prices[Classes.Bussiness] = new PriceCategories(
+                            reader.GetDecimal(10), // Adult
+                            reader.GetDecimal(11), // Child
+                            reader.GetDecimal(12), // Baby
+                            reader.GetDecimal(13)  // Pensioner
+                        );
+                        prices[Classes.First] = new PriceCategories(
+                            reader.GetDecimal(14), // Adult
+                            reader.GetDecimal(15), // Child
+                            reader.GetDecimal(16), // Baby
+                            reader.GetDecimal(17)  // Pensioner
+                        );
+
+                        foreach (var passenger in Passengers)
                         {
-                            DepartureTime = reader.GetDateTime(0);
-                            ArrivalTime = reader.GetDateTime(1);
-                            DepartureCity = reader.GetString(2);
-                            ArrivalCity = reader.GetString(3);
-                            DepartureIcao = reader.GetString(4);
-                            ArrivalIcao = reader.GetString(5);
-
-                            var prices = new Dictionary<Classes, PriceCategories>();
-                            prices[Classes.Econom] = new PriceCategories(
-                                reader.GetDecimal(6),  // Adult
-                                reader.GetDecimal(7),  // Child
-                                reader.GetDecimal(8),  // Baby
-                                reader.GetDecimal(9)   // Pensioner
-                            );
-                            prices[Classes.Bussiness] = new PriceCategories(
-                                reader.GetDecimal(10), // Adult
-                                reader.GetDecimal(11), // Child
-                                reader.GetDecimal(12), // Baby
-                                reader.GetDecimal(13)  // Pensioner
-                            );
-                            prices[Classes.First] = new PriceCategories(
-                                reader.GetDecimal(14), // Adult
-                                reader.GetDecimal(15), // Child
-                                reader.GetDecimal(16), // Baby
-                                reader.GetDecimal(17)  // Pensioner
-                            );
-
-                            foreach (var passenger in Passengers)
+                            if (prices.TryGetValue(passenger.PassengerClass, out var categoryPrices))
                             {
-                                if (prices.TryGetValue(passenger.PassengerClass, out var categoryPrices))
-                                {
-                                    passenger.SetPrices(categoryPrices);
-                                }
+                                passenger.SetPrices(categoryPrices);
                             }
                         }
                     }
                 }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Помилка бази даних при завантаженні цін: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
@@ -191,8 +219,10 @@ namespace CoursFlairy.View.ClientPage
                     PassengerClass = _passengerClasses[i]
                 };
                 passenger.UserPassportDataChanged += Passenger_UserPassportDataChanged;
+                passenger.PropertyChanged += Passenger_PropertyChanged;
                 Passengers.Add(passenger);
             }
+            UpdateTotalSum();
         }
 
         private void Passenger_UserPassportDataChanged(object sender, EventArgs e)
@@ -203,12 +233,100 @@ namespace CoursFlairy.View.ClientPage
             }
         }
 
+        private void Passenger_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PassengerInfo.CurrentPrice))
+            {
+                UpdateTotalSum();
+            }
+        }
+
+        private void UpdateTotalSum()
+        {
+            TotalSum = Passengers.Sum(p => (double)p.CurrentPrice);
+        }
+
         private void UserPassportData_Loaded(object sender, RoutedEventArgs e)
         {
             if (sender is UserPassportData passportData && 
                 passportData.DataContext is PassengerInfo passengerInfo)
             {
                 passengerInfo.PassportData = passportData;
+            }
+        }
+
+        private const string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        private void emailAnimation(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox emailTextBox)
+            {
+                bool isValid = Regex.IsMatch(emailTextBox.Text, emailPattern);
+                if (emailBorder.BorderBrush is not SolidColorBrush brush || brush.IsFrozen)
+                    emailBorder.BorderBrush = brush = new SolidColorBrush(MainColor20.Color);
+
+                brush.BeginAnimation(SolidColorBrush.ColorProperty,
+                    new ColorAnimation(isValid ? MainColor100.Color : MainColor20.Color, TimeSpan.FromSeconds(0.15)));
+                Email = emailTextBox.Text;
+            }
+        }
+
+        private void BorderAnimation(Border border, bool start = true)
+        {
+            if (border.BorderBrush is not SolidColorBrush brush || brush.IsFrozen)
+                border.BorderBrush = brush = new SolidColorBrush(MainColor20.Color);
+
+            if (!start)
+                brush.BeginAnimation(SolidColorBrush.ColorProperty,
+                    new ColorAnimation(MainColor100.Color, TimeSpan.FromSeconds(0.15)));
+            else
+                brush.BeginAnimation(SolidColorBrush.ColorProperty,
+                    new ColorAnimation(MainColor20.Color, TimeSpan.FromSeconds(0.15)));
+        }
+
+        private void PaymentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                mainWindow.GlobalMessage.Show("Будь ласка, введіть email", 3);
+                return;
+            }
+
+            if (!Regex.IsMatch(Email, emailPattern))
+            {
+                mainWindow.GlobalMessage.Show("Будь ласка, введіть коректний email", 3);
+                return;
+            }
+
+            bool allPassengersValid = true;
+            foreach (var passenger in Passengers)
+            {
+                if (passenger.PassportData.Validation() == State.unsuccessful)
+                {
+                    allPassengersValid = false;
+                    break;
+                }
+            }
+
+            if (!allPassengersValid)
+            {
+                mainWindow.GlobalMessage.Show("Будь ласка, заповніть коректно дані всіх пасажирів", 3);
+                return;
+            }
+
+            // Navigate to payment page
+            var parentWindow = Window.GetWindow(this);
+            if (parentWindow is MainWindow mw)
+            {
+                var selectPage = mw.PageManager.Content as SelectPage;
+                if (selectPage != null)
+                {
+                    selectPage.CurentPage = 5;
+                    // TODO: Replace with actual payment page navigation
+                    // selectPage.PageManager.Navigate(new PaymentPage(_flightId, Passengers.ToList(), Email, TotalSum));
+                    selectPage.FillPath(5);
+                }
             }
         }
 
