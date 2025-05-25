@@ -186,7 +186,7 @@ namespace CoursFlairy.View.ClientPage
 
                 parent.FillPath(6);
                 parent.CurentPage = 6;
-                parent.PageManager.Navigate(new TicketPage());
+                parent.PageManager.Navigate(new TicketPage(parent.TicketId));
             }
             catch (Exception ex)
             {

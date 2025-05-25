@@ -127,6 +127,7 @@ namespace CoursFlairy.View.ClientPage
             _selectedSeats = new ObservableCollection<PlaneSeats>();
             LoadFlightDetails();
             LoadPlaneScheme();
+            UpdateOccupiedSeats();
 
             Loaded += (s, e) =>
             {
@@ -161,6 +162,67 @@ namespace CoursFlairy.View.ClientPage
             CurrentClass = Classes.Econom;
             LoadFlightDetails();
             LoadPlaneScheme();
+            UpdateOccupiedSeats();
+        }
+
+        private void UpdateOccupiedSeats()
+        {
+            List<string> OccupiedSeats = new List<string>();
+            int firstClassCount = 0;
+            int businessClassCount = 0;
+            int economyClassCount = 0;
+
+            try
+            {
+                string query = @"
+                    SELECT t.SeatCode, t.Class
+                    FROM Ticket t
+                    WHERE t.FlightID = @flightId";
+
+                using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
+                {
+                    command.Parameters.AddWithValue("@flightId", _flightId);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string seatCode = reader.GetString(0);
+                            int classGroup = reader.GetInt32(1);
+                            OccupiedSeats.Add(seatCode);
+
+                            switch (classGroup)
+                            {
+                                case 1:
+                                    firstClassCount++;
+                                    break;
+                                case 2:
+                                    businessClassCount++;
+                                    break;
+                                case 3:
+                                    economyClassCount++;
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                foreach (var row in PlaneStructsList)
+                {
+                    foreach (var seat in row)
+                    {
+                        seat.SetOccupied(OccupiedSeats.Contains(seat.ToString()));
+                    }
+                }
+
+                EconomySeats -= economyClassCount;
+                BusinessSeats -= businessClassCount;
+                FirstClassSeats -= firstClassCount;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка при оновленні зайнятих місць: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadFlightDetails()

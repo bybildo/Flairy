@@ -34,7 +34,7 @@
         </Grid.RowDefinitions>
 
         <!--Верхня Частина-->
-        <Grid Background="{DynamicResource PanelGradient}">
+        <Grid Background="{DynamicResource PanelGradient}" Panel.ZIndex="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="15*"/>
@@ -112,7 +112,11 @@
         </Grid>
 
         <!--Нижня Частина-->
-        <Frame x:Name="PageManager" Grid.Row="1" NavigationUIVisibility="Hidden" Source="SearchPage.xaml"/>
+        <Grid Grid.Row="1">
+            <Grid x:Name="SearchBackground" Grid.RowSpan="2" Background="{DynamicResource SearchPageGradient}"/>
+            <Frame x:Name="PageManager" NavigationUIVisibility="Hidden" Source="SearchPage.xaml"/>
+        </Grid>
+        
         <Grid Visibility="{Binding ElementName=AccountUI, Path=Opacity, Converter={StaticResource OpacityToVisiblityConverter}}" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*"/>

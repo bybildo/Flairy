@@ -4,6 +4,7 @@ using CoursFlairy.Model.UI;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,16 +15,17 @@ namespace CoursFlairy.View.ClientPage
 {
     public partial class FlightClientPage : Page, INotifyPropertyChanged
     {
-        private List<FlightStruct> _filteredFlights;
+        private ObservableCollection<FlightStruct> _filteredFlights;
         private FlightStruct _filter;
 
-        public List<FlightStruct> FilteredFlights
+        public ObservableCollection<FlightStruct> FilteredFlights
         {
             get => _filteredFlights;
             set
             {
                 _filteredFlights = value;
                 OnPropertyChanged(nameof(FilteredFlights));
+                OnPropertyChanged(nameof(FilteredFlights.Count));
             }
         }
 
@@ -31,14 +33,14 @@ namespace CoursFlairy.View.ClientPage
         {
             InitializeComponent();
             _filter = filter;
-            FilteredFlights = new List<FlightStruct>();
+            FilteredFlights = new ObservableCollection<FlightStruct>();
             UpdateFilteredFlights();
         }
 
         public FlightClientPage()
         {
             InitializeComponent();
-            FilteredFlights = new List<FlightStruct>();
+            FilteredFlights = new ObservableCollection<FlightStruct>();
         }
 
         private void UpdateFilteredFlights()
@@ -46,6 +48,14 @@ namespace CoursFlairy.View.ClientPage
             try
             {
                 string query = @"
+                    WITH OccupiedSeatsCount AS (
+                        SELECT 
+                            FlightID,
+                            Class,
+                            COUNT(*) as OccupiedCount
+                        FROM Ticket
+                        GROUP BY FlightID, Class
+                    )
                     SELECT 
                         f.ID as FlightId,
                         f.DTime,
@@ -64,9 +74,9 @@ namespace CoursFlairy.View.ClientPage
                         p.Adult as AdultPrice,
                         -- Seat Info
                         CASE 
-                            WHEN @classGroup = 1 THEN pl.Economy
-                            WHEN @classGroup = 2 THEN pl.Bussiness
-                            WHEN @classGroup = 3 THEN pl.First
+                            WHEN @classGroup = 1 THEN pl.Economy - ISNULL((SELECT OccupiedCount FROM OccupiedSeatsCount WHERE FlightID = f.ID AND Class = 3), 0)
+                            WHEN @classGroup = 2 THEN pl.Bussiness - ISNULL((SELECT OccupiedCount FROM OccupiedSeatsCount WHERE FlightID = f.ID AND Class = 2), 0)
+                            WHEN @classGroup = 3 THEN pl.First - ISNULL((SELECT OccupiedCount FROM OccupiedSeatsCount WHERE FlightID = f.ID AND Class = 1), 0)
                         END as AvailableSeats
                     FROM Flight f
                     INNER JOIN Route r ON f.RouteID = r.ID
@@ -132,9 +142,9 @@ namespace CoursFlairy.View.ClientPage
                     }
 
                     query += @" AND CASE 
-                        WHEN @classGroup = 1 THEN pl.Economy
-                        WHEN @classGroup = 2 THEN pl.Bussiness
-                        WHEN @classGroup = 3 THEN pl.First
+                        WHEN @classGroup = 1 THEN pl.Economy - ISNULL((SELECT OccupiedCount FROM OccupiedSeatsCount WHERE FlightID = f.ID AND Class = 3), 0)
+                        WHEN @classGroup = 2 THEN pl.Bussiness - ISNULL((SELECT OccupiedCount FROM OccupiedSeatsCount WHERE FlightID = f.ID AND Class = 2), 0)
+                        WHEN @classGroup = 3 THEN pl.First - ISNULL((SELECT OccupiedCount FROM OccupiedSeatsCount WHERE FlightID = f.ID AND Class = 1), 0)
                     END >= @requiredSeats";
                 }
 
@@ -147,7 +157,7 @@ namespace CoursFlairy.View.ClientPage
                         command.Parameters.Add(param);
                     }
 
-                    var flights = new List<FlightStruct>();
+                    var flights = new ObservableCollection<FlightStruct>();
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {

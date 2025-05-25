@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CoursFlairy.View.ClientPage
 {
@@ -22,6 +13,7 @@ namespace CoursFlairy.View.ClientPage
     public partial class TicketPage : Page, INotifyPropertyChanged
     {
         private List<int> _tickets;
+
         public List<int> Tickets
         {
             get => _tickets;
@@ -29,22 +21,42 @@ namespace CoursFlairy.View.ClientPage
             {
                 _tickets = value;
                 OnPropertyChanged(nameof(Tickets));
+                UpdateVisibility();
             }
         }
 
         public TicketPage(List<int> ticketIds)
         {
             InitializeComponent();
+            DataContext = this;
             Tickets = ticketIds;
         }
 
         public TicketPage()
         {
             InitializeComponent();
+            DataContext = this;
+            
             var parent = FindParent<SelectPage>(this);
             if (parent != null)
             {
                 Tickets = parent.TicketId;
+            }
+            
+            UpdateVisibility();
+        }
+
+        private void UpdateVisibility()
+        {
+            if (Tickets != null && Tickets.Count > 0)
+            {
+                TicketsContainer.Visibility = Visibility.Visible;
+                NoTicketsMessage.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                TicketsContainer.Visibility = Visibility.Collapsed;
+                NoTicketsMessage.Visibility = Visibility.Visible;
             }
         }
 

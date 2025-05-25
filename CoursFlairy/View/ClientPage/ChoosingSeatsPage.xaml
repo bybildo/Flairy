@@ -6,9 +6,10 @@
       xmlns:local="clr-namespace:CoursFlairy.View.ClientPage"
       mc:Ignorable="d" xmlns:convertersearch="clr-namespace:CoursFlairy.ViewModel.Converter.SearchPage"
       xmlns:converter="clr-namespace:CoursFlairy.ViewModel.Converter.Bussines"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="800" xmlns:converterUI="clr-namespace:CoursFlairy.ViewModel.UI"
       Title="ChoosingSeatsPage" d:DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Page.Resources>
+        <converterUI:ShowMessageBorderWeightConverter x:Key="ShowMessageBorderWeightConverter"/>
         <Style TargetType="TextBox">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="FontSize" Value="30"/>
@@ -424,9 +425,14 @@
 
                     <Grid HorizontalAlignment="Center">
                         <ScrollViewer Name="ConstructorScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                            <Grid Background="{DynamicResource White}">
-                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                    <Grid Height="20"/>
+                            <Grid Background="Transparent">
+                                <Border Background="White" HorizontalAlignment="Center" CornerRadius="10" Margin="0" Opacity="100" Height="{Binding ElementName=Constructor, Path=ActualHeight, Converter={StaticResource ShowMessageBorderWeightConverter}}" Width="{Binding ElementName=Constructor, Path=ActualWidth, Converter={StaticResource ShowMessageBorderWeightConverter}}">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                                    </Border.Effect>
+                                </Border>
+                                <StackPanel Name="ListPanel" Orientation="Vertical" HorizontalAlignment="Center">
+                                    <Grid Height="30"/>
                                     <Line Stroke="{DynamicResource MainColor100}" StrokeThickness="2" X2="{Binding ConstructorWidth}" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                                     <ItemsControl Name="Constructor" Background="{DynamicResource EmptyColor}" Width="{Binding ConstructorWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" ItemsSource="{Binding PlaneStructsList}">
                                         <ItemsControl.ItemTemplate>
@@ -484,6 +490,7 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                     <Line Stroke="{DynamicResource MainColor100}" StrokeThickness="2" X2="{Binding ConstructorWidth}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                                    <Grid Height="30"/>
                                 </StackPanel>
                             </Grid>
                         </ScrollViewer>
@@ -500,7 +507,7 @@
                             <Border x:Name="FilteredButton" 
                                 Style="{StaticResource ButtonStyle}"
                                 Width="200" Height="50"
-                                Margin="0,0,10,0"
+                                Margin="0,0,20,0"
                                 MouseDown="FilteredButton_MouseDown">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="4" ShadowDepth="0.4" Color="{DynamicResource Shadow}" Opacity="0.35"/>

@@ -17,6 +17,7 @@ namespace CoursFlairy.Model
         private double _width;
         private double _height;
         private bool _isSelected;
+        private bool _isOccupied;
         private RotateTransform _pathAngleTransform = new RotateTransform { Angle = 90 };
 
         public PlaneSeats(PlaneBrushes seatClass, string row, int seatNumber, double size, Classes curentClass)
@@ -27,7 +28,28 @@ namespace CoursFlairy.Model
             _width = size;
             _height = size;
             _isSelected = false;
+            _isOccupied = false;
             SetClass(curentClass);
+        }
+
+        public bool IsOccupied
+        {
+            get => _isOccupied;
+            set
+            {
+                if (_isOccupied != value)
+                {
+                    _isOccupied = value;
+                    OnPropertyChanged(nameof(IsOccupied));
+                    OnPropertyChanged(nameof(BorderColor));
+                    OnPropertyChanged(nameof(PlaneLayoutColor));
+                    OnPropertyChanged(nameof(OriginalSeatColor));
+                    if (value && IsSelected)
+                    {
+                        IsSelected = false;
+                    }
+                }
+            }
         }
 
         public string SeatText { get { if (SeatClass == PlaneBrushes.wc) return "wc"; return $"{Row}{SeatNumber}"; } }
@@ -56,7 +78,8 @@ namespace CoursFlairy.Model
         {
             get
             {
-                return SeatClass != PlaneBrushes.wc && 
+                return !IsOccupied && 
+                       SeatClass != PlaneBrushes.wc && 
                        SeatClass != PlaneBrushes.empty && 
                        SeatClass != PlaneBrushes.enter &&
                        (CurrentClass == PlaneBrushes.empty || CurrentClass == SeatClass);
@@ -79,6 +102,10 @@ namespace CoursFlairy.Model
         {
             get
             {
+                if (IsOccupied)
+                {
+                    return new SolidColorBrush(Colors.Gray);
+                }
                 if (IsSelected && CanBeSelected)
                 {
                     return SelectedSeatColor;
@@ -92,6 +119,11 @@ namespace CoursFlairy.Model
         {
             get
             {
+                if (IsOccupied)
+                {
+                    return new SolidColorBrush(Colors.Gray);
+                }
+
                 switch (SeatClass)
                 {
                     case PlaneBrushes.first:
@@ -112,6 +144,11 @@ namespace CoursFlairy.Model
         {
             get
             {
+                if (IsOccupied)
+                {
+                    return new SolidColorBrush(Colors.Gray);
+                }
+
                 if (CurrentClass != PlaneBrushes.empty)
                 {
                     if (CurrentClass != SeatClass && SeatClass != PlaneBrushes.wc && SeatClass != PlaneBrushes.empty && SeatClass != PlaneBrushes.enter) 
@@ -164,6 +201,11 @@ namespace CoursFlairy.Model
             OnPropertyChanged(nameof(BorderColor));
             OnPropertyChanged(nameof(PlaneLayoutColor));
             OnPropertyChanged(nameof(OriginalSeatColor));
+        }
+
+        public void SetOccupied(bool occupied)
+        {
+            IsOccupied = occupied;
         }
 
         #region PropertyChanged

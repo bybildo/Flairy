@@ -4,13 +4,115 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:CoursFlairy.View.ClientPage"
-      mc:Ignorable="d"  d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
+      xmlns:ui="clr-namespace:CoursFlairy.View.UI"
+      xmlns:converters="clr-namespace:CoursFlairy.View.UI.Converters"
+      mc:Ignorable="d"  
+      d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="TicketPage">
 
-    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
-        <Grid>
-         
-        </Grid>
+    <Page.Resources>
+        <converters:TicketInfoToIdConverter x:Key="TicketInfoToIdConverter"/>
+    </Page.Resources>
+
+    <Grid Background="Transparent">
+        <!-- Заголовок -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок сторінки -->
+        <Border Grid.Row="0" Margin="0, 30, 0, 0" 
+                Background="White" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="0,0,0,1"
+                CornerRadius="10"
+                Padding="30,20" Width="650">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+            </Border.Effect>
+                
+            <StackPanel>
+                <TextBlock Text="Ваш квиток" 
+                           FontSize="28" 
+                           FontWeight="Bold" 
+                           Foreground="#333333" 
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Збережіть або роздрукуйте, можна переглянути в профілі, копія відправлена на email" 
+                           FontSize="14" 
+                           Foreground="#666666" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Контент -->
+        <ScrollViewer Grid.Row="1" 
+                      VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="20">
+            <Grid>
+                <!-- Контейнер для квитків -->
+                <ItemsControl x:Name="TicketsContainer" 
+                              ItemsSource="{Binding Tickets}"
+                              HorizontalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Квиток займає 60% ширини екрану -->
+                                    <ui:TicketUI Grid.Column="1" 
+                                                 TicketId="{Binding Converter={StaticResource TicketInfoToIdConverter}}"
+                                                 MaxWidth="800"
+                                                 MinWidth="600"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <!-- Повідомлення коли немає квитків -->
+                <Border x:Name="NoTicketsMessage" 
+                        Background="White" 
+                        CornerRadius="12" 
+                        BorderBrush="#E0E0E0" 
+                        BorderThickness="1"
+                        Padding="40"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17L7,12H10V8H14V12H17L12,17Z" 
+                              Fill="#CCCCCC" 
+                              Width="48" 
+                              Height="48" 
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,20"/>
+                        <TextBlock Text="Квитки не знайдено" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="#666666" 
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Здається, у вас поки що немає квитків" 
+                                   FontSize="14" 
+                                   Foreground="#999999" 
+                                   HorizontalAlignment="Center" 
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>

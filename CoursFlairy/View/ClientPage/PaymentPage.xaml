@@ -301,7 +301,7 @@
                         </Border>
 
                         <!-- Return Home Button -->
-                        <Button Grid.Row="3"
+                        <Button Grid.Row="3" IsEnabled="False"
                                 Content="Повернутися на головну"
                                 Command="{Binding ReturnHomeCommand}"
                                 Height="45"

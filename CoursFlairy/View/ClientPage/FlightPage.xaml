@@ -5,8 +5,10 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:CoursFlairy.View.ClientPage"
+      xmlns:converters="clr-namespace:CoursFlairy.Model.Converters"
+      xmlns:convertersUI="clr-namespace:CoursFlairy.ViewModel.UI"
       mc:Ignorable="d" d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="800" 
       Title="FlightClientPage">
 
     <Page.Resources>
@@ -19,6 +21,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <convertersUI:ShowMessageBorderWeightConverter x:Key="ShowMessageBorderWeightConverter"/>
 
         <Style x:Key="FlightListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -227,10 +231,11 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="White" DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
+    <Grid Background="Transparent" DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="0.04*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="0.05*"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -240,9 +245,80 @@
             <ColumnDefinition Width="0.2*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="1" Grid.Column="1">
-            <ScrollViewer VerticalScrollBarVisibility="Hidden"  
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0, 0,0,0">
+            <Grid.Resources>
+                <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+            </Grid.Resources>
+
+            <Border Height="220" Width="600" Margin="0, -300, 0, 0" Background="White" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                </Border.Effect>
+                <Border.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Visible" NonZeroValue="Collapsed"/>
+                        </Binding.Converter>
+                    </Binding>
+                </Border.Visibility>
+            </Border>
+
+            <Border  Background="White" CornerRadius="10" Margin="-30" Opacity="0100" Height="{Binding ElementName=ListView, Path=ActualHeight, Converter={StaticResource ShowMessageBorderWeightConverter}}">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                </Border.Effect>
+                <Border.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Collapsed" NonZeroValue="Visible"/>
+                        </Binding.Converter>
+                    </Binding>
+                </Border.Visibility>
+            </Border>
+
+            <StackPanel Margin="0, -300, 0, 0" HorizontalAlignment="Center" 
+                      VerticalAlignment="Center"
+                      TextBlock.TextAlignment="Center">
+                <TextBlock Text="За вашими фільтрами не знайдено рейсів"
+                         FontSize="24"
+                         FontWeight="Medium"
+                         Foreground="{DynamicResource HintColor}"
+                         Margin="0,0,0,8"/>
+                <TextBlock Text="Спробуйте змінити параметри пошуку"
+                         FontSize="16"
+                         Foreground="{DynamicResource HintColor}"
+                         Opacity="0.8"/>
+                <Path Data="{DynamicResource plane}" 
+      Width="64" 
+      Height="64" 
+      HorizontalAlignment="Center"
+      Stretch="Uniform"
+      Fill="{DynamicResource HintColor}"
+      Opacity="0.6" RenderTransformOrigin="0.5, 0.5"               
+      Margin="0,20,0,0">
+                    <Path.RenderTransform>
+                        <RotateTransform Angle="45"/>
+                    </Path.RenderTransform>
+                </Path>
+                <StackPanel.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Visible" NonZeroValue="Collapsed"/>
+                        </Binding.Converter>
+                    </Binding>
+                </StackPanel.Visibility>
+            </StackPanel>
+
+            <ScrollViewer Name="ListView" VerticalScrollBarVisibility="Hidden"  
                          PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                <ScrollViewer.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Collapsed" NonZeroValue="Visible"/>
+                        </Binding.Converter>
+                    </Binding>
+                </ScrollViewer.Visibility>
+                
                 <ListBox ItemsSource="{Binding FilteredFlights}"
                         ItemContainerStyle="{StaticResource FlightListBoxItemStyle}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
