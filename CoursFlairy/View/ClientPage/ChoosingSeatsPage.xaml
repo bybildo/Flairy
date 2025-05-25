@@ -63,6 +63,7 @@
         <converter:ToogleButtonColorConvertor x:Key="ToogleButtonColorConvertor"/>
         <converter:BoolToVisiblityConverter x:Key="BoolToVisiblityConverter"/>
         <converter:TextToColorNullConverter x:Key="TextToColorNullConverter"/>
+        <converter:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 
         <Style x:Key="ScrollBarThumbVertical" TargetType="{x:Type Thumb}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -287,7 +288,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Economy Class -->
-                                <Grid Grid.Column="0" Margin="20,0,20,0">
+                                <Grid Grid.Column="0" Margin="20,0,20,0" Visibility="{Binding EconomySeats, Converter={StaticResource IntToVisibilityConverter}}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -317,7 +318,7 @@
                                     <Grid Grid.Row="1" Background="Transparent" MouseDown="EconomyPath_MouseDown"/>
 
                                     <TextBlock Grid.Row="2" HorizontalAlignment="Center" TextAlignment="Center">
-                    <Run Text="{Binding EconomyPrice, StringFormat={}{0:### ### ###}}" 
+                    <Run Text="{Binding EconomyPrice, StringFormat={}{0:N0}}" 
                          FontSize="22"
                          FontFamily="Bahnschrift"/>
                     <Run Text=" грн" 
@@ -328,7 +329,7 @@
                                 </Grid>
 
                                 <!-- Business Class -->
-                                <Grid Grid.Column="1" Margin="20,0,20,0">
+                                <Grid Grid.Column="1" Margin="20,0,20,0" Visibility="{Binding BusinessSeats, Converter={StaticResource IntToVisibilityConverter}}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -358,7 +359,7 @@
                                     <Grid Grid.Row="1" Background="Transparent" MouseDown="BusinessPath_MouseDown"/>
 
                                     <TextBlock Grid.Row="2" HorizontalAlignment="Center" TextAlignment="Center">
-                    <Run Text="{Binding BusinessPrice, StringFormat={}{0:### ### ###}}" 
+                    <Run Text="{Binding BusinessPrice, StringFormat={}{0:N0}}" 
                          FontSize="22"
                          FontFamily="Bahnschrift"/>
                     <Run Text=" грн" 
@@ -369,7 +370,7 @@
                                 </Grid>
 
                                 <!-- First Class -->
-                                <Grid Grid.Column="2" Margin="20,0,20,0">
+                                <Grid Grid.Column="2" Margin="20,0,20,0" Visibility="{Binding FirstClassSeats, Converter={StaticResource IntToVisibilityConverter}}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -399,7 +400,7 @@
                                     <Grid Grid.Row="1" Background="Transparent" MouseDown="FirstPath_MouseDown"/>
 
                                     <TextBlock Grid.Row="2" HorizontalAlignment="Center" TextAlignment="Center">
-                    <Run Text="{Binding FirstClassPrice, StringFormat={}{0:### ### ###}}" 
+                    <Run Text="{Binding FirstClassPrice, StringFormat={}{0:N0}}" 
                          FontSize="22"
                          FontFamily="Bahnschrift"/>
                     <Run Text=" грн" 

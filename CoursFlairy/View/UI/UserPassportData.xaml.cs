@@ -1,6 +1,8 @@
 ﻿using CoursFlairy.Data;
+using CoursFlairy.Model;
 using CoursFlairy.Model.Enum;
 using Microsoft.Data.SqlClient;
+using Microsoft.Identity.Client;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -603,6 +605,49 @@ namespace CoursFlairy.View.UI
         }
         #endregion
         #endregion
+
+        public PassportInfo GetPassportInfo()
+        {
+            int citizenshipId = GetCitizenshipId(Citizenship);
+            if (citizenshipId == -1)
+            {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.GlobalMessage.Show("Помилка громадянства", 3);
+                return null;
+            }
+
+            return new PassportInfo(gender, Namee, Surname, PersonalDate, Passport, PassportDate, citizenshipId);
+        }
+
+        private int GetCitizenshipId(string Citizenship)
+        {
+            if (DataBase.GetConnection().State != System.Data.ConnectionState.Open)
+                return -1;
+
+            string query = @"SELECT TOP 1 ID FROM Country WHERE Name LIKE @searchText";
+
+            using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
+            {
+                command.Parameters.AddWithValue("@searchText", $"{Citizenship}%");
+
+                try
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int read = reader.GetInt32(0);
+                            return read;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show($"Помилка: {ex.Message}", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            return -1;
+        }
 
         public void CitizenshipUpdate()
         {

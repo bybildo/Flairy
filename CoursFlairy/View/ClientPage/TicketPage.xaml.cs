@@ -21,9 +21,44 @@ namespace CoursFlairy.View.ClientPage
     /// </summary>
     public partial class TicketPage : Page, INotifyPropertyChanged
     {
+        private List<int> _tickets;
+        public List<int> Tickets
+        {
+            get => _tickets;
+            set
+            {
+                _tickets = value;
+                OnPropertyChanged(nameof(Tickets));
+            }
+        }
+
+        public TicketPage(List<int> ticketIds)
+        {
+            InitializeComponent();
+            Tickets = ticketIds;
+        }
+
         public TicketPage()
         {
             InitializeComponent();
+            var parent = FindParent<SelectPage>(this);
+            if (parent != null)
+            {
+                Tickets = parent.TicketId;
+            }
+        }
+
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            while (child != null)
+            {
+                child = VisualTreeHelper.GetParent(child);
+                if (child is T parent)
+                {
+                    return parent;
+                }
+            }
+            return null;
         }
 
         #region PropertyChanged

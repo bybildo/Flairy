@@ -9,6 +9,8 @@
       Title="TicketPage">
 
     <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
-        
+        <Grid>
+         
+        </Grid>
     </Grid>
 </Page>

@@ -41,157 +41,299 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="{StaticResource PriceBackgroundColor}">
+    <Grid Margin="0, -100, 0, 0">
         <Grid MaxWidth="600" MaxHeight="800" VerticalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->
-            <TextBlock Text="Payment Details" 
-                     FontFamily="Bahnschrift"
-                     FontSize="24" 
-                     Margin="20,20,20,10"
-                     Foreground="{StaticResource MainColor100}"/>
-
             <!-- Payment Form -->
-            <Border Grid.Row="1" 
-                    Background="White" 
-                    Margin="20,0,20,20" 
-                    CornerRadius="10"
-                    BorderBrush="{StaticResource MainColor20}"
-                    BorderThickness="1">
-                <Grid Margin="20">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPaymentSuccessful}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
 
-                    <!-- Amount -->
-                    <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                        <TextBlock Text="Сума до сплати"
-                                 FontFamily="Bahnschrift"
-                                 FontSize="14"
-                                 Margin="0,0,0,5"
-                                 Foreground="{StaticResource HintColor}"/>
-                        <TextBlock Text="{Binding Amount, StringFormat={}{0:N2} грн}"
-                                 FontFamily="Bahnschrift"
-                                 FontSize="24"
-                                 Foreground="{StaticResource MainColor100}"/>
-                    </StackPanel>
+                <!-- Header -->
+                <TextBlock Text="Оплата" 
+                         FontFamily="Bahnschrift"
+                         FontSize="24" 
+                         Margin="20,20,20,10"
+                         Foreground="{StaticResource MainColor100}"/>
 
-                    <!-- Card Number -->
-                    <StackPanel Grid.Row="1" Margin="0,0,0,20">
-                        <TextBlock Text="Номер картки"
-                                 FontFamily="Bahnschrift"
-                                 FontSize="14"
-                                 Margin="0,0,0,5"
-                                 Foreground="{StaticResource HintColor}"/>
-                        <TextBox x:Name="CardNumberTextBox"
-                               Style="{StaticResource PaymentTextBox}"
-                               Text="{Binding CardNumber, UpdateSourceTrigger=PropertyChanged}"
-                               MaxLength="19"
-                               PreviewTextInput="NumberValidationTextBox"
-                               PreviewKeyDown="TextBox_PreviewKeyDown"
-                               KeyUp="CardNumberTextBox_KeyUp"/>
-                    </StackPanel>
+                <!-- Payment Form -->
+                <Border Grid.Row="1" 
+                        Background="White" 
+                        Margin="20, 0,20,20" 
+                        CornerRadius="10"
+                        BorderBrush="{StaticResource MainColor20}"
+                        BorderThickness="1">
+                    <Grid Margin="20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <!-- Expiry and CVV -->
-                    <Grid Grid.Row="2" Margin="0,0,0,20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Термін дії (ММ/РР)"
+                        <!-- Amount -->
+                        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                            <TextBlock Text="Сума до сплати"
                                      FontFamily="Bahnschrift"
                                      FontSize="14"
                                      Margin="0,0,0,5"
                                      Foreground="{StaticResource HintColor}"/>
-                            <TextBox x:Name="ExpiryTextBox"
-                                   Style="{StaticResource PaymentTextBox}"
-                                   Text="{Binding ExpiryDate, UpdateSourceTrigger=PropertyChanged}"
-                                   MaxLength="5"
-                                   PreviewTextInput="ExpiryValidationTextBox"
-                                   PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                            <TextBlock Text="{Binding Amount, StringFormat={}{0:N2} грн}"
+                                     FontFamily="Bahnschrift"
+                                     FontSize="24"
+                                     Foreground="{StaticResource MainColor100}"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="CVV-код"
+                        <!-- Card Number -->
+                        <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                            <TextBlock Text="Номер картки"
                                      FontFamily="Bahnschrift"
                                      FontSize="14"
                                      Margin="0,0,0,5"
                                      Foreground="{StaticResource HintColor}"/>
-                            <TextBox x:Name="CvvTextBox"
+                            <TextBox x:Name="CardNumberTextBox"
                                    Style="{StaticResource PaymentTextBox}"
-                                   Text="{Binding Cvv, UpdateSourceTrigger=PropertyChanged}"
-                                   MaxLength="3"
+                                   Text="{Binding CardNumber, UpdateSourceTrigger=PropertyChanged}"
+                                   MaxLength="19"
                                    PreviewTextInput="NumberValidationTextBox"
-                                   PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                                   PreviewKeyDown="TextBox_PreviewKeyDown"
+                                   KeyUp="CardNumberTextBox_KeyUp"/>
                         </StackPanel>
-                    </Grid>
 
-                    <!-- Pay Button -->
-                    <Button Grid.Row="3" 
-                            Content="Оплатити"
-                            Command="{Binding PayCommand}"
-                            Height="45"
-                            Background="{StaticResource MainColor100}"
-                            Foreground="White"
-                            FontFamily="Bahnschrift"
-                            FontSize="16"
-                            BorderThickness="0">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="5">
-                                                <ContentPresenter HorizontalAlignment="Center" 
-                                                                VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Opacity" Value="0.9"/>
-                                    </Trigger>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Opacity" Value="0.7"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                        <!-- Expiry Date and CVV -->
+                        <Grid Grid.Row="2" Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <!-- Processing Overlay -->
-                    <Grid Grid.Row="0" Grid.RowSpan="6" 
-                          Background="#80FFFFFF"
-                          Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <StackPanel HorizontalAlignment="Center" 
-                                  VerticalAlignment="Center">
-                            <TextBlock Text="Processing Payment..."
-                                     FontFamily="Bahnschrift"
-                                     FontSize="18"
-                                     Foreground="{StaticResource MainColor100}"
-                                     HorizontalAlignment="Center"/>
-                            <ProgressBar IsIndeterminate="True" 
-                                       Width="200" 
-                                       Height="2" 
-                                       Margin="0,10,0,0"/>
-                        </StackPanel>
+                            <!-- Expiry Date -->
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="Термін дії"
+                                         FontFamily="Bahnschrift"
+                                         FontSize="14"
+                                         Margin="0,0,0,5"
+                                         Foreground="{StaticResource HintColor}"/>
+                                <TextBox x:Name="ExpiryDateTextBox"
+                                       Style="{StaticResource PaymentTextBox}"
+                                       Text="{Binding ExpiryDate, UpdateSourceTrigger=PropertyChanged}"
+                                       MaxLength="5"
+                                       PreviewTextInput="ExpiryDateValidationTextBox"
+                                       PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                            </StackPanel>
+
+                            <!-- CVV -->
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="CVV"
+                                         FontFamily="Bahnschrift"
+                                         FontSize="14"
+                                         Margin="0,0,0,5"
+                                         Foreground="{StaticResource HintColor}"/>
+                                <TextBox x:Name="CvvTextBox"
+                                       Style="{StaticResource PaymentTextBox}"
+                                       Text="{Binding Cvv, UpdateSourceTrigger=PropertyChanged}"
+                                       MaxLength="3"
+                                       PreviewTextInput="NumberValidationTextBox"
+                                       PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Pay Button -->
+                        <Button Grid.Row="3" 
+                                Content="Оплатити"
+                                Command="{Binding PayCommand}"
+                                Height="45"
+                                Background="{StaticResource MainColor100}"
+                                Foreground="White"
+                                FontFamily="Bahnschrift"
+                                FontSize="16"
+                                BorderThickness="0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                    VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.9"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.7"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <!-- Processing Overlay -->
+                        <Grid Grid.Row="0" Grid.RowSpan="6" 
+                              Background="#80FFFFFF"
+                              Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center">
+                                <TextBlock Text="Обробка платежу..."
+                                         FontFamily="Bahnschrift"
+                                         FontSize="24"
+                                         Foreground="{StaticResource MainColor100}"
+                                         HorizontalAlignment="Center"
+                                         Margin="0,0,0,20"/>
+                                <ProgressBar IsIndeterminate="True" 
+                                           Width="200" 
+                                           Height="2"/>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Border>
+                </Border>
+            </Grid>
+
+            <!-- Confirmation View -->
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPaymentSuccessful}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <Border Background="White" 
+                        Margin="20" 
+                        CornerRadius="15"
+                        BorderBrush="{StaticResource MainColor20}"
+                        BorderThickness="1">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" 
+                                        ShadowDepth="0" 
+                                        Opacity="0.1"/>
+                    </Border.Effect>
+
+                    <Grid Margin="30">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Success Icon -->
+                        <Border Grid.Row="0"
+                                Width="90"
+                                Height="90"
+                                Background="{StaticResource MainColor100}"
+                                CornerRadius="45"
+                                Margin="0,10,0,25"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="✓"
+                                     FontSize="48"
+                                     Foreground="White"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Title -->
+                        <TextBlock Grid.Row="1" 
+                                 Text="Платіж успішно зараховано!"
+                                 FontFamily="Bahnschrift"
+                                 FontSize="26"
+                                 FontWeight="SemiBold"
+                                 Foreground="{StaticResource MainColor100}"
+                                 HorizontalAlignment="Center"
+                                 TextAlignment="Center"
+                                 Margin="0,0,0,15"/>
+
+                        <!-- Payment Details -->
+                        <Border Grid.Row="2" 
+                                Background="#F8F9FA"
+                                CornerRadius="10"
+                                Padding="20"
+                                Margin="0,0,0,25">
+                            <StackPanel>
+                                <TextBlock Text="Деталі платежу:"
+                                         FontFamily="Bahnschrift"
+                                         FontSize="16"
+                                         Foreground="{StaticResource HintColor}"
+                                         Margin="0,0,0,10"/>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Сума: "
+                                             FontFamily="Bahnschrift"
+                                             FontSize="18"
+                                             Foreground="{StaticResource MainColor100}"/>
+                                             
+                                    <TextBlock Grid.Column="1"
+                                             Text="{Binding Amount, StringFormat={}{0:N2} грн}"
+                                             FontFamily="Bahnschrift"
+                                             FontSize="18"
+                                             FontWeight="SemiBold"
+                                             Foreground="{StaticResource MainColor100}"
+                                             HorizontalAlignment="Right"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Return Home Button -->
+                        <Button Grid.Row="3"
+                                Content="Повернутися на головну"
+                                Command="{Binding ReturnHomeCommand}"
+                                Height="45"
+                                Background="{StaticResource MainColor100}"
+                                Foreground="White"
+                                FontFamily="Bahnschrift"
+                                FontSize="16"
+                                BorderThickness="0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                    VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.9"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

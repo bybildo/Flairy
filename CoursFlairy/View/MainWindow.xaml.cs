@@ -25,7 +25,7 @@ namespace CoursFlairy.View
             this.DataContext = viewModel;
             CurrentAccount.Load();
             
-            PageManager.Navigate(new PaymentPage());
+            PageManager.Navigate(new TicketPage(new List<int>() { 1 }));
         }
 
         private void AutoScreen()

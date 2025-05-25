@@ -16,7 +16,14 @@ namespace CoursFlairy.View
     public partial class SelectPage : Page, INotifyPropertyChanged
     {
         private FlightStruct filters;
+      
         public int CurentPage { get; set; } = 2;
+        public List<string> SelectedSeatsCode { get; set; } = new List<string>();
+        public List<string> SelectedSeats { get; set; } = new List<string>();
+        public List<PassportInfo> Clients { get; set; } = new List<PassportInfo>();
+        public List<decimal> Prices { get; set; } = new List<decimal>();
+        public List<int> TicketId { get; set; } = new List<int>();
+        public string Email { get; set; }
 
         private int _flightId;
         private Classes _currentClass;
@@ -76,6 +83,8 @@ namespace CoursFlairy.View
                     return;
                 }
 
+                if (CurentPage == 6) return;
+
                 ResetAllPaths();
                 FillPath(clickedIndex);
                 switch (clickedIndex)
@@ -98,11 +107,6 @@ namespace CoursFlairy.View
                     case 4:
                         CurentPage = 4;
                         PageManager.Navigate(new PassengerDataPage(flightId, passengerClasses));
-                        break;
-                    case 5:
-                        if (CurentPage == 5) return;
-                        CurentPage = 5;
-                        MessageBox.Show("Оплата - в розробці");
                         break;
                 }
             }

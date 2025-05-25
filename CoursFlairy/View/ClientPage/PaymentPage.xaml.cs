@@ -15,6 +15,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 using CoursFlairy.View.UI;
+using CoursFlairy.Data;
+using CoursFlairy.Model.Enum;
+using Microsoft.Data.SqlClient;
+using System.Collections;
+using CoursFlairy.Model;
+using System.Data;
+using System.Diagnostics;
 
 namespace CoursFlairy.View.ClientPage
 {
@@ -27,14 +34,17 @@ namespace CoursFlairy.View.ClientPage
         private string _expiryDate;
         private string _cvv;
         private bool _isProcessing;
+        private bool _isPaymentSuccessful;
         private decimal _amount;
         private ICommand _payCommand;
+        private ICommand _returnHomeCommand;
 
-        public PaymentPage(decimal amount)
+        public PaymentPage(double amount)
         {
             InitializeComponent();
-            Amount = amount;
-            PayCommand = new RelayCommand(async _ => await ProcessPayment(), _ => CanProcessPayment());
+            Amount = (decimal)amount;
+            PayCommand = new RelayCommand(ProcessPayment, _ => CanProcessPayment());
+            ReturnHomeCommand = new RelayCommand(_ => { ReturnHome(); return Task.CompletedTask; });
             DataContext = this;
         }
 
@@ -42,7 +52,8 @@ namespace CoursFlairy.View.ClientPage
         {
             InitializeComponent();
             Amount = 0.0m;
-            PayCommand = new RelayCommand(async _ => await ProcessPayment(), _ => CanProcessPayment());
+            PayCommand = new RelayCommand(ProcessPayment, _ => CanProcessPayment());
+            ReturnHomeCommand = new RelayCommand(_ => { ReturnHome(); return Task.CompletedTask; });
             DataContext = this;
         }
 
@@ -99,6 +110,16 @@ namespace CoursFlairy.View.ClientPage
             }
         }
 
+        public bool IsPaymentSuccessful
+        {
+            get => _isPaymentSuccessful;
+            set
+            {
+                _isPaymentSuccessful = value;
+                OnPropertyChanged(nameof(IsPaymentSuccessful));
+            }
+        }
+
         public ICommand PayCommand
         {
             get => _payCommand;
@@ -106,6 +127,16 @@ namespace CoursFlairy.View.ClientPage
             {
                 _payCommand = value;
                 OnPropertyChanged(nameof(PayCommand));
+            }
+        }
+
+        public ICommand ReturnHomeCommand
+        {
+            get => _returnHomeCommand;
+            set
+            {
+                _returnHomeCommand = value;
+                OnPropertyChanged(nameof(ReturnHomeCommand));
             }
         }
 
@@ -123,25 +154,179 @@ namespace CoursFlairy.View.ClientPage
             return true;
         }
 
-        private async Task ProcessPayment()
+        private async Task ProcessPayment(object parameter)
         {
-            IsProcessing = true;
-
             try
             {
-                // Симулюємо обробку платежу
+                // Показуємо процес обробки
+                IsProcessing = true;
+                IsPaymentSuccessful = false;
+                CommandManager.InvalidateRequerySuggested();
+
+                // Імітація обробки платежу
                 await Task.Delay(2000);
 
-                // Переходимо на сторінку успішного платежу
-                NavigationService?.Navigate(new ConfirmationPage(Amount));
+                // Показуємо успішне підтвердження
+                IsProcessing = false;
+                IsPaymentSuccessful = true;
+                CommandManager.InvalidateRequerySuggested();
+
+                // Чекаємо ще 3 секунди перед поверненням на головну
+                await Task.Delay(3000);
+
+                var parent = FindParent<SelectPage>(this);
+                List<int> ticketId = new List<int>();
+                for (int i = 0; i < parent.Clients.Count; i++)
+                {
+                    int id = AddNewClient(parent.Clients[i], parent.Email);
+                    int ticket = AddTicket(id, parent.flightId, parent.SelectedSeats[i], parent.SelectedSeatsCode[i], parent.passengerClasses[i], parent.Prices[i]);
+                    ticketId.Add(ticket);
+                }
+                parent.TicketId = ticketId;
+
+                parent.FillPath(6);
+                parent.CurentPage = 6;
+                parent.PageManager.Navigate(new TicketPage());
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Payment failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
+                MessageBox.Show($"Помилка при обробці платежу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                 IsProcessing = false;
+                IsPaymentSuccessful = false;
+                CommandManager.InvalidateRequerySuggested();
+            }
+        }
+
+        private int AddTicket(int clientId, int flightId, string seat, string seatCode, Classes classe, decimal price)
+        {
+            try
+            {
+                string query = @"
+            INSERT INTO [dbo].[Ticket] (
+                [ClientID], 
+                [FlightID], 
+                [Seat], 
+                [SeatCode],      
+                [Class], 
+                [Baggage], 
+                [Price], 
+                [AddDate]
+            ) 
+            VALUES (
+                @ClientID, 
+                @FlightID, 
+                @Seat, 
+                @SeatCode, 
+                @Class, 
+                @Baggage, 
+                @Price, 
+                GETDATE()
+            );
+            SELECT SCOPE_IDENTITY();";
+
+                using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
+                {
+                    command.Parameters.AddWithValue("@ClientID", clientId); // Дозволяємо NULL для ClientID
+                    command.Parameters.AddWithValue("@FlightID", flightId);
+                    command.Parameters.AddWithValue("@Seat", seat);
+                    command.Parameters.AddWithValue("@SeatCode", seatCode);
+                    command.Parameters.AddWithValue("@Class", GetIDFromClases(classe));
+                    command.Parameters.AddWithValue("@Baggage", 0);
+                    command.Parameters.AddWithValue("@Price", price);
+
+                    object result = command.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return 0;
+            }
+        }
+
+        private int AddNewClient(PassportInfo passportInfo, string email)
+        {
+            try
+            {
+                string query = @"
+            INSERT INTO [dbo].[Client] (
+                [Name], 
+                [Surname], 
+                [Citizenship], 
+                [Passport], 
+                [PassportDate], 
+                [Email], 
+                [Gender], 
+                [BirthDate]
+            ) 
+            VALUES (
+                @Name, 
+                @Surname, 
+                @Citizenship, 
+                @Passport, 
+                @PassportDate, 
+                @Email, 
+                @Gender, 
+                @BirthDate
+            );
+            SELECT SCOPE_IDENTITY();";
+
+                using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
+                {
+                    command.Parameters.AddWithValue("@Surname", passportInfo.firstName);
+                    command.Parameters.AddWithValue("@Name", passportInfo.lastName);
+                    command.Parameters.AddWithValue("@Citizenship", passportInfo.CitizentshipID);
+                    command.Parameters.AddWithValue("@Passport", passportInfo.passportNumber);
+                    command.Parameters.AddWithValue("@PassportDate", passportInfo.passportDate);
+                    command.Parameters.AddWithValue("@Email", email);
+                    command.Parameters.AddWithValue("@Gender", (int)passportInfo.gender);
+                    command.Parameters.AddWithValue("@BirthDate", passportInfo.birthDate);
+
+                    object result = command.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return -1;
+            }
+        }
+
+        private int GetIDFromClases(Classes classes)
+        {
+            switch (classes)
+            {
+                case Classes.Econom:
+                    return 3;
+                case Classes.Bussiness:
+                    return 2;
+                case Classes.First:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            while (child != null)
+            {
+                child = VisualTreeHelper.GetParent(child);
+                if (child is T parent)
+                {
+                    return parent;
+                }
+            }
+            return null;
+        }
+
+        private void ReturnHome()
+        {
+            while (NavigationService?.CanGoBack == true)
+            {
+                //NavigationService.GoBack();
             }
         }
 
@@ -173,7 +358,7 @@ namespace CoursFlairy.View.ClientPage
         {
             var textBox = (TextBox)sender;
             var text = textBox.Text.Replace(" ", "");
-            
+
             if (text.Length > 0)
             {
                 // Форматуємо текст групами по 4 цифри
@@ -194,7 +379,7 @@ namespace CoursFlairy.View.ClientPage
                                                     .Count(c => c == ' ');
                 int originalSpacesBeforeCursor = textBox.Text.Substring(0, Math.Min(cursorPosition, textBox.Text.Length))
                                                         .Count(c => c == ' ');
-                
+
                 textBox.Text = formattedText;
                 textBox.CaretIndex = Math.Min(cursorPosition + (spacesBeforeCursor - originalSpacesBeforeCursor), formattedText.Length);
             }
@@ -205,14 +390,14 @@ namespace CoursFlairy.View.ClientPage
             if (e.Key == Key.Enter)
             {
                 var textBox = (TextBox)sender;
-                
+
                 // Визначаємо наступний елемент для фокусу
                 if (textBox == CardNumberTextBox)
                 {
-                    ExpiryTextBox.Focus();
+                    ExpiryDateTextBox.Focus();
                     e.Handled = true;
                 }
-                else if (textBox == ExpiryTextBox)
+                else if (textBox == ExpiryDateTextBox)
                 {
                     CvvTextBox.Focus();
                     e.Handled = true;
@@ -223,10 +408,10 @@ namespace CoursFlairy.View.ClientPage
                     e.Handled = true;
                 }
             }
-            
+
             // Для поля терміну дії
             var currentTextBox = (TextBox)sender;
-            if (currentTextBox == ExpiryTextBox)
+            if (currentTextBox == ExpiryDateTextBox)
             {
                 // Якщо натиснуто Backspace і курсор стоїть після "/", видаляємо також "/"
                 if (e.Key == Key.Back && currentTextBox.CaretIndex == 3 && currentTextBox.Text.Contains("/"))
@@ -243,7 +428,7 @@ namespace CoursFlairy.View.ClientPage
             e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
         }
 
-        private void ExpiryValidationTextBox(object sender, TextCompositionEventArgs e)
+        private void ExpiryDateValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             var textBox = (TextBox)sender;
             var futureText = textBox.Text.Insert(textBox.CaretIndex, e.Text);

@@ -103,6 +103,7 @@ namespace CoursFlairy.View.ClientPage
                 {
                     parent.flightId = flightId;
                     parent.passengerClasses = _passengerClasses;
+                    parent.Prices = Passengers.Select(p => p.CurrentPrice).ToList();
                 }
             };
         }
@@ -150,9 +151,9 @@ namespace CoursFlairy.View.ClientPage
                     JOIN Route r ON f.RouteID = r.ID
                     JOIN Airport depAir ON r.DepartureID = depAir.ID
                     JOIN Airport arrAir ON r.ArrivalID = arrAir.ID
-                    JOIN Price pe ON r.ID = pe.RouteID AND pe.ClassGroup = 1
-                    JOIN Price pb ON r.ID = pb.RouteID AND pb.ClassGroup = 2
-                    JOIN Price pf ON r.ID = pf.RouteID AND pf.ClassGroup = 3
+                    LEFT JOIN Price pe ON r.ID = pe.RouteID AND pe.ClassGroup = 1
+                    LEFT JOIN Price pb ON r.ID = pb.RouteID AND pb.ClassGroup = 2
+                    LEFT JOIN Price pf ON r.ID = pf.RouteID AND pf.ClassGroup = 3
                     WHERE f.ID = @flightId";
 
                 command.Parameters.AddWithValue("@flightId", _flightId);
@@ -170,22 +171,22 @@ namespace CoursFlairy.View.ClientPage
 
                         var prices = new Dictionary<Classes, PriceCategories>();
                         prices[Classes.Econom] = new PriceCategories(
-                            reader.GetDecimal(6),  // Adult
-                            reader.GetDecimal(7),  // Child
-                            reader.GetDecimal(8),  // Baby
-                            reader.GetDecimal(9)   // Pensioner
+                            reader.IsDBNull(6) ? 0 : reader.GetDecimal(6),  // Adult
+                            reader.IsDBNull(7) ? 0 : reader.GetDecimal(7),  // Child
+                            reader.IsDBNull(8) ? 0 : reader.GetDecimal(8),  // Baby
+                            reader.IsDBNull(9) ? 0 : reader.GetDecimal(9)   // Pensioner
                         );
                         prices[Classes.Bussiness] = new PriceCategories(
-                            reader.GetDecimal(10), // Adult
-                            reader.GetDecimal(11), // Child
-                            reader.GetDecimal(12), // Baby
-                            reader.GetDecimal(13)  // Pensioner
+                            reader.IsDBNull(10) ? 0 : reader.GetDecimal(10), // Adult
+                            reader.IsDBNull(11) ? 0 : reader.GetDecimal(11), // Child
+                            reader.IsDBNull(12) ? 0 : reader.GetDecimal(12), // Baby
+                            reader.IsDBNull(13) ? 0 : reader.GetDecimal(13)  // Pensioner
                         );
                         prices[Classes.First] = new PriceCategories(
-                            reader.GetDecimal(14), // Adult
-                            reader.GetDecimal(15), // Child
-                            reader.GetDecimal(16), // Baby
-                            reader.GetDecimal(17)  // Pensioner
+                            reader.IsDBNull(14) ? 0 : reader.GetDecimal(14), // Adult
+                            reader.IsDBNull(15) ? 0 : reader.GetDecimal(15), // Child
+                            reader.IsDBNull(16) ? 0 : reader.GetDecimal(16), // Baby
+                            reader.IsDBNull(17) ? 0 : reader.GetDecimal(17)  // Pensioner
                         );
 
                         foreach (var passenger in Passengers)
@@ -244,11 +245,18 @@ namespace CoursFlairy.View.ClientPage
         private void UpdateTotalSum()
         {
             TotalSum = Passengers.Sum(p => (double)p.CurrentPrice);
+            
+            // Также обновляем список цен в SelectPage
+            var selectPage = FindParent<SelectPage>(this);
+            if (selectPage != null && Passengers != null)
+            {
+                selectPage.Prices = Passengers.Select(p => p.CurrentPrice).ToList();
+            }
         }
 
         private void UserPassportData_Loaded(object sender, RoutedEventArgs e)
         {
-            if (sender is UserPassportData passportData && 
+            if (sender is UserPassportData passportData &&
                 passportData.DataContext is PassengerInfo passengerInfo)
             {
                 passengerInfo.PassportData = passportData;
@@ -286,6 +294,31 @@ namespace CoursFlairy.View.ClientPage
         private void PaymentButton_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
+            var selectPage = FindParent<SelectPage>(this);
+
+            selectPage.Clients = new List<PassportInfo>();
+            bool allPassengersValid = true;
+            foreach (var passenger in Passengers)
+            {
+                if (passenger.PassportData.Validation() == State.unsuccessful)
+                {
+                    allPassengersValid = false;
+                    break;
+                }
+                else
+                {
+                    if (selectPage != null)
+                    {
+                        selectPage.Clients.Add(passenger.PassportData.GetPassportInfo());
+                    }
+                }
+            }
+
+            if (!allPassengersValid)
+            {
+                mainWindow.GlobalMessage.Show("Будь ласка, заповніть коректно дані всіх пасажирів", 3);
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(Email))
             {
@@ -299,34 +332,13 @@ namespace CoursFlairy.View.ClientPage
                 return;
             }
 
-            bool allPassengersValid = true;
-            foreach (var passenger in Passengers)
+            if (selectPage != null)
             {
-                if (passenger.PassportData.Validation() == State.unsuccessful)
-                {
-                    allPassengersValid = false;
-                    break;
-                }
-            }
-
-            if (!allPassengersValid)
-            {
-                mainWindow.GlobalMessage.Show("Будь ласка, заповніть коректно дані всіх пасажирів", 3);
-                return;
-            }
-
-            // Navigate to payment page
-            var parentWindow = Window.GetWindow(this);
-            if (parentWindow is MainWindow mw)
-            {
-                var selectPage = mw.PageManager.Content as SelectPage;
-                if (selectPage != null)
-                {
-                    selectPage.CurentPage = 5;
-                    // TODO: Replace with actual payment page navigation
-                    // selectPage.PageManager.Navigate(new PaymentPage(_flightId, Passengers.ToList(), Email, TotalSum));
-                    selectPage.FillPath(5);
-                }
+                selectPage.Email = Email;
+                selectPage.Prices = Passengers.Select(p => p.CurrentPrice).ToList();
+                selectPage.CurentPage = 5;
+                selectPage.PageManager.Navigate(new PaymentPage(TotalSum));
+                selectPage.FillPath(5);
             }
         }
 
@@ -389,7 +401,7 @@ namespace CoursFlairy.View.ClientPage
                 }
             }
 
-            public string FormattedPrice => $"Ціна: {Convert.ToDouble(CurrentPrice)} грн";
+            public string FormattedPrice => $"Ціна: {CurrentPrice:N0} грн";
 
             public UserPassportData PassportData
             {

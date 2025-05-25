@@ -188,9 +188,9 @@ namespace CoursFlairy.View.ClientPage
                     JOIN Airport arrAir ON r.ArrivalID = arrAir.ID
                     JOIN Plane pl ON r.PlaneID = pl.ID
                     JOIN Airline al ON pl.AirlineID = al.ID
-                    JOIN Price pe ON r.ID = pe.RouteID AND pe.ClassGroup = 1
-                    JOIN Price pb ON r.ID = pb.RouteID AND pb.ClassGroup = 2
-                    JOIN Price pf ON r.ID = pf.RouteID AND pf.ClassGroup = 3
+                    LEFT JOIN Price pe ON r.ID = pe.RouteID AND pe.ClassGroup = 1
+                    LEFT JOIN Price pb ON r.ID = pb.RouteID AND pb.ClassGroup = 2
+                    LEFT JOIN Price pf ON r.ID = pf.RouteID AND pf.ClassGroup = 3
                     WHERE f.ID = @flightId";
 
                 using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
@@ -209,11 +209,17 @@ namespace CoursFlairy.View.ClientPage
                             EconomySeats = reader.GetInt32(5);
                             BusinessSeats = reader.GetInt32(6);
                             FirstClassSeats = reader.GetInt32(7);
-                            EconomyPrice = reader.GetDecimal(8);
-                            BusinessPrice = reader.GetDecimal(9);
-                            FirstClassPrice = reader.GetDecimal(10);
+
+                            // Handle nullable prices
+                            EconomyPrice = reader.IsDBNull(8) ? 0 : reader.GetDecimal(8);
+                            BusinessPrice = reader.IsDBNull(9) ? 0 : reader.GetDecimal(9);
+                            FirstClassPrice = reader.IsDBNull(10) ? 0 : reader.GetDecimal(10);
+
                             DepartureTime = reader.GetDateTime(11);
                             ArrivalTime = reader.GetDateTime(12);
+
+                            // Update UI visibility based on available seats
+                            UpdateClassVisibility();
                         }
                     }
                 }
@@ -221,6 +227,26 @@ namespace CoursFlairy.View.ClientPage
             catch (Exception ex)
             {
                 MessageBox.Show($"Помилка завантаження деталей рейсу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateClassVisibility()
+        {
+            // Get the parent window to access the XAML elements
+            var parentWindow = Window.GetWindow(this);
+            if (parentWindow is MainWindow mainWindow)
+            {
+                // Find the class icons in the XAML
+                var economyIcon = mainWindow.FindName("pathec") as Path;
+                var businessIcon = mainWindow.FindName("pathbi") as Path;
+                var firstClassIcon = mainWindow.FindName("pathfi") as Path;
+
+                if (economyIcon != null)
+                    economyIcon.Visibility = EconomySeats > 0 ? Visibility.Visible : Visibility.Collapsed;
+                if (businessIcon != null)
+                    businessIcon.Visibility = BusinessSeats > 0 ? Visibility.Visible : Visibility.Collapsed;
+                if (firstClassIcon != null)
+                    firstClassIcon.Visibility = FirstClassSeats > 0 ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -420,16 +446,20 @@ namespace CoursFlairy.View.ClientPage
             {
                 var selectedClasses = SelectedSeats.Select(s => s.GetClass()).ToList();
                 var passengerDataPage = new PassengerDataPage(_flightId, selectedClasses);
-                var parentWindow = Window.GetWindow(this);
-                if (parentWindow is MainWindow mainWindow)
+                var selectPage = FindParent<SelectPage>(this);
+                if (selectPage != null)
                 {
-                    var selectPage = mainWindow.PageManager.Content as SelectPage;
-                    if (selectPage != null)
+                    selectPage.SelectedSeatsCode = new List<string>();
+                    selectPage.SelectedSeats = new List<string>();
+                    foreach (var seat in SelectedSeats)
                     {
-                        selectPage.CurentPage = 4;
-                        selectPage.PageManager.Navigate(passengerDataPage);
-                        selectPage.FillPath(4);
+                        selectPage.SelectedSeats.Add(seat.GetSeat());
+                        selectPage.SelectedSeatsCode.Add(seat.ToString());
                     }
+
+                    selectPage.CurentPage = 4;
+                    selectPage.PageManager.Navigate(passengerDataPage);
+                    selectPage.FillPath(4);
                 }
             }
             else

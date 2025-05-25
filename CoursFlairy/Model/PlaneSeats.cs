@@ -127,6 +127,11 @@ namespace CoursFlairy.Model
             return Row + "-" + SeatNumber + "-" + (int)SeatClass;
         }
 
+        public string GetSeat()
+        {
+            return Row + SeatNumber;
+        }
+
         public Classes GetClass()
         {
             switch (SeatClass)
