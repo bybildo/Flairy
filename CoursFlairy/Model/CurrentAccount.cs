@@ -43,7 +43,9 @@ static class CurrentAccount
         }
         catch
         {
-            MessageBox.Show("Файл пошкоджено або пароль невірний!");
+            MessageBox.Show("Помилка завантаження акаунту");
+            accountType = AccountType.None;
+            id = -1;
         }
     }
 
@@ -88,7 +90,8 @@ static class CurrentAccount
         public AccountType AccountType { get; set; }
         public int Id { get; set; }
 
-        public SaveData(AccountType accountType, int id)
+
+        public SaveData(AccountType accountType, int id, bool isRemember = false)
         {
             AccountType = accountType;
             Id = id;

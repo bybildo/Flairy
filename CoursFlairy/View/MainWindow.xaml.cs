@@ -1,4 +1,5 @@
 ﻿using CoursFlairy.Data;
+using CoursFlairy.View.Bussiness;
 using CoursFlairy.View.ClientPage;
 using CoursFlairy.View.UI;
 using CoursFlairy.ViewModel;
@@ -27,9 +28,14 @@ namespace CoursFlairy.View
             MainWindowVM viewModel = new MainWindowVM();
             this.DataContext = viewModel;
             CurrentAccount.Load();
-            
-            PageManager.Navigate(new SearchPage());
-            await CloudGenerate();
+
+            if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
+                PageManager.Navigate(new BussinessControlPage());
+            else
+            {
+                PageManager.Navigate(new SearchPage());
+                await CloudGenerate();
+            }
         }
 
         #region Генерація хмар

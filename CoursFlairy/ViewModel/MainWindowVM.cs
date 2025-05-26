@@ -1,5 +1,6 @@
 ﻿using CoursFlairy.Data;
 using CoursFlairy.View;
+using CoursFlairy.View.UserPage;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
@@ -23,7 +24,11 @@ namespace CoursFlairy.ViewModel
 
         private void Account_MouseDownF()
         {
-            MessageBox.Show("Account");
+            if (CurrentAccount.id != -1)
+            {
+                mainWindow.PageManager.Navigate(new UserControlPage());
+            }
+            else MessageBox.Show("Авторизуйтесь");
         }
 
         private void Close_MouseDownF()

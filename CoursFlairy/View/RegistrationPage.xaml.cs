@@ -1155,6 +1155,7 @@ namespace CoursFlairy.View
                     CurrentAccount.Set(Model.Enum.AccountType.User, lastID + 1);
                     var mainWindow = (MainWindow)Application.Current.MainWindow;
                     mainWindow.PageManager.Navigate(new SearchPage());
+                    mainWindow.GlobalMessage.Show("Акаунт успішно зареєстровано", 3);
                 }
                 catch (Exception ex)
                 {
@@ -1206,6 +1207,7 @@ namespace CoursFlairy.View
                     CurrentAccount.Set(Model.Enum.AccountType.Bussines, lastID + 1);
                     var mainWindow = (MainWindow)Application.Current.MainWindow;
                     mainWindow.PageManager.Navigate(new BussinessControlPage());
+                    mainWindow.GlobalMessage.Show("Бізнес-акаунт успішно зареєстровано", 3);
                 }
                 catch (Exception ex)
                 {
