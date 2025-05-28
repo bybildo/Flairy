@@ -384,7 +384,7 @@ namespace CoursFlairy.View
         {
             RegistrationButtonUpdate();
 
-            if (UserPassport.Validation(false) != State.successful)
+            if (UserPassport.Validation(false) == State.successful)
             {
                 referralCode.IsEnabled = true;
             }

@@ -38,6 +38,7 @@ namespace CoursFlairy.View.ClientPage
         private decimal _amount;
         private ICommand _payCommand;
         private ICommand _returnHomeCommand;
+        private bool isFormatting = false;
 
         public PaymentPage(double amount)
         {
@@ -142,7 +143,9 @@ namespace CoursFlairy.View.ClientPage
 
         private bool CanProcessPayment()
         {
-            if (string.IsNullOrWhiteSpace(CardNumber) || CardNumber.Length < 16)
+            // Перевіряємо номер картки (без пробілів, має бути точно 16 цифр)
+            var cardNumberWithoutSpaces = CardNumber?.Replace(" ", "") ?? "";
+            if (string.IsNullOrWhiteSpace(cardNumberWithoutSpaces) || cardNumberWithoutSpaces.Length != 16)
                 return false;
 
             if (string.IsNullOrWhiteSpace(ExpiryDate) || !IsValidExpiryDate(ExpiryDate))
@@ -354,39 +357,100 @@ namespace CoursFlairy.View.ClientPage
             return true;
         }
 
-        private void CardNumberTextBox_KeyUp(object sender, KeyEventArgs e)
+        private void CardNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (isFormatting) return;
+
             var textBox = (TextBox)sender;
-            var text = textBox.Text.Replace(" ", "");
-
-            if (text.Length > 0)
+            var cursorPosition = textBox.CaretIndex;
+            var currentText = textBox.Text;
+            
+            // Видаляємо всі пробіли та залишаємо тільки цифри
+            var digitsOnly = new string(currentText.Where(char.IsDigit).ToArray());
+            
+            // Обмежуємо до 16 цифр
+            if (digitsOnly.Length > 16)
             {
-                // Форматуємо текст групами по 4 цифри
-                var formattedText = string.Empty;
-                for (int i = 0; i < text.Length; i++)
-                {
-                    if (i > 0 && i % 4 == 0)
-                    {
-                        formattedText += " ";
-                    }
-                    formattedText += text[i];
-                }
-
-                // Зберігаємо позицію курсора
-                int cursorPosition = textBox.CaretIndex;
-                // Якщо ми додали пробіл перед поточною позицією, зсуваємо курсор
-                int spacesBeforeCursor = formattedText.Substring(0, Math.Min(cursorPosition, formattedText.Length))
-                                                    .Count(c => c == ' ');
-                int originalSpacesBeforeCursor = textBox.Text.Substring(0, Math.Min(cursorPosition, textBox.Text.Length))
-                                                        .Count(c => c == ' ');
-
-                textBox.Text = formattedText;
-                textBox.CaretIndex = Math.Min(cursorPosition + (spacesBeforeCursor - originalSpacesBeforeCursor), formattedText.Length);
+                digitsOnly = digitsOnly.Substring(0, 16);
             }
+
+            // Форматуємо у групи по 4 цифри
+            var formattedText = "";
+            for (int i = 0; i < digitsOnly.Length; i++)
+            {
+                if (i > 0 && i % 4 == 0)
+                {
+                    formattedText += " ";
+                }
+                formattedText += digitsOnly[i];
+            }
+
+            // Якщо форматований текст не змінився, не робимо нічого
+            if (currentText == formattedText)
+            {
+                CardNumber = digitsOnly;
+                return;
+            }
+
+            // Рахуємо позицію курсора на основі кількості цифр
+            int digitsBeforeCursor = 0;
+            for (int i = 0; i < Math.Min(cursorPosition, currentText.Length); i++)
+            {
+                if (char.IsDigit(currentText[i]))
+                {
+                    digitsBeforeCursor++;
+                }
+            }
+            
+            // Знаходимо нову позицію курсора у форматованому тексті
+            int newCursorPosition = 0;
+            int digitCount = 0;
+            for (int i = 0; i < formattedText.Length; i++)
+            {
+                if (char.IsDigit(formattedText[i]))
+                {
+                    digitCount++;
+                    if (digitCount > digitsBeforeCursor)
+                    {
+                        newCursorPosition = i;
+                        break;
+                    }
+                }
+                if (digitCount == digitsBeforeCursor)
+                {
+                    newCursorPosition = i + 1;
+                }
+            }
+            
+            // Якщо курсор був в самому кінці, ставимо його в кінець
+            if (cursorPosition >= currentText.Length)
+            {
+                newCursorPosition = formattedText.Length;
+            }
+
+            // Встановлюємо прапорець форматування
+            isFormatting = true;
+            
+            // Оновлюємо текст і позицію курсора
+            textBox.Text = formattedText;
+            textBox.CaretIndex = Math.Min(newCursorPosition, formattedText.Length);
+            
+            // Знімаємо прапорець форматування  
+            isFormatting = false;
+
+            // Оновлюємо властивість (тільки цифри для валідації)
+            CardNumber = digitsOnly;
         }
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // Заборонити пробіли у всіх полях
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+                return;
+            }
+
             if (e.Key == Key.Enter)
             {
                 var textBox = (TextBox)sender;
@@ -425,7 +489,30 @@ namespace CoursFlairy.View.ClientPage
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+            // Заборонити пробіли та будь-які не-цифрові символи
+            e.Handled = !new Regex("[0-9]").IsMatch(e.Text) || e.Text == " ";
+        }
+
+        private void CardNumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            var currentTextWithoutSpaces = textBox.Text.Replace(" ", "");
+            
+            // Заборонити пробіли та будь-які не-цифрові символи
+            if (!new Regex("[0-9]").IsMatch(e.Text) || e.Text == " ")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Обмежити до 16 цифр максимум
+            if (currentTextWithoutSpaces.Length >= 16)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            e.Handled = false;
         }
 
         private void ExpiryDateValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -433,8 +520,8 @@ namespace CoursFlairy.View.ClientPage
             var textBox = (TextBox)sender;
             var futureText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
 
-            // Перевіряємо, чи введено число
-            if (!new Regex("[0-9]").IsMatch(e.Text))
+            // Заборонити пробіли та перевірити, чи введено число
+            if (!new Regex("[0-9]").IsMatch(e.Text) || e.Text == " ")
             {
                 e.Handled = true;
                 return;
@@ -452,6 +539,27 @@ namespace CoursFlairy.View.ClientPage
             {
                 textBox.Text += "/";
                 textBox.CaretIndex = textBox.Text.Length;
+            }
+
+            e.Handled = false;
+        }
+
+        private void CvvValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            
+            // Заборонити пробіли та будь-які не-цифрові символи
+            if (!new Regex("[0-9]").IsMatch(e.Text) || e.Text == " ")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Обмежити до 3 цифр для CVV
+            if (textBox.Text.Length >= 3)
+            {
+                e.Handled = true;
+                return;
             }
 
             e.Handled = false;

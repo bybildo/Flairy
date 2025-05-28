@@ -106,11 +106,10 @@
                                      Foreground="{StaticResource HintColor}"/>
                             <TextBox x:Name="CardNumberTextBox"
                                    Style="{StaticResource PaymentTextBox}"
-                                   Text="{Binding CardNumber, UpdateSourceTrigger=PropertyChanged}"
                                    MaxLength="19"
-                                   PreviewTextInput="NumberValidationTextBox"
+                                   PreviewTextInput="CardNumberValidationTextBox"
                                    PreviewKeyDown="TextBox_PreviewKeyDown"
-                                   KeyUp="CardNumberTextBox_KeyUp"/>
+                                   TextChanged="CardNumberTextBox_TextChanged"/>
                         </StackPanel>
 
                         <!-- Expiry Date and CVV -->
@@ -146,7 +145,7 @@
                                        Style="{StaticResource PaymentTextBox}"
                                        Text="{Binding Cvv, UpdateSourceTrigger=PropertyChanged}"
                                        MaxLength="3"
-                                       PreviewTextInput="NumberValidationTextBox"
+                                       PreviewTextInput="CvvValidationTextBox"
                                        PreviewKeyDown="TextBox_PreviewKeyDown"/>
                             </StackPanel>
                         </Grid>

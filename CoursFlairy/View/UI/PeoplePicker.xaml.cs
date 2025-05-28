@@ -443,7 +443,7 @@ namespace CoursFlairy.View.UI
         #region Методи
         private void UpdateImage()
         {
-            int numOfClass = (int)Class + 1;
+            int numOfClass = (int)Class;
 
             var categories = new Dictionary<string, string> { { "pensioner", Pensioner }, { "adult", Adult }, { "child", Child }, { "baby", Baby } };
             List<string> result = new List<string>();

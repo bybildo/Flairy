@@ -14,7 +14,7 @@ namespace CoursFlairy.View.Bussiness
     /// </summary>
     public partial class BussinessControlPage : Page
     {
-        private StateBussines _PageState = StateBussines.Palne;
+        private StateBussines _PageState = StateBussines.Profile;
 
         public StateBussines PageState
         {
@@ -36,7 +36,22 @@ namespace CoursFlairy.View.Bussiness
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            //PageState = StateBussines.Profile;
+            InitializePageState();
+        }
+
+        private void InitializePageState()
+        {
+            // Set initial page content
+            PageManager.Content = GetPageByState(StateBussines.Profile);
+            
+            // Ensure ProfileBorder is styled as active
+            var profileBorder = GetBorderByState(StateBussines.Profile);
+            var profileText = ((TextBlock)((Viewbox)profileBorder.Child).Child);
+            
+            if ((profileBorder.Background is not SolidColorBrush brush1 || brush1.IsFrozen)) 
+                profileBorder.Background = new SolidColorBrush(MainColor100.Color);
+            if ((profileText.Foreground is not SolidColorBrush brush2 || brush2.IsFrozen)) 
+                profileText.Foreground = new SolidColorBrush(White.Color);
         }
 
         private void ChangeState(object sender, MouseButtonEventArgs e)
@@ -79,30 +94,53 @@ namespace CoursFlairy.View.Bussiness
 
         private void BorderAnimation(Border startBorder, Border endBorder)
         {
+            // startBorder becomes active (MainColor100 background, White text)
+            // endBorder becomes inactive (White background, MainColor100 text)
+            
             var startText = ((TextBlock)((Viewbox)startBorder.Child).Child);
             var endText = ((TextBlock)((Viewbox)endBorder.Child).Child);
 
-            if ((startBorder.Background is not SolidColorBrush brush1 || brush1.IsFrozen)) startBorder.Background = brush1 = new SolidColorBrush(White.Color);
-            if ((endBorder.Background is not SolidColorBrush brush2 || brush2.IsFrozen)) endBorder.Background = brush2 = new SolidColorBrush(MainColor100.Color);
-            if ((startText.Foreground is not SolidColorBrush brush3 || brush3.IsFrozen)) startText.Foreground = brush3 = new SolidColorBrush(MainColor100.Color);
-            if ((endText.Foreground is not SolidColorBrush brush4 || brush4.IsFrozen)) endText.Foreground = brush4 = new SolidColorBrush(MainColor100.Color);
+            if ((startBorder.Background is not SolidColorBrush brush1 || brush1.IsFrozen)) 
+                startBorder.Background = brush1 = new SolidColorBrush(White.Color);
+            if ((endBorder.Background is not SolidColorBrush brush2 || brush2.IsFrozen)) 
+                endBorder.Background = brush2 = new SolidColorBrush(MainColor100.Color);
+            if ((startText.Foreground is not SolidColorBrush brush3 || brush3.IsFrozen)) 
+                startText.Foreground = brush3 = new SolidColorBrush(MainColor100.Color);
+            if ((endText.Foreground is not SolidColorBrush brush4 || brush4.IsFrozen)) 
+                endText.Foreground = brush4 = new SolidColorBrush(White.Color);
 
-            var backgroundstartAnimation = new ColorAnimation
+            // Animation to make startBorder active
+            var backgroundActiveAnimation = new ColorAnimation
             {
                 To = MainColor100.Color,
                 Duration = TimeSpan.FromSeconds(0.1)
             };
 
-            var backgroundendAnimation = new ColorAnimation
+            // Animation to make endBorder inactive
+            var backgroundInactiveAnimation = new ColorAnimation
             {
                 To = White.Color,
                 Duration = TimeSpan.FromSeconds(0.1)
             };
 
-            brush1.BeginAnimation(SolidColorBrush.ColorProperty, backgroundstartAnimation);
-            brush2.BeginAnimation(SolidColorBrush.ColorProperty, backgroundendAnimation);
-            brush3.BeginAnimation(SolidColorBrush.ColorProperty, backgroundendAnimation);
-            brush4.BeginAnimation(SolidColorBrush.ColorProperty, backgroundstartAnimation);
+            // Animation to make startBorder text white
+            var textActiveAnimation = new ColorAnimation
+            {
+                To = White.Color,
+                Duration = TimeSpan.FromSeconds(0.1)
+            };
+
+            // Animation to make endBorder text MainColor100
+            var textInactiveAnimation = new ColorAnimation
+            {
+                To = MainColor100.Color,
+                Duration = TimeSpan.FromSeconds(0.1)
+            };
+
+            brush1.BeginAnimation(SolidColorBrush.ColorProperty, backgroundActiveAnimation);
+            brush2.BeginAnimation(SolidColorBrush.ColorProperty, backgroundInactiveAnimation);
+            brush3.BeginAnimation(SolidColorBrush.ColorProperty, textActiveAnimation);
+            brush4.BeginAnimation(SolidColorBrush.ColorProperty, textInactiveAnimation);
         }
     }
 }

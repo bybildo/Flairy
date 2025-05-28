@@ -95,9 +95,9 @@
                         </Style>
                     </StackPanel.Resources>
 
-                    <Border x:Name="ProfileBorder">
+                    <Border x:Name="ProfileBorder" Background="{DynamicResource MainColor100}">
                         <Viewbox>
-                            <TextBlock Text="Профіль" FontFamily="Bahnschrift"/>
+                            <TextBlock Text="Профіль" FontFamily="Bahnschrift" Foreground="{DynamicResource White}"/>
                         </Viewbox>
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
