@@ -49,7 +49,7 @@
         
         <!-- Контент -->
         <ScrollViewer Grid.Row="1" 
-                      VerticalScrollBarVisibility="Auto" 
+                      VerticalScrollBarVisibility="Hidden" 
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="20">
             <Grid>

@@ -202,7 +202,11 @@ namespace CoursFlairy.View.ClientPage
                         pf.Adult as FirstAdult,
                         pf.Child as FirstChild,
                         pf.Baby as FirstBaby,
-                        pf.Pensioner as FirstPensioner
+                        pf.Pensioner as FirstPensioner,
+                        r.BackpackIncluded,
+                        pe.Baggage as EconomyBaggage,
+                        pb.Baggage as BusinessBaggage,
+                        pf.Baggage as FirstBaggage
                     FROM Flight f
                     JOIN Route r ON f.RouteID = r.ID
                     JOIN Airport depAir ON r.DepartureID = depAir.ID
@@ -225,39 +229,57 @@ namespace CoursFlairy.View.ClientPage
                         DepartureIcao = reader.GetString(4);
                         ArrivalIcao = reader.GetString(5);
 
-                        var prices = new Dictionary<Classes, PriceCategories>();
-                        prices[Classes.Econom] = new PriceCategories(
-                            reader.IsDBNull(6) ? 0 : reader.GetDecimal(6),  // Adult
-                            reader.IsDBNull(7) ? 0 : reader.GetDecimal(7),  // Child
-                            reader.IsDBNull(8) ? 0 : reader.GetDecimal(8),  // Baby
-                            reader.IsDBNull(9) ? 0 : reader.GetDecimal(9)   // Pensioner
+                        var economyPrices = new PriceCategories(
+                            reader.GetDecimal(6),
+                            reader.GetDecimal(7),
+                            reader.GetDecimal(8),
+                            reader.GetDecimal(9)
                         );
-                        prices[Classes.Bussiness] = new PriceCategories(
-                            reader.IsDBNull(10) ? 0 : reader.GetDecimal(10), // Adult
-                            reader.IsDBNull(11) ? 0 : reader.GetDecimal(11), // Child
-                            reader.IsDBNull(12) ? 0 : reader.GetDecimal(12), // Baby
-                            reader.IsDBNull(13) ? 0 : reader.GetDecimal(13)  // Pensioner
+
+                        var businessPrices = new PriceCategories(
+                            reader.GetDecimal(10),
+                            reader.GetDecimal(11),
+                            reader.GetDecimal(12),
+                            reader.GetDecimal(13)
                         );
-                        prices[Classes.First] = new PriceCategories(
-                            reader.IsDBNull(14) ? 0 : reader.GetDecimal(14), // Adult
-                            reader.IsDBNull(15) ? 0 : reader.GetDecimal(15), // Child
-                            reader.IsDBNull(16) ? 0 : reader.GetDecimal(16), // Baby
-                            reader.IsDBNull(17) ? 0 : reader.GetDecimal(17)  // Pensioner
+
+                        var firstPrices = new PriceCategories(
+                            reader.GetDecimal(14),
+                            reader.GetDecimal(15),
+                            reader.GetDecimal(16),
+                            reader.GetDecimal(17)
                         );
+
+                        bool backpackIncluded = reader.GetBoolean(18);
+                        decimal economyBaggage = !reader.IsDBNull(19) ? reader.GetDecimal(19) : 0;
+                        decimal businessBaggage = !reader.IsDBNull(20) ? reader.GetDecimal(20) : 0;
+                        decimal firstBaggage = !reader.IsDBNull(21) ? reader.GetDecimal(21) : 0;
 
                         foreach (var passenger in Passengers)
                         {
-                            if (prices.TryGetValue(passenger.PassengerClass, out var categoryPrices))
+                            switch (passenger.PassengerClass)
                             {
-                                passenger.SetPrices(categoryPrices);
+                                case Classes.Econom:
+                                    passenger.SetPrices(economyPrices);
+                                    passenger.BaggagePrice = economyBaggage;
+                                    passenger.BaggageAvailable = economyBaggage > 0;
+                                    break;
+                                case Classes.Bussiness:
+                                    passenger.SetPrices(businessPrices);
+                                    passenger.BaggagePrice = businessBaggage;
+                                    passenger.BaggageAvailable = businessBaggage > 0;
+                                    break;
+                                case Classes.First:
+                                    passenger.SetPrices(firstPrices);
+                                    passenger.BaggagePrice = firstBaggage;
+                                    passenger.BaggageAvailable = firstBaggage > 0;
+                                    break;
                             }
+                            passenger.BackpackIncluded = backpackIncluded;
+                            passenger.RecalculatePrice();
                         }
                     }
                 }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show($"Помилка бази даних при завантаженні цін: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
@@ -355,10 +377,11 @@ namespace CoursFlairy.View.ClientPage
             var selectPage = FindParent<SelectPage>(this);
 
             selectPage.Clients = new List<PassportInfo>();
+            selectPage.HasBaggage = new List<bool>();
             bool allPassengersValid = true;
             foreach (var passenger in Passengers)
             {
-                if (passenger.PassportData.Validation() == State.unsuccessful)
+                if (passenger.PassportData.Validation() != State.successful)
                 {
                     allPassengersValid = false;
                     break;
@@ -368,6 +391,7 @@ namespace CoursFlairy.View.ClientPage
                     if (selectPage != null)
                     {
                         selectPage.Clients.Add(passenger.PassportData.GetPassportInfo());
+                        selectPage.HasBaggage.Add(passenger.HasBaggage);
                     }
                 }
             }
@@ -607,6 +631,10 @@ namespace CoursFlairy.View.ClientPage
             private decimal _currentPrice;
             private PriceCategories _prices;
             private UserPassportData _passportData;
+            private bool _hasBaggage;
+            private decimal _baggagePrice;
+            private bool _baggageAvailable;
+            private bool _backpackIncluded;
 
             public event EventHandler UserPassportDataChanged;
             public event PropertyChangedEventHandler PropertyChanged;
@@ -644,6 +672,50 @@ namespace CoursFlairy.View.ClientPage
 
             public string FormattedPrice => $"Ціна: {CurrentPrice:N0} грн";
 
+            public bool HasBaggage
+            {
+                get => _hasBaggage;
+                set
+                {
+                    _hasBaggage = value;
+                    OnPropertyChanged(nameof(HasBaggage));
+                    RecalculatePrice();
+                }
+            }
+
+            public decimal BaggagePrice
+            {
+                get => _baggagePrice;
+                set
+                {
+                    _baggagePrice = value;
+                    OnPropertyChanged(nameof(BaggagePrice));
+                    OnPropertyChanged(nameof(FormattedBaggagePrice));
+                }
+            }
+
+            public bool BaggageAvailable
+            {
+                get => _baggageAvailable;
+                set
+                {
+                    _baggageAvailable = value;
+                    OnPropertyChanged(nameof(BaggageAvailable));
+                }
+            }
+
+            public bool BackpackIncluded
+            {
+                get => _backpackIncluded;
+                set
+                {
+                    _backpackIncluded = value;
+                    OnPropertyChanged(nameof(BackpackIncluded));
+                }
+            }
+
+            public string FormattedBaggagePrice => BaggagePrice > 0 ? $"+ {BaggagePrice:N0} грн" : "Включено";
+
             public UserPassportData PassportData
             {
                 get => _passportData;
@@ -675,26 +747,22 @@ namespace CoursFlairy.View.ClientPage
 
             public void RecalculatePrice()
             {
-                if (_prices == null)
+                if (_birthDate.HasValue)
                 {
-                    CurrentPrice = 0;
-                    return;
-                }
+                    int age = CalculateAge(_birthDate.Value);
+                    decimal basePrice;
 
-                if (!_birthDate.HasValue)
-                {
-                    CurrentPrice = _prices.Adult;
-                    return;
-                }
+                    if (age < 2)
+                        basePrice = _prices.Baby;
+                    else if (age < 12)
+                        basePrice = _prices.Child;
+                    else if (age >= 60)
+                        basePrice = _prices.Pensioner;
+                    else
+                        basePrice = _prices.Adult;
 
-                var age = CalculateAge(_birthDate.Value);
-                CurrentPrice = age switch
-                {
-                    < 2 => _prices.Baby,
-                    < 18 => _prices.Child,
-                    >= 60 => _prices.Pensioner,
-                    _ => _prices.Adult
-                };
+                    CurrentPrice = basePrice + (HasBaggage ? BaggagePrice : 0);
+                }
             }
 
             private int CalculateAge(DateTime birthDate)

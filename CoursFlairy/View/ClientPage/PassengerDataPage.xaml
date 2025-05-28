@@ -158,6 +158,130 @@
                                                         x:Name="PassportData"
                                                         DataContext="{Binding}"
                                                         Loaded="UserPassportData_Loaded"/>
+
+                                    <!-- Baggage Section -->
+                                    <StackPanel Margin="23,0,23,10">
+                                        <TextBlock Text="Багаж" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,15"/>
+                                        
+                                        <!-- Backpack Info -->
+                                        <Border Background="#F8F9FA" 
+                                                CornerRadius="8" 
+                                                Padding="15,12"
+                                                Visibility="{Binding BackpackIncluded, Converter={StaticResource BoolToVisiblityConverter}}">
+                                            <StackPanel>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Border Width="40" Height="40" 
+                                                            Background="{DynamicResource MainColor20}" 
+                                                            CornerRadius="8">
+                                                        <TextBlock Text="✓" 
+                                                                 FontSize="20" 
+                                                                 Foreground="{DynamicResource MainColor100}"
+                                                                 HorizontalAlignment="Center"
+                                                                 VerticalAlignment="Center"/>
+                                                    </Border>
+
+                                                    <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                                        <TextBlock Text="Ручна поклажа" 
+                                                                 FontSize="16" 
+                                                                 FontWeight="SemiBold"/>
+                                                        <TextBlock Text="Включено у вартість квитка" 
+                                                                 FontSize="14" 
+                                                                 Foreground="#666666"
+                                                                 Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Baggage Option -->
+                                        <Border Background="#F8F9FA" 
+                                                CornerRadius="8" 
+                                                Padding="15,12"
+                                                Margin="0,10,0,0"
+                                                Visibility="{Binding BaggageAvailable, Converter={StaticResource BoolToVisiblityConverter}}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Width="40" Height="40" 
+                                                        Background="{DynamicResource MainColor20}" 
+                                                        CornerRadius="8">
+                                                    <Path Data="M20.5,6.5L21.5,7.5L16.5,12.5L21.5,17.5L20.5,18.5L15.5,13.5L10.5,18.5L9.5,17.5L14.5,12.5L9.5,7.5L10.5,6.5L15.5,11.5L20.5,6.5Z" 
+                                                          Fill="{DynamicResource MainColor100}"
+                                                          Width="24" Height="24"
+                                                          Stretch="Uniform"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                                </Border>
+
+                                                <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                                    <TextBlock Text="Багаж" 
+                                                             FontSize="16" 
+                                                             FontWeight="SemiBold"/>
+                                                    <TextBlock Text="До 23 кг" 
+                                                             FontSize="14" 
+                                                             Foreground="#666666"
+                                                             Margin="0,4,0,0"/>
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" 
+                                                          Orientation="Horizontal" 
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,10,0">
+                                                    <TextBlock Text="{Binding FormattedBaggagePrice}"
+                                                             FontSize="16"
+                                                             FontWeight="SemiBold"
+                                                             Foreground="{DynamicResource MainColor100}"
+                                                             Margin="0,0,15,0"
+                                                             VerticalAlignment="Center"/>
+                                                    
+                                                    <CheckBox IsChecked="{Binding HasBaggage}"
+                                                              VerticalAlignment="Center">
+                                                        <CheckBox.Style>
+                                                            <Style TargetType="CheckBox">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="CheckBox">
+                                                                            <Border x:Name="border" 
+                                                                                    Background="White"
+                                                                                    BorderBrush="{DynamicResource MainColor100}"
+                                                                                    BorderThickness="2"
+                                                                                    CornerRadius="4"
+                                                                                    Width="22" 
+                                                                                    Height="22">
+                                                                                <Path x:Name="checkMark"
+                                                                                      Data="M9.5,0.5L11,2L5,8L0,3L1.5,1.5L5,5L9.5,0.5Z"
+                                                                                      Fill="{DynamicResource MainColor100}"
+                                                                                      Stretch="Uniform"
+                                                                                      Width="12"
+                                                                                      Height="12"
+                                                                                      Visibility="Collapsed"/>
+                                                                            </Border>
+                                                                            <ControlTemplate.Triggers>
+                                                                                <Trigger Property="IsChecked" Value="True">
+                                                                                    <Setter TargetName="checkMark" Property="Visibility" Value="Visible"/>
+                                                                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource MainColor20}"/>
+                                                                                </Trigger>
+                                                                            </ControlTemplate.Triggers>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Style>
+                                                        </CheckBox.Style>
+                                                    </CheckBox>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+
                                     <TextBlock Text="{Binding FormattedPrice}"
                                              FontSize="16"
                                              FontWeight="SemiBold"

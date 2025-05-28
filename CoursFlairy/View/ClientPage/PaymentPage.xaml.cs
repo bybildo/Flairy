@@ -204,47 +204,31 @@ namespace CoursFlairy.View.ClientPage
         {
             try
             {
-                string query = @"
-            INSERT INTO [dbo].[Ticket] (
-                [ClientID], 
-                [FlightID], 
-                [Seat], 
-                [SeatCode],      
-                [Class], 
-                [Baggage], 
-                [Price], 
-                [AddDate]
-            ) 
-            VALUES (
-                @ClientID, 
-                @FlightID, 
-                @Seat, 
-                @SeatCode, 
-                @Class, 
-                @Baggage, 
-                @Price, 
-                GETDATE()
-            );
-            SELECT SCOPE_IDENTITY();";
+                var connection = DataBase.GetConnection();
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    INSERT INTO Ticket (ClientID, FlightID, SeatCode, Seat, Class, Price, Baggage)
+                    VALUES (@ClientID, @FlightID, @SeatCode, @Seat, @Class, @Price, @Baggage);
+                    SELECT SCOPE_IDENTITY();";
 
-                using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
-                {
-                    command.Parameters.AddWithValue("@ClientID", clientId); // Дозволяємо NULL для ClientID
-                    command.Parameters.AddWithValue("@FlightID", flightId);
-                    command.Parameters.AddWithValue("@Seat", seat);
-                    command.Parameters.AddWithValue("@SeatCode", seatCode);
-                    command.Parameters.AddWithValue("@Class", GetIDFromClases(classe));
-                    command.Parameters.AddWithValue("@Baggage", 0);
-                    command.Parameters.AddWithValue("@Price", price);
+                command.Parameters.AddWithValue("@ClientID", clientId);
+                command.Parameters.AddWithValue("@FlightID", flightId);
+                command.Parameters.AddWithValue("@SeatCode", seatCode);
+                command.Parameters.AddWithValue("@Seat", seat);
+                command.Parameters.AddWithValue("@Class", GetIDFromClases(classe));
+                command.Parameters.AddWithValue("@Price", price);
 
-                    object result = command.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : 0;
-                }
+                var parent = FindParent<SelectPage>(this);
+                int index = parent.SelectedSeats.IndexOf(seat);
+                command.Parameters.AddWithValue("@Baggage", parent.HasBaggage[index]);
+
+                var result = command.ExecuteScalar();
+                return Convert.ToInt32(result);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return 0;
+                MessageBox.Show($"Помилка при додаванні квитка: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return -1;
             }
         }
 

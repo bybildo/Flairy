@@ -23,6 +23,7 @@ namespace CoursFlairy.View
         public List<PassportInfo> Clients { get; set; } = new List<PassportInfo>();
         public List<decimal> Prices { get; set; } = new List<decimal>();
         public List<int> TicketId { get; set; } = new List<int>();
+        public List<bool> HasBaggage { get; set; } = new List<bool>();
         public string Email { get; set; }
 
         private int _flightId;
