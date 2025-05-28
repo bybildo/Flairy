@@ -2,8 +2,11 @@
 using CoursFlairy.View.Bussiness;
 using CoursFlairy.View.ClientPage;
 using CoursFlairy.View.UI;
-using CoursFlairy.ViewModel;
-using CoursFlairy.Tests;
+using CoursFlairy.View.UserPage;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,17 +24,11 @@ namespace CoursFlairy.View
             InitializeComponent();
             AutoScreen();
             GlobalMessage.Visibility = Visibility.Visible;
-            
-            #if DEBUG
-            ReferralCodeTest.RunBasicTests();
-            #endif
         }
 
         private async void Form1_Load(object sender, RoutedEventArgs e)
         {
             DataBase.Open();
-            MainWindowVM viewModel = new MainWindowVM();
-            this.DataContext = viewModel;
             CurrentAccount.Load();
 
             if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
@@ -237,5 +234,42 @@ namespace CoursFlairy.View
 
             AccountUI.BeginAnimation(LogIn.OpacityProperty, fadeInAnimation);
         }
+
+        #region Command Event Handlers
+        private void Icon_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (PageManager == null)
+                throw new InvalidOperationException("frame not found");
+
+            if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
+                PageManager.Navigate(new BussinessControlPage());
+            else 
+                PageManager.Navigate(new SearchPage());
+        }
+
+        private void Account_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (CurrentAccount.id != -1)
+            {
+                if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
+                    PageManager.Navigate(new BussinessControlPage());
+                else
+                    PageManager.Navigate(new UserControlPage());
+            }
+            else
+                GlobalMessage.Show("Щоб перейти до кабінету війдіть у акаунт");
+        }
+
+        private void Close_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            DataBase.Close();
+            this.Close();
+        }
+
+        private void Collapse_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+        #endregion
     }
 }

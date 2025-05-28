@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:UI="clr-namespace:CoursFlairy.View.UI"
         xmlns:converter="clr-namespace:CoursFlairy.ViewModel.Converter.MainWindow"
         mc:Ignorable="d"
@@ -43,13 +42,7 @@
             </Grid.ColumnDefinitions>
 
             <!--Логотип-->
-            <Grid Background="Transparent">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDown">
-                        <i:InvokeCommandAction Command="{Binding Icon_MouseDown}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-
+            <Grid Background="Transparent" MouseDown="Icon_MouseDown">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1.1*"/>
                     <RowDefinition Height="8*"/>
@@ -66,13 +59,7 @@
             </Grid>
 
             <!--Аккаунт-->
-            <Grid x:Name="AccountGrid" Grid.Column="2" Style="{DynamicResource Highlight}" MouseEnter="AccountShow" MouseLeave="AccountHide">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDown">
-                        <i:InvokeCommandAction Command="{Binding Account_MouseDown}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-
+            <Grid x:Name="AccountGrid" Grid.Column="2" Style="{DynamicResource Highlight}" MouseEnter="AccountShow" MouseLeave="AccountHide" MouseDown="Account_MouseDown">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="2.5*"/>
@@ -93,20 +80,10 @@
                 </Grid.RowDefinitions>
 
                 <Path Name="cross" Grid.Row="1" Fill="{DynamicResource White}" Stretch="Uniform" Data="{DynamicResource cross}"/>
-                <Grid Grid.RowSpan="3" Style="{DynamicResource Highlight}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDown">
-                            <i:InvokeCommandAction Command="{Binding Close_MouseDown}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                <Grid Grid.RowSpan="3" Style="{DynamicResource Highlight}" MouseDown="Close_MouseDown">
                 </Grid>
                 <Line Name="line" X1="0" Y1="0" X2="{Binding ElementName=cross, Path=ActualWidth}" Y2="0" Stroke="{DynamicResource White}" StrokeThickness="1.2" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <Grid Grid.Row="2" Grid.RowSpan="3" Style="{DynamicResource Highlight}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDown">
-                            <i:InvokeCommandAction Command="{Binding Сollapse_MouseDown}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                <Grid Grid.Row="2" Grid.RowSpan="3" Style="{DynamicResource Highlight}" MouseDown="Collapse_MouseDown">
                 </Grid>
             </Grid>
         </Grid>
