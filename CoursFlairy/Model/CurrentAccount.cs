@@ -41,9 +41,9 @@ static class CurrentAccount
                 id = obj.Id;
             }
         }
-        catch
+        catch(Exception ex)
         {
-            MessageBox.Show("Помилка завантаження акаунту");
+            MessageBox.Show($"Помилка завантаження акаунту {ex.Message}");
             accountType = AccountType.None;
             id = -1;
         }
@@ -90,8 +90,7 @@ static class CurrentAccount
         public AccountType AccountType { get; set; }
         public int Id { get; set; }
 
-
-        public SaveData(AccountType accountType, int id, bool isRemember = false)
+        public SaveData(AccountType accountType, int id)
         {
             AccountType = accountType;
             Id = id;

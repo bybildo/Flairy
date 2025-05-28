@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -99,6 +100,7 @@ namespace CoursFlairy.View
             LogIn.ToBigInterface();
             UpdateCanvasSize();
             await CreateAnimatedEllipsesAsync();
+            referralCode.IsEnabled = true;
         }
 
         #region Методи 
@@ -382,7 +384,7 @@ namespace CoursFlairy.View
         {
             RegistrationButtonUpdate();
 
-            if (UserPassport.Validation(false) == State.successful)
+            if (UserPassport.Validation(false) != State.successful)
             {
                 referralCode.IsEnabled = true;
             }
@@ -616,11 +618,31 @@ namespace CoursFlairy.View
             {
                 if (referral.Text.Length > 0)
                 {
-                    BorderAnimation(referralCodeBorder, false);
+                    // Перевіряємо формат та валідність реферального коду
+                    bool isValidFormat = referral.Text.Length == 8 && 
+                                       referral.Text.All(c => "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".Contains(c));
+                    
+                    if (isValidFormat)
+                    {
+                        // Перевіряємо чи існує код в базі даних
+                        bool codeExists = ReferralSystem.IsValidReferralCode(referral.Text);
+                        if (codeExists)
+                        {
+                            BorderAnimation(referralCodeBorder, false); // Зелений бордер для валідного коду
+                        }
+                        else
+                        {
+                            BorderAnimation(referralCodeBorder, true); // Червоний бордер для неіснуючого коду
+                        }
+                    }
+                    else
+                    {
+                        BorderAnimation(referralCodeBorder, true); // Червоний бордер для неправильного формату
+                    }
                 }
                 else
                 {
-                    BorderAnimation(referralCodeBorder);
+                    BorderAnimation(referralCodeBorder); // Стандартний бордер для порожнього поля
                 }
             }
         }
@@ -1100,45 +1122,63 @@ namespace CoursFlairy.View
 
         private void RegistrationProcces()
         {
-            string query = @"INSERT INTO [dbo].[User] ([Login], [Email], [PasswordHash], [Phone]) VALUES (@login, @email, @password, @phone)";
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            
+            // СПОЧАТКУ перевіряємо реферальний код, щоб включити його в INSERT
+            int? referrerId = null;
+            if (!string.IsNullOrWhiteSpace(referralCode.Text))
+            {
+                if (ReferralSystem.IsValidReferralCode(referralCode.Text))
+                {
+                    referrerId = ReferralSystem.GetUserIdByReferralCode(referralCode.Text);
+                    if (referrerId == null)
+                    {
+                        mainWindow.GlobalMessage.Show("Реферальний код недійсний", 3);
+                        return;
+                    }
+                }
+                else
+                {
+                    mainWindow.GlobalMessage.Show("Реферальний код має неправильний формат", 3);
+                    return;
+                }
+            }
+            
+            // Формуємо SQL запит з ReferredBy
+            string query = @"INSERT INTO [dbo].[User] ([Login], [Email], [PasswordHash], [Phone], [RefID]) VALUES (@login, @email, @password, @phone, @referredBy)";
             State state = UserPassport.Validation(false);
             if (state == State.successful)
             {
-                //Реферал не підключений
-                query = @"INSERT INTO [dbo].[User] ([Login], [Name], [Surname], [Gender] , [Citizenship], [BirthDate], [Passport], [PassportDate], [Email], [Phone], [PasswordHash]) VALUES (@login, @name, @surname, @gender, @citizenship, @birthDate, @passport, @passportDate, @email, @phone, @password)";
+                query = @"INSERT INTO [dbo].[User] ([Login], [Name], [Surname], [Gender], [Citizenship], [BirthDate], [Passport], [PassportDate], [Email], [Phone], [PasswordHash], [RefID]) VALUES (@login, @name, @surname, @gender, @citizenship, @birthDate, @passport, @passportDate, @email, @phone, @password, @referredBy)";
             }
 
-            int lastID = -1;
-            using (SqlCommand command = new SqlCommand("SELECT TOP 1 ID FROM [dbo].[User] ORDER BY ID DESC", DataBase.GetConnection()))
-            {
-                try
-                {
-                    var result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        lastID = Convert.ToInt32(result);
-                    }
-                }
-                catch (Exception ex) { MessageBox.Show("Помилка", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error); }
-            }
-            if (lastID == -1)
-            {
-                MessageBox.Show("Помилка отримання Bussiness ID", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error);
-                lastID = 0;
-            }
-
+            int newUserId = -1;
             using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
             {
                 command.Parameters.AddWithValue("@login", login.Text);
                 command.Parameters.AddWithValue("@email", email.Text);
                 command.Parameters.AddWithValue("@password", GetPasswordHash(password.Password));
-                if (state == State.successful) command.Parameters.AddWithValue("@name", UserPassport.Namee);
-                if (state == State.successful) command.Parameters.AddWithValue("@surname", UserPassport.Surname);
-                if (state == State.successful) command.Parameters.AddWithValue("@gender", (int)UserPassport.gender);
-                if (state == State.successful) command.Parameters.AddWithValue("@citizenship", FindCountryId(UserPassport.Citizenship));
-                if (state == State.successful) command.Parameters.AddWithValue("@birthDate", UserPassport.PersonalDate);
-                if (state == State.successful) command.Parameters.AddWithValue("@passport", UserPassport.Passport);
-                if (state == State.successful) command.Parameters.AddWithValue("@passportDate", UserPassport.PassportDate);
+                
+                // Додаємо ReferredBy параметр
+                if (referrerId.HasValue)
+                {
+                    command.Parameters.AddWithValue("@referredBy", referrerId.Value);
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@referredBy", DBNull.Value);
+                }
+
+                if (state == State.successful)
+                {
+                    command.Parameters.AddWithValue("@name", UserPassport.Namee);
+                    command.Parameters.AddWithValue("@surname", UserPassport.Surname);
+                    command.Parameters.AddWithValue("@gender", (int)UserPassport.gender);
+                    command.Parameters.AddWithValue("@citizenship", FindCountryId(UserPassport.Citizenship));
+                    command.Parameters.AddWithValue("@birthDate", UserPassport.PersonalDate);
+                    command.Parameters.AddWithValue("@passport", UserPassport.Passport);
+                    command.Parameters.AddWithValue("@passportDate", UserPassport.PassportDate);
+                }
 
                 if (string.IsNullOrWhiteSpace(phone.Text))
                 {
@@ -1152,20 +1192,38 @@ namespace CoursFlairy.View
                 try
                 {
                     command.ExecuteNonQuery();
-                    CurrentAccount.Set(Model.Enum.AccountType.User, lastID + 1);
-                    var mainWindow = (MainWindow)Application.Current.MainWindow;
+                    
+                    // Отримуємо ID щойно вставленого користувача
+                    using (SqlCommand idCommand = new SqlCommand("SELECT SCOPE_IDENTITY()", DataBase.GetConnection()))
+                    {
+                        var result = idCommand.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            newUserId = Convert.ToInt32(result);
+                        }
+                    }
+                    
+                    CurrentAccount.Set(Model.Enum.AccountType.User, newUserId);
                     mainWindow.PageManager.Navigate(new SearchPage());
-                    mainWindow.GlobalMessage.Show("Акаунт успішно зареєстровано", 3);
+                    
+                    string message = "Акаунт успішно зареєстровано";
+                    if (referrerId.HasValue)
+                    {
+                        message += $" з реферальним кодом! Запросив користувач ID: {referrerId.Value}";
+                    }
+                    mainWindow.GlobalMessage.Show(message, 3);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Помилка: {ex.Message}", "Помилка БД", MessageBoxButton.OK, MessageBoxImage.Error);
+                    mainWindow.GlobalMessage.Show($"Помилка реєстрації: {ex.Message}", 3);
                 }
             }
         }
 
         private void RegistrationBussProcces()
         {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            
             string logo = "";
             if (icon.Visibility == Visibility.Visible)
             {
@@ -1205,7 +1263,6 @@ namespace CoursFlairy.View
                 {
                     command.ExecuteNonQuery();
                     CurrentAccount.Set(Model.Enum.AccountType.Bussines, lastID + 1);
-                    var mainWindow = (MainWindow)Application.Current.MainWindow;
                     mainWindow.PageManager.Navigate(new BussinessControlPage());
                     mainWindow.GlobalMessage.Show("Бізнес-акаунт успішно зареєстровано", 3);
                 }

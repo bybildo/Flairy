@@ -7,6 +7,7 @@
       xmlns:ui="clr-namespace:CoursFlairy.View.UI"
       xmlns:searchconverter="clr-namespace:CoursFlairy.ViewModel.Converter.SearchPage"
       xmlns:mainconverter="clr-namespace:CoursFlairy.ViewModel.Converter.MainWindow"
+      xmlns:businessconverter="clr-namespace:CoursFlairy.ViewModel.Converter.Bussines"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1200"
       Title="PassengerDataPage">
@@ -14,6 +15,7 @@
     <Page.Resources>
         <searchconverter:TextToVisibilityConverter x:Key="TextToVisibilityConverter"/>
         <mainconverter:OpacityToVisiblityConverter x:Key="OpacityToVisiblityConverter"/>
+        <businessconverter:BoolToVisiblityConverter x:Key="BoolToVisiblityConverter"/>
     </Page.Resources>
 
     <ScrollViewer Grid.Column="1" VerticalAlignment="Top" VerticalScrollBarVisibility="Hidden" Focusable="False">
@@ -101,7 +103,7 @@
                         </StackPanel>
                     </Grid>
                 </Grid>
-                <ItemsControl ItemsSource="{Binding Passengers}" Margin="0, 20, 0, 0" Focusable="False">
+                <ItemsControl x:Name="PassengersItemsControl" ItemsSource="{Binding Passengers}" Margin="0, 20, 0, 0" Focusable="False">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -114,15 +116,43 @@
                                     </Border.Effect>
                                 </Border>
                                 <StackPanel Margin="0,0,0,30">
-                                    <TextBlock FontSize="18" 
-                              FontWeight="SemiBold" 
-                              Margin="23,23,0,5">
-                                        <Run Text="Пасажир "/>
-                                        <Run Text="{Binding PassengerNumber}"/>
-                                        <Run Text=" • "/>
-                                        <Run Text="{Binding PassengerClass}" 
-                                             Foreground="{DynamicResource MainColor100}"/>
-                                    </TextBlock>
+                                    <Grid Margin="23,23,0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBlock Grid.Column="0" FontSize="18" 
+                                                  FontWeight="SemiBold">
+                                            <Run Text="Пасажир "/>
+                                            <Run Text="{Binding PassengerNumber}"/>
+                                            <Run Text=" • "/>
+                                            <Run Text="{Binding PassengerClass}" 
+                                                 Foreground="{DynamicResource MainColor100}"/>
+                                        </TextBlock>
+                                        
+                                        <!-- Кнопка швидкого заповнення -->
+                                        <Button Grid.Column="1"
+                                                x:Name="QuickFillButton"
+                                                Content="Заповнити моїми даними"
+                                                FontSize="12"
+                                                Padding="10,5"
+                                                Background="{DynamicResource MainColor100}"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                Margin="10,0,23,0"
+                                                Click="QuickFillButton_Click"
+                                                Tag="{Binding}"
+                                                Visibility="{Binding DataContext.ShowQuickFillButtons, 
+                                                           RelativeSource={RelativeSource AncestorType=Page}, 
+                                                           Converter={StaticResource BoolToVisiblityConverter}}">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="5"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+                                    </Grid>
                                     <ui:UserPassportData Height="320" 
                                                         Margin="23" 
                                                         x:Name="PassportData"

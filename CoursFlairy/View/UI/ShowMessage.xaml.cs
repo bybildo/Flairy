@@ -74,6 +74,12 @@ namespace CoursFlairy.View.UI
             timer.Start();
         }
 
+        public bool? ShowConfirm(string message)
+        {
+            var confirmDialog = new CustomMessageBox(message, true);
+            return confirmDialog.ShowDialog();
+        }
+
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 

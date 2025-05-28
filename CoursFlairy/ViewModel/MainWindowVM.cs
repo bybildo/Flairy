@@ -1,5 +1,6 @@
 ﻿using CoursFlairy.Data;
 using CoursFlairy.View;
+using CoursFlairy.View.Bussiness;
 using CoursFlairy.View.UserPage;
 using System.ComponentModel;
 using System.Windows;
@@ -28,7 +29,8 @@ namespace CoursFlairy.ViewModel
             {
                 mainWindow.PageManager.Navigate(new UserControlPage());
             }
-            else MessageBox.Show("Авторизуйтесь");
+            else
+                mainWindow.GlobalMessage.Show("Щоб перейти до кабінету війдіть у акаунт");
         }
 
         private void Close_MouseDownF()
@@ -46,7 +48,10 @@ namespace CoursFlairy.ViewModel
         {
             if (mainWindow.PageManager == null)
                 throw new InvalidOperationException("frame not found");
-            mainWindow.PageManager.Navigate(new SearchPage());
+
+            if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
+                mainWindow.PageManager.Navigate(new BussinessControlPage());
+            else mainWindow.PageManager.Navigate(new SearchPage());
         }
 
         public ICommand Close_MouseDown { get; private set; }

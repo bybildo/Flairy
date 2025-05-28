@@ -2,12 +2,83 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Message" 
-        Height="150" 
-        Width="300"
+        Height="180" 
+        Width="350"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
+        WindowStartupLocation="CenterScreen"
         ShowInTaskbar="False">
+
+    <Window.Resources>
+        <Style x:Key="RoundedButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource MainColor100}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Bahnschrift"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MainColor80}"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MainColor60}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="OutlinedButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource White}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MainColor100}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MainColor100}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Bahnschrift"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MainColor20}"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MainColor40}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     
     <Border Background="White"
             BorderBrush="{StaticResource MainColor20}"
@@ -23,6 +94,7 @@
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock x:Name="MessageText"
@@ -33,6 +105,27 @@
                      TextWrapping="Wrap"
                      VerticalAlignment="Center"
                      HorizontalAlignment="Center"/>
+
+            <StackPanel Grid.Row="1" 
+                      Orientation="Horizontal" 
+                      HorizontalAlignment="Center" 
+                      Margin="0,20,0,0"
+                      x:Name="ButtonPanel"
+                      Visibility="Collapsed">
+                <Button x:Name="CancelButton"
+                        Content="Скасувати"
+                        Width="120"
+                        Height="35"
+                        Margin="0,0,10,0"
+                        Style="{StaticResource OutlinedButton}"
+                        Click="CancelButton_Click"/>
+                <Button x:Name="ConfirmButton"
+                        Content="Підтвердити"
+                        Width="120"
+                        Height="35"
+                        Style="{StaticResource RoundedButton}"
+                        Click="ConfirmButton_Click"/>
+            </StackPanel>
         </Grid>
     </Border>
 </Window> 

@@ -32,6 +32,8 @@ namespace CoursFlairy.View.UserPage
         {
             InitializeComponent();
             PageState = StateUser.Profile;
+            PageManager.Content = GetPageByState(StateUser.Profile);
+            (ProfileBorder.Background, ((TextBlock)((Viewbox)ProfileBorder.Child).Child).Foreground) = (((TextBlock)((Viewbox)ProfileBorder.Child).Child).Foreground, ProfileBorder.Background);
         }
 
         private void ChangeState(object sender, MouseButtonEventArgs e)
@@ -48,30 +50,28 @@ namespace CoursFlairy.View.UserPage
 
         private void Exit(object sender, MouseButtonEventArgs e)
         {
-            // TODO: Implement exit logic
-            MessageBox.Show("Exit clicked");
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            var result = mainWindow.GlobalMessage.ShowConfirm("Ви впевнені, що хочете вийти?");
+
+            if (result == true)
+            {
+                CurrentAccount.Set(AccountType.None, -1);
+                CurrentAccount.Save();
+                mainWindow.PageManager.Navigate(new SearchPage());
+                mainWindow.AccountUI.Visibility = Visibility.Hidden;
+                mainWindow.AccountUI.ShowLogin();
+            }
         }
+
 
         private Page GetPageByState(StateUser state)
         {
-            return state switch
-            {
-                StateUser.Profile => new ProfilePage(),
-                StateUser.Tickets => new TicketsPage(),
-                StateUser.Interface => new InterfacePage(),
-                _ => null
-            };
+            return state switch{ StateUser.Profile => new ProfilePage(), StateUser.Tickets => new TicketsPage(), StateUser.Interface => new InterfacePage(), _ => null};
         }
 
         private Border GetBorderByState(StateUser state)
         {
-            return state switch
-            {
-                StateUser.Profile => ProfileBorder,
-                StateUser.Tickets => TicketsBorder,
-                StateUser.Interface => InterfaceBorder,
-                _ => null
-            };
+            return state switch { StateUser.Profile => ProfileBorder, StateUser.Tickets => TicketsBorder, StateUser.Interface => InterfaceBorder, _ => null};
         }
 
         private void BorderAnimation(Border startBorder, Border endBorder)

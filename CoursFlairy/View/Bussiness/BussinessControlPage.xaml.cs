@@ -62,6 +62,21 @@ namespace CoursFlairy.View.Bussiness
             return state switch { StateBussines.Profile => ProfileBorder, StateBussines.Palne => PlaneBorder, StateBussines.Route => RouteBorder, StateBussines.Flight => FlightBorder, _ => null };
         }
 
+        private void Exit(object sender, MouseButtonEventArgs e)
+        {
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            var result = mainWindow.GlobalMessage.ShowConfirm("Ви впевнені, що хочете вийти?");
+
+            if (result == true)
+            {
+                CurrentAccount.Set(AccountType.None, -1);
+                CurrentAccount.Save();
+                mainWindow.PageManager.Navigate(new SearchPage());
+                mainWindow.AccountUI.Visibility = Visibility.Hidden;
+                mainWindow.AccountUI.ShowLogin();
+            }
+        }
+
         private void BorderAnimation(Border startBorder, Border endBorder)
         {
             var startText = ((TextBlock)((Viewbox)startBorder.Child).Child);

@@ -4,11 +4,337 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:CoursFlairy.View.UserPage"
+      xmlns:ui="clr-namespace:CoursFlairy.View.UI"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="1000"
       Title="ProfilePage">
 
-    <Grid Background="White">
-        <TextBlock Text="Profile Page" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
-    </Grid>
+    <Page.Resources>
+        <Style x:Key="RoundedButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource MainColor100}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Bahnschrift"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MainColor80}"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MainColor60}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+        <Border Background="White" CornerRadius="20">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0" 
+                        Background="{DynamicResource White}" 
+                        CornerRadius="15" 
+                        Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Профіль користувача" 
+                                 FontSize="28" 
+                                 FontWeight="SemiBold" 
+                                 FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                 Foreground="{DynamicResource Black}"
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Main Content -->
+                <StackPanel Grid.Row="1" Margin="0,40,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="100*"/>
+                            <ColumnDefinition Width="20*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Passport Data Section -->
+                        <Border Grid.Column="1" Background="{DynamicResource White}" CornerRadius="10" Margin="-20">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <Grid Grid.Row="0" Margin="20,20,20,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Паспортні дані" 
+                                             FontSize="20" 
+                                             FontWeight="SemiBold" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             Foreground="{DynamicResource Black}"/>
+                                    
+                                    <StackPanel Grid.Column="1" 
+                                              Orientation="Horizontal" 
+                                              HorizontalAlignment="Right">
+                                        <Button x:Name="editButton" 
+                                                Content="Редагувати" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="EditButton_Click"
+                                                Margin="0,0,10,0"/>
+                                        <Button x:Name="cancelButton" 
+                                                Content="Скасувати" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="CancelButton_Click"
+                                                Visibility="Collapsed"
+                                                Margin="0,0,10,0"/>
+                                        <Button x:Name="saveButton" 
+                                                Content="Зберегти" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="SaveButton_Click"
+                                                Visibility="Collapsed"/>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <ui:UserPassportData x:Name="userPassportData" Grid.Row="1" Height="300" Margin="20"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Grid Margin="0,60,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="100*"/>
+                            <ColumnDefinition Width="20*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Referral Code Section -->
+                        <Border Grid.Column="1" Background="{DynamicResource White}" CornerRadius="10" Margin="-20">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <Grid Grid.Row="0" Margin="20,20,20,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Реферальна система" 
+                                             FontSize="20" 
+                                             FontWeight="SemiBold" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             Foreground="{DynamicResource Black}"/>
+                                    
+                                    <StackPanel Grid.Column="1" 
+                                              Orientation="Horizontal" 
+                                              HorizontalAlignment="Right">
+                                        <Button x:Name="generateReferralButton" 
+                                                Content="Згенерувати код" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="GenerateReferralButton_Click"
+                                                Margin="0,0,10,0"
+                                                Visibility="Collapsed"/>
+                                        <Button x:Name="copyReferralButton" 
+                                                Content="Скопіювати" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="CopyReferralButton_Click"/>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <StackPanel Grid.Row="1" Margin="20,0,20,20">
+                                    <TextBlock Text="Ваш реферальний код:" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="16"
+                                             Foreground="{DynamicResource Black}"
+                                             Margin="0,0,0,10"/>
+                                
+                                    <Border x:Name="referralCodeBorder" 
+                                            BorderBrush="{DynamicResource MainColor20}" 
+                                            Background="Transparent" 
+                                            BorderThickness="1" 
+                                            CornerRadius="8"
+                                            Width="300"
+                                            HorizontalAlignment="Left">
+                                        <Grid Margin="10,0">
+                                            <TextBox x:Name="referralCodeTextBox" 
+                                                   Foreground="{DynamicResource Black}" 
+                                                   FontSize="19" 
+                                                   FontFamily="Bahnschrift" 
+                                                   MaxLength="100" 
+                                                   Background="Transparent"
+                                                   BorderThickness="0"
+                                                   Height="35"
+                                                   IsReadOnly="True"
+                                                   VerticalContentAlignment="Center"
+                                                   Text="Генерується..."/>
+                                        </Grid>
+                                    </Border>
+
+                                    <TextBlock x:Name="referralStatsText"
+                                             Text="Кількість запрошених: 0" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="14"
+                                             Foreground="{DynamicResource Black}"
+                                             Margin="0,10,0,0"/>
+                                             
+                                    <TextBlock Text="Як працює реферальна система:" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="12"
+                                             Foreground="{DynamicResource Black}"
+                                             Margin="0,10,0,5"/>
+                                             
+                                    <TextBlock Text="• Поділіться своїм кодом з друзями" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="11"
+                                             Foreground="{DynamicResource HintColor}"
+                                             Margin="0,0,0,2"/>
+                                             
+                                    <TextBlock Text="• Вони вводять його при реєстрації" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="11"
+                                             Foreground="{DynamicResource HintColor}"
+                                             Margin="0,0,0,2"/>
+                                             
+                                    <TextBlock Text="• Отримуйте бонуси за кожного запрошеного" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="11"
+                                             Foreground="{DynamicResource HintColor}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Grid Margin="0,60,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="100*"/>
+                            <ColumnDefinition Width="20*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Email Section -->
+                        <Border Grid.Column="1" Background="{DynamicResource White}" CornerRadius="10" Margin="-20">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <Grid Grid.Row="0" Margin="20,20,20,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Електронна пошта" 
+                                             FontSize="20" 
+                                             FontWeight="SemiBold" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             Foreground="{DynamicResource Black}"/>
+                                    
+                                    <StackPanel Grid.Column="1" 
+                                              Orientation="Horizontal" 
+                                              HorizontalAlignment="Right">
+                                        <Button x:Name="editEmailButton" 
+                                                Content="Редагувати" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="EditEmailButton_Click"
+                                                Margin="0,0,10,0"/>
+                                        <Button x:Name="cancelEmailButton" 
+                                                Content="Скасувати" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="CancelEmailButton_Click"
+                                                Visibility="Collapsed"
+                                                Margin="0,0,10,0"/>
+                                        <Button x:Name="saveEmailButton" 
+                                                Content="Зберегти" 
+                                                Style="{StaticResource RoundedButton}"
+                                                Click="SaveEmailButton_Click"
+                                                Visibility="Collapsed"/>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <StackPanel Grid.Row="1" Margin="20,0,20,20">
+                                    <TextBlock Text="Поточна адреса:" 
+                                             FontFamily="{DynamicResource BlackerSans Pro It Variable}" 
+                                             FontWeight="Light" 
+                                             FontSize="16"
+                                             Foreground="{DynamicResource Black}"
+                                             Margin="0,0,0,10"/>
+                                
+                                    <Border x:Name="emailBorder" 
+                                            BorderBrush="{DynamicResource MainColor20}" 
+                                            Background="Transparent" 
+                                            BorderThickness="1" 
+                                            CornerRadius="8"
+                                            Width="300"
+                                            HorizontalAlignment="Left">
+                                        <Grid Margin="10,0">
+                                            <TextBox x:Name="emailTextBox" 
+                                                   Foreground="{DynamicResource Black}" 
+                                                   FontSize="19" 
+                                                   FontFamily="Bahnschrift" 
+                                                   MaxLength="100" 
+                                                   Background="Transparent"
+                                                   BorderThickness="0"
+                                                   Height="35"
+                                                   IsEnabled="False"
+                                                   VerticalContentAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </ScrollViewer>
 </Page> 

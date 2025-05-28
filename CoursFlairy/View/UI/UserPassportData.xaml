@@ -118,14 +118,14 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
 
-                <Border Background="{DynamicResource White}" Grid.RowSpan="3" Margin="1.4" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerLeftBorderRoundConverter}}">
+                <Border Name="womanBorder" Background="{DynamicResource White}" Grid.RowSpan="3" Margin="1.4" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerLeftBorderRoundConverter}}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="3.5" ShadowDepth="0.3" Color="{DynamicResource Shadow}" Direction="320" Opacity="0" />
                     </Border.Effect>
                 </Border>
 
                 <Viewbox Grid.Row="1" Margin="5,0,-5,0">
-                    <TextBlock Text="♀" Foreground="HotPink"/>
+                    <TextBlock Name="womanText" Text="♀" Foreground="HotPink"/>
                 </Viewbox>
 
             </Grid>
@@ -137,14 +137,14 @@
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
 
-                <Border Background="{DynamicResource White}" Margin="1.4" Grid.RowSpan="3" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerRightBorderRoundConverter}}">
+                <Border Name="manBorder" Background="{DynamicResource White}" Margin="1.4" Grid.RowSpan="3" CornerRadius="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource PeoplePickerRightBorderRoundConverter}}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="3.5" ShadowDepth="0.3" Color="{DynamicResource Shadow}" Direction="320" Opacity="0" />
                     </Border.Effect>
                 </Border>
 
                 <Viewbox Grid.Row="1" Margin="-3,0,3,0">
-                    <TextBlock Text="♂" Foreground="{DynamicResource MainColor100}"/>
+                    <TextBlock Name="manText" Text="♂" Foreground="{DynamicResource MainColor100}"/>
                 </Viewbox>
             </Grid>
 

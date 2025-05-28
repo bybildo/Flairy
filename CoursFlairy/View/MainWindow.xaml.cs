@@ -3,6 +3,7 @@ using CoursFlairy.View.Bussiness;
 using CoursFlairy.View.ClientPage;
 using CoursFlairy.View.UI;
 using CoursFlairy.ViewModel;
+using CoursFlairy.Tests;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,6 +21,10 @@ namespace CoursFlairy.View
             InitializeComponent();
             AutoScreen();
             GlobalMessage.Visibility = Visibility.Visible;
+            
+            #if DEBUG
+            ReferralCodeTest.RunBasicTests();
+            #endif
         }
 
         private async void Form1_Load(object sender, RoutedEventArgs e)
@@ -190,6 +195,8 @@ namespace CoursFlairy.View
 
         private async void AccountShow(object sender, MouseEventArgs e)
         {
+            if (CurrentAccount.id != -1) return;
+
             await Task.Delay(200);
             if (!AccountUI.IsMouseOver && !AccountGrid.IsMouseOver) return;
 
@@ -206,6 +213,8 @@ namespace CoursFlairy.View
 
         private async void AccountHide(object sender, System.Windows.Input.MouseEventArgs e)
         {
+            if (CurrentAccount.id != -1) return;
+
             await Task.Delay(200);
             if (AccountUI.IsMouseOver || AccountGrid.IsMouseOver) return;
 

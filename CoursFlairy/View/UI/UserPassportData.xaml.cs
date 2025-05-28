@@ -112,7 +112,7 @@ namespace CoursFlairy.View.UI
             set
             {
                 _name = value;
-                OnPropertyChanged(nameof(Name));
+                OnPropertyChanged(nameof(Namee));
             }
         }
 
@@ -768,6 +768,51 @@ namespace CoursFlairy.View.UI
             return State.successful;
         }
 
+        public void UpdateColor()
+        {
+            if (gender == Gender.man)
+            {
+              (manBorder.Background, manText.Foreground) = (manText.Foreground, manBorder.Background);
+            }
+            else if (gender == Gender.woman)
+            {
+                (womanBorder.Background, womanText.Foreground) = (womanText.Foreground, womanBorder.Background);
+            }
+        }
+
+        public void SetReadOnly(bool isReadOnly)
+        {
+            // Блокуємо/розблоковуємо всі поля введення
+            surnametb.IsEnabled = !isReadOnly;
+            nametb.IsEnabled = !isReadOnly;
+            passporttb.IsEnabled = !isReadOnly;
+            personalDaytb.IsEnabled = !isReadOnly;
+            personalMonthtb.IsEnabled = !isReadOnly;
+            personalYeartb.IsEnabled = !isReadOnly;
+            passportDaytb.IsEnabled = !isReadOnly;
+            passportMonthtb.IsEnabled = !isReadOnly;
+            passportYeartb.IsEnabled = !isReadOnly;
+            ManGrid.IsEnabled = !isReadOnly;
+            WomanGrid.IsEnabled = !isReadOnly;
+            citizenshipButton.IsEnabled = !isReadOnly;
+            citizenshiptb.IsEnabled = !isReadOnly;
+        }
+
+        public void ClearData()
+        {
+            // Очищаємо всі поля
+            Surname = "";
+            Namee = "";
+            Passport = "";
+            PersonalDay = "";
+            PersonalMonth = "";
+            PersonalYear = "";
+            PassportDay = "";
+            PassportMonth = "";
+            PassportYear = "";
+            Citizenship = "";
+            gender = Gender.none;
+        }
 
         private void ScrollViewer_PreviewHorizontalMouseWheel(object sender, MouseWheelEventArgs e)
         {

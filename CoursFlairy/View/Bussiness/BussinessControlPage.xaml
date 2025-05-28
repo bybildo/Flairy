@@ -130,6 +130,19 @@
                             <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
                         </Border.Effect>
                     </Border>
+
+                    <Border x:Name="ExitBorder" MouseDown="Exit">
+                        <Viewbox>
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{DynamicResource exit}" Fill="OrangeRed" Stretch="Uniform" Margin="0, 0 ,3, 0" Height="10" Width="10"/>
+                                <TextBlock Text="Вийти" FontFamily="Bahnschrift" Foreground="OrangeRed" />
+                            </StackPanel>
+                        </Viewbox>
+
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                        </Border.Effect>
+                    </Border>
                 </StackPanel>
             </ScrollViewer>
 

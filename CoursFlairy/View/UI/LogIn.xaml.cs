@@ -107,7 +107,11 @@ namespace CoursFlairy.View.UI
                         int id = Convert.ToInt32(result);
                         CurrentAccount.Set(Model.Enum.AccountType.Bussines, id);
                         mainWindow.PageManager.Navigate(new BussinessControlPage());
+
                         if (rememberBox.IsChecked == true) CurrentAccount.Save();
+                        HideLogin();
+                        login.Text = "";
+                        password.Password = "";
                         return;
                     }
                 }
@@ -132,7 +136,12 @@ namespace CoursFlairy.View.UI
                         int id = Convert.ToInt32(result);
                         CurrentAccount.Set(Model.Enum.AccountType.User, id);
                         mainWindow.PageManager.Navigate(new SearchPage());
+
                         if (rememberBox.IsChecked == true) CurrentAccount.Save();
+                        mainWindow.GlobalMessage.Show("Вхід успішний", 3);
+                        login.Text = "";
+                        password.Password = "";
+                        HideLogin();
                         return;
                     }
                     else
@@ -413,5 +422,15 @@ namespace CoursFlairy.View.UI
             }
         }
         #endregion
+
+        public void ShowLogin()
+        {
+            MainGrid.RowDefinitions[0].Height = new GridLength(1.5, GridUnitType.Star);
+        }
+
+        public void HideLogin()
+        {
+            MainGrid.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Star);
+        }
     }
 }

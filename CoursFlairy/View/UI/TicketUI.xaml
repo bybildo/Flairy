@@ -310,7 +310,7 @@
                     
                     <!-- QR-код (заглушка) -->
                     <Border Grid.Row="2" 
-                            Background="#F5F5F5" 
+                             
                             CornerRadius="4" 
                             Height="50" 
                             Margin="0,15,0,0">

@@ -44,6 +44,10 @@ namespace CoursFlairy.View.ClientPage
         private string _arrivalIcao;
         private string _email = "";
         private decimal _totalSum;
+        private bool _isUserLoggedIn = false;
+        private bool _showQuickFillButtons = false;
+        private bool _hasUsedQuickFill = false;
+        private PassengerInfo _quickFilledPassenger = null;
 
         public string DepartureCity { get => _departureCity; set { _departureCity = value; OnPropertyChanged(nameof(DepartureCity)); } }
         public string ArrivalCity { get => _arrivalCity; set { _arrivalCity = value; OnPropertyChanged(nameof(ArrivalCity)); } }
@@ -56,6 +60,16 @@ namespace CoursFlairy.View.ClientPage
         public string ArrivalTimeString => ArrivalTime.ToString("HH:mm");
         public string DepartureDateString => DepartureTime.ToString("dd.MM.yyyy");
         public string ArrivalDateString => ArrivalTime.ToString("dd.MM.yyyy");
+
+        public bool ShowQuickFillButtons
+        {
+            get => _showQuickFillButtons;
+            set
+            {
+                _showQuickFillButtons = value;
+                OnPropertyChanged(nameof(ShowQuickFillButtons));
+            }
+        }
 
         public ObservableCollection<PassengerInfo> Passengers
         {
@@ -98,6 +112,7 @@ namespace CoursFlairy.View.ClientPage
 
             Loaded += (s, e) =>
             {
+                LoadUserEmail();
                 var parent = FindParent<SelectPage>(this);
                 if (parent != null)
                 {
@@ -108,17 +123,58 @@ namespace CoursFlairy.View.ClientPage
             };
         }
 
-        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        private void LoadUserEmail()
         {
-            while (child != null)
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            if (CurrentAccount.id != -1 && CurrentAccount.accountType == AccountType.User)
             {
-                child = VisualTreeHelper.GetParent(child);
-                if (child is T parent)
+                try
                 {
-                    return parent;
+                    var connection = DataBase.GetConnection();
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT Email, Citizenship FROM [User] WHERE ID = @UserId";
+                    command.Parameters.AddWithValue("@UserId", CurrentAccount.id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            // Завантажуємо email
+                            if (!reader.IsDBNull(0))
+                            {
+                                Email = reader.GetString(0);
+                                _isUserLoggedIn = true;
+                                
+                                if (email != null)
+                                {
+                                    email.IsEnabled = false;
+                                    email.Text = Email;
+                                }
+                            }
+
+                            // Перевіряємо наявність громадянства
+                            bool hasCitizenship = !reader.IsDBNull(1);
+                            ShowQuickFillButtons = hasCitizenship;
+                        }
+                        else
+                        {
+                            ShowQuickFillButtons = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (mainWindow != null)
+                    {
+                        mainWindow.GlobalMessage.Show($"Помилка завантаження email: {ex.Message}");
+                    }
+                    ShowQuickFillButtons = false;
                 }
             }
-            return null;
+            else
+            {
+                ShowQuickFillButtons = false;
+            }
         }
 
         private void LoadFlightPrices()
@@ -266,6 +322,8 @@ namespace CoursFlairy.View.ClientPage
         private const string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
         private void emailAnimation(object sender, TextChangedEventArgs e)
         {
+            if (_isUserLoggedIn) return;
+
             if (sender is TextBox emailTextBox)
             {
                 bool isValid = Regex.IsMatch(emailTextBox.Text, emailPattern);
@@ -339,6 +397,189 @@ namespace CoursFlairy.View.ClientPage
                 selectPage.CurentPage = 5;
                 selectPage.PageManager.Navigate(new PaymentPage(TotalSum));
                 selectPage.FillPath(5);
+            }
+        }
+
+        private void QuickFillButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            
+            // Перевіряємо чи користувач авторизований
+            if (CurrentAccount.id == -1 || CurrentAccount.accountType != AccountType.User)
+            {
+                mainWindow.GlobalMessage.Show("Для швидкого заповнення потрібно війти в акаунт", 3);
+                return;
+            }
+
+            // Отримуємо PassengerInfo з Tag кнопки
+            if (sender is Button button && button.Tag is PassengerInfo passengerInfo)
+            {
+                LoadUserDataForPassenger(passengerInfo);
+                _hasUsedQuickFill = true;
+                _quickFilledPassenger = passengerInfo;
+                
+                // Змінюємо текст кнопки на "Скасувати заповнення"
+                button.Content = "Скасувати заповнення";
+                button.Click -= QuickFillButton_Click;
+                button.Click += CancelQuickFill_Click;
+                
+                // Блокуємо поля для редагування
+                if (passengerInfo.PassportData != null)
+                {
+                    passengerInfo.PassportData.SetReadOnly(true);
+                    passengerInfo.PassportData.UpdateColor();
+                }
+
+                // Знаходимо всі кнопки швидкого заповнення та приховуємо їх
+                var parentWindow = Window.GetWindow(button);
+                if (parentWindow != null)
+                {
+                    var allButtons = FindVisualChildren<Button>(parentWindow)
+                        .Where(b => b != button && b.Name == "QuickFillButton");
+                    
+                    foreach (var otherButton in allButtons)
+                    {
+                        otherButton.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+        }
+
+        private void CancelQuickFill_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            
+            if (sender is Button button && button.Tag is PassengerInfo passengerInfo)
+            {
+                // Очищаємо дані
+                if (passengerInfo.PassportData != null)
+                {
+                    passengerInfo.PassportData.ClearData();
+                    passengerInfo.PassportData.SetReadOnly(false);
+                }
+                
+                // Скидаємо стан
+                _hasUsedQuickFill = false;
+                _quickFilledPassenger = null;
+                
+                // Повертаємо початковий стан кнопки
+                button.Content = "Заповнити моїми даними";
+                button.Click -= CancelQuickFill_Click;
+                button.Click += QuickFillButton_Click;
+                
+                // Показуємо всі кнопки швидкого заповнення
+                var parentWindow = Window.GetWindow(button);
+                if (parentWindow != null)
+                {
+                    var allButtons = FindVisualChildren<Button>(parentWindow)
+                        .Where(b => b.Name == "QuickFillButton");
+                    
+                    foreach (var quickFillButton in allButtons)
+                    {
+                        quickFillButton.Visibility = Visibility.Visible;
+                    }
+                }
+                
+                mainWindow.GlobalMessage.Show("Швидке заповнення скасовано", 2);
+            }
+        }
+
+        private void LoadUserDataForPassenger(PassengerInfo passengerInfo)
+        {
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            
+            try
+            {
+                var connection = DataBase.GetConnection();
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT u.Gender, u.Name, u.Surname, u.BirthDate, u.Passport, u.PassportDate, u.Citizenship, c.Name as CountryName
+                    FROM [User] u
+                    LEFT JOIN Country c ON u.Citizenship = c.ID
+                    WHERE u.ID = @UserId";
+                command.Parameters.AddWithValue("@UserId", CurrentAccount.id);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        // Перевіряємо чи є громадянство
+                        if (reader.IsDBNull(6)) // Citizenship
+                        {
+                            mainWindow.GlobalMessage.Show("У вашому профілі не вказано громадянство. Будь ласка, заповніть дані у профілі", 3);
+                            return;
+                        }
+
+                        var passportData = passengerInfo.PassportData;
+                        if (passportData != null)
+                        {
+                            // Заповнюємо стать
+                            if (!reader.IsDBNull(0))
+                            {
+                                passportData.gender = (Gender)reader.GetInt32(0);
+                            }
+
+                            // Заповнюємо ім'я
+                            if (!reader.IsDBNull(1))
+                            {
+                                passportData.Namee = reader.GetString(1);                              
+                            }
+
+                            // Заповнюємо прізвище
+                            if (!reader.IsDBNull(2))
+                            {
+                                passportData.Surname = reader.GetString(2);
+                            }
+
+                            // Заповнюємо дату народження
+                            if (!reader.IsDBNull(3))
+                            {
+                                var birthDate = reader.GetDateTime(3);
+                                passportData.PersonalDay = birthDate.Day.ToString("00");
+                                passportData.PersonalMonth = birthDate.Month.ToString("00");
+                                passportData.PersonalYear = birthDate.Year.ToString();
+                            }
+
+                            // Заповнюємо номер паспорта
+                            if (!reader.IsDBNull(4))
+                            {
+                                passportData.Passport = reader.GetString(4);
+                            }
+
+                            // Заповнюємо дату закінчення паспорта
+                            if (!reader.IsDBNull(5))
+                            {
+                                var passportDate = reader.GetDateTime(5);
+                                passportData.PassportDay = passportDate.Day.ToString("00");
+                                passportData.PassportMonth = passportDate.Month.ToString("00");
+                                passportData.PassportYear = passportDate.Year.ToString();
+                            }
+
+                            // Заповнюємо громадянство
+                            if (!reader.IsDBNull(7))
+                            {
+                                passportData.Citizenship = reader.GetString(7);
+                                passportData.CitizenshipHint = reader.GetString(7);
+                                passportData.CitizenshipUpdate();
+                            }
+
+                            passportData.UpdateColor();
+                            mainWindow.GlobalMessage.Show("Дані успішно заповнено", 2);
+                        }
+                    }
+                    else
+                    {
+                        mainWindow.GlobalMessage.Show("Не вдалося завантажити дані користувача", 3);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                mainWindow.GlobalMessage.Show($"Помилка бази даних: {ex.Message}", 3);
+            }
+            catch (Exception ex)
+            {
+                mainWindow.GlobalMessage.Show($"Помилка завантаження даних: {ex.Message}", 3);
             }
         }
 
@@ -479,5 +720,34 @@ namespace CoursFlairy.View.ClientPage
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            while (child != null)
+            {
+                child = VisualTreeHelper.GetParent(child);
+                if (child is T parent)
+                {
+                    return parent;
+                }
+            }
+            return null;
+        }
+
+        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj == null) yield break;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+                
+                if (child is T t)
+                    yield return t;
+
+                foreach (T childOfChild in FindVisualChildren<T>(child))
+                    yield return childOfChild;
+            }
+        }
     }
 }

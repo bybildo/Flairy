@@ -148,7 +148,7 @@
                         <!--Дата-->
                         <Border x:Name="DateBorder" BorderBrush="{DynamicResource MainColor20}" Background="Transparent" BorderThickness="1" Grid.Column="3" Grid.Row="1" CornerRadius="20" Margin="10" Panel.ZIndex="2" MouseDown="DatePickerShow">
                             <Grid Margin="5, 0, 5, 0" PreviewMouseDown="DatePickerShow">
-                                <TextBlock Text="Туди" FontSize="23" Margin="6,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateA, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
+                                <TextBlock Text="Будь-яка" FontSize="23" Margin="6,0,0,0"  Foreground="{DynamicResource HintColor}" Opacity="0.6" VerticalAlignment="Center" Visibility="{Binding ElementName=DateA, Path=Text, Mode=OneWay, Converter={StaticResource TextToVisibilityConverter}}"/>
                                 <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PanningMode="HorizontalOnly" PreviewMouseWheel="ScrollViewer_PreviewHorizontalMouseWheel">
                                     <TextBlock x:Name="DateA" Grid.Column="1" Foreground="{DynamicResource Black}" Text="{Binding ElementName=DatePicker, Path=CheckedDays}" VerticalAlignment="Center" FontSize="25" FontFamily="Bahnschrift"/>
                                 </ScrollViewer>
