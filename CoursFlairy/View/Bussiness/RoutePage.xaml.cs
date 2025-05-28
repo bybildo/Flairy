@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace CoursFlairy.View.Bussiness
@@ -16,13 +17,13 @@ namespace CoursFlairy.View.Bussiness
     public partial class RoutePage : Page, INotifyPropertyChanged
     {
         private List<RouteStruct> _routes = new List<RouteStruct>();
-
         private string _routeName;
         private double _listItemHeight;
+        private RouteStruct _expandedRoute = null;
+
         public string RouteName { get => _routeName; set { _routeName = value; UpdateRoute(); OnPropertyChanged(nameof(RouteName)); } }
         public List<RouteStruct> Routes { get => _routes; set { _routes = value; OnPropertyChanged(nameof(Routes)); } }
         public double ListItemHeight { get => _listItemHeight; set { _listItemHeight = value; OnPropertyChanged(nameof(ListItemHeight)); } }
-
 
         public RoutePage()
         {
@@ -38,6 +39,151 @@ namespace CoursFlairy.View.Bussiness
         private void AddRoute_MouseDown(object sender, MouseButtonEventArgs e)
         {
             this.NavigationService.Navigate(new AddRoutePage());
+        }
+
+        private void RouteItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is RouteStruct routeStruct)
+            {
+                ToggleRouteExpansion(routeStruct, border);
+            }
+        }
+
+        private void ToggleRouteExpansion(RouteStruct routeStruct, Border clickedBorder)
+        {
+            // Find the ListBoxItem container
+            var listBoxItem = FindParent<ListBoxItem>(clickedBorder);
+            if (listBoxItem == null) return;
+
+            var template = listBoxItem.Template;
+            var expandedRow = template.FindName("ExpandedRow", listBoxItem) as RowDefinition;
+            var routeDetailsBorder = template.FindName("RouteDetailsBorder", listBoxItem) as Border;
+
+            if (expandedRow == null || routeDetailsBorder == null) return;
+
+            // Collapse all other routes first
+            foreach (var route in Routes)
+            {
+                if (route != routeStruct && route.IsExpanded)
+                {
+                    var otherItem = FindListBoxItemForRoute(route);
+                    if (otherItem != null)
+                    {
+                        var otherTemplate = otherItem.Template;
+                        var otherExpandedRow = otherTemplate.FindName("ExpandedRow", otherItem) as RowDefinition;
+                        var otherDetailsBorder = otherTemplate.FindName("RouteDetailsBorder", otherItem) as Border;
+                        if (otherExpandedRow != null && otherDetailsBorder != null)
+                        {
+                            otherExpandedRow.Height = new GridLength(0);
+                            otherDetailsBorder.Opacity = 0;
+                            route.IsExpanded = false;
+                        }
+                    }
+                }
+            }
+
+            if (routeStruct.IsExpanded)
+            {
+                // Collapse current route
+                expandedRow.Height = new GridLength(0);
+                routeDetailsBorder.Opacity = 0;
+                routeStruct.IsExpanded = false;
+                _expandedRoute = null;
+            }
+            else
+            {
+                // Expand current route
+                LoadRouteDetails(routeStruct);
+                expandedRow.Height = new GridLength(200);
+                routeDetailsBorder.Opacity = 1;
+                routeStruct.IsExpanded = true;
+                _expandedRoute = routeStruct;
+            }
+        }
+
+        private void LoadRouteDetails(RouteStruct routeStruct)
+        {
+            try
+            {
+                string query = @"
+                    SELECT r.ID, 
+                           dep_airport.ICAO as DepartureICAO, 
+                           arr_airport.ICAO as ArrivalICAO, 
+                           p.Name as PlaneName
+                    FROM Route r
+                    LEFT JOIN Plane p ON r.PlaneID = p.ID
+                    LEFT JOIN Airport dep_airport ON r.DepartureID = dep_airport.ID
+                    LEFT JOIN Airport arr_airport ON r.ArrivalID = arr_airport.ID
+                    WHERE r.Name = @routeName AND r.AirlineID = @airlineID";
+
+                using (SqlCommand command = new SqlCommand(query, DataBase.GetConnection()))
+                {
+                    command.Parameters.AddWithValue("@routeName", routeStruct.RouteName);
+                    command.Parameters.AddWithValue("@airlineID", CurrentAccount.id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            routeStruct.RouteId = reader.GetInt32(0);
+                            routeStruct.DepartureAirport = reader.IsDBNull(1) ? "Не вказано" : reader.GetString(1);
+                            routeStruct.ArrivalAirport = reader.IsDBNull(2) ? "Не вказано" : reader.GetString(2);
+                            routeStruct.PlaneName = reader.IsDBNull(3) ? "Не призначено" : reader.GetString(3);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження деталей маршруту: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private ListBoxItem FindListBoxItemForRoute(RouteStruct route)
+        {
+            var listBox = FindChild<ListBox>(this);
+            if (listBox == null) return null;
+
+            for (int i = 0; i < listBox.Items.Count; i++)
+            {
+                var item = listBox.ItemContainerGenerator.ContainerFromIndex(i) as ListBoxItem;
+                if (item?.DataContext == route)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        private static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+            while (parent != null && !(parent is T))
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+            return parent as T;
+        }
+
+        private static T FindChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T result)
+                {
+                    return result;
+                }
+                else
+                {
+                    var childResult = FindChild<T>(child);
+                    if (childResult != null)
+                        return childResult;
+                }
+            }
+            return null;
         }
 
         private void UpdateRoute()
@@ -178,8 +324,20 @@ namespace CoursFlairy.View.Bussiness
         {
             private string _routeName;
             private int _amountTime;
+            private bool _isExpanded = false;
+            private string _departureAirport;
+            private string _arrivalAirport;
+            private string _planeName;
+            private int _routeId;
+
             public string RouteName { get => _routeName; set { _routeName = value; OnPropertyChanged(nameof(RouteName)); } }
-            public int AmountTime { get => _amountTime; set { _amountTime = value; OnPropertyChanged(nameof(AmountTime)); } }
+            public int AmountTime { get => _amountTime; set { _amountTime = value; OnPropertyChanged(nameof(AmountTime)); OnPropertyChanged(nameof(TimeString)); } }
+            public bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(nameof(IsExpanded)); } }
+            public string DepartureAirport { get => _departureAirport; set { _departureAirport = value; OnPropertyChanged(nameof(DepartureAirport)); } }
+            public string ArrivalAirport { get => _arrivalAirport; set { _arrivalAirport = value; OnPropertyChanged(nameof(ArrivalAirport)); } }
+            public string PlaneName { get => _planeName; set { _planeName = value; OnPropertyChanged(nameof(PlaneName)); } }
+            public int RouteId { get => _routeId; set { _routeId = value; OnPropertyChanged(nameof(RouteId)); } }
+
             public string TimeString
             {
                 get
@@ -198,10 +356,10 @@ namespace CoursFlairy.View.Bussiness
                 }
             }
 
-            public RouteStruct(string name, int time)
+            public RouteStruct(string routeName, int amountTime)
             {
-                RouteName = name;
-                AmountTime = time;
+                RouteName = routeName;
+                AmountTime = amountTime;
             }
 
             public RouteStruct() { }

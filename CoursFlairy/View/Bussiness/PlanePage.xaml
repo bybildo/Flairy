@@ -80,13 +80,19 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Grid Height="{Binding ListItemHeight, RelativeSource={RelativeSource AncestorType={x:Type Page}}}" Margin="2, 1, 2, 30">
-                            <Border x:Name="Bd" CornerRadius="10" Background="{DynamicResource White}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                        <Grid x:Name="ItemGrid" Margin="2, 1, 2, 30">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="{Binding ListItemHeight, RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/>
+                                <RowDefinition x:Name="ExpandedRow" Height="0"/>
+                            </Grid.RowDefinitions>
+                            
+                            <Border x:Name="Bd" Grid.Row="0" CornerRadius="10" Background="{DynamicResource White}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" MouseDown="PlaneItem_MouseDown">
                                 <Border.Effect>
                                     <DropShadowEffect x:Name="ShadowEffect" BlurRadius="3" ShadowDepth="0.2" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
                                 </Border.Effect>
                             </Border>
-                            <Grid>
+                            
+                            <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="0.6*"/>
                                     <ColumnDefinition Width="26*"/>
@@ -192,6 +198,89 @@
                                     </Grid>
                                 </Grid>
                             </Grid>
+                            
+                            <!-- Expandable Cabin Layout Section -->
+                            <Border x:Name="CabinLayoutBorder" Grid.Row="1" CornerRadius="0,0,10,10" Background="{DynamicResource White}" BorderBrush="{DynamicResource MainColor20}" BorderThickness="1,0,1,1" Opacity="0" Margin="2,0,2,0">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="3" ShadowDepth="0.2" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                                </Border.Effect>
+                                <ScrollViewer x:Name="CabinLayoutScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="20" MaxHeight="300" MaxWidth="800">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <!-- Header -->
+                                        <TextBlock Grid.Row="0" Text="Схема салону" FontFamily="Bahnschrift" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource MainColor100}" Margin="0,0,0,15" HorizontalAlignment="Center"/>
+                                        
+                                        <!-- Cabin Layout with ScrollViewer -->
+                                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" MaxHeight="250" MaxWidth="750" PreviewMouseWheel="CabinScrollViewer_PreviewMouseWheel">
+                                            <Border Background="{DynamicResource EmptyColor}" CornerRadius="8" Padding="15" HorizontalAlignment="Center">
+                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                                    <Line Stroke="{DynamicResource MainColor100}" StrokeThickness="2" X2="{Binding CabinWidth}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+                                                    <ItemsControl ItemsSource="{Binding CabinLayout}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <ItemsControl ItemsSource="{Binding}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <UniformGrid Columns="{Binding DataContext.CabinColumns, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"/>
+                                                                        </ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Grid Width="{Binding WidthElement}" Height="{Binding HeightElement}" >
+                                                                                <Border Margin="7" CornerRadius="7" Background="{Binding PlaneLayoutColor}" Opacity="0.6"/>
+                                                                                <Border Margin="7" CornerRadius="7" BorderThickness="2" BorderBrush="{Binding PlaneLayoutColor}"/>
+
+                                                                                <Grid Background="Transparent">
+                                                                                    <Grid.RowDefinitions>
+                                                                                        <RowDefinition Height="1*"/>
+                                                                                        <RowDefinition Height="1.5*"/>
+                                                                                        <RowDefinition Height="0.9*"/>
+                                                                                    </Grid.RowDefinitions>
+
+                                                                                    <Viewbox Grid.Row="1">
+                                                                                        <TextBlock Text="{Binding SeatText}" Foreground="{DynamicResource EmptyColor}" FontFamily="Bahnschrift"/>
+                                                                                    </Viewbox>
+                                                                                </Grid>
+
+                                                                                <Grid>
+                                                                                    <Grid.Resources>
+                                                                                        <Style TargetType="Path">
+                                                                                            <Setter Property="Stretch" Value="Uniform"/>
+                                                                                            <Setter Property="Fill" Value="{DynamicResource EnterColor}"/>
+                                                                                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                                                                            <Setter Property="Margin" Value="-5"/>
+                                                                                            <Setter Property="Visibility" Value="{Binding PathVisiblity}"/>
+                                                                                        </Style>
+                                                                                    </Grid.Resources>
+
+                                                                                    <Grid.RowDefinitions>
+                                                                                        <RowDefinition Height="*"/>
+                                                                                        <RowDefinition Height="*"/>
+                                                                                        <RowDefinition Height="*"/>
+                                                                                        <RowDefinition Height="*"/>
+                                                                                    </Grid.RowDefinitions>
+
+                                                                                    <Path Grid.Row="1" Data="{DynamicResource arrow}" RenderTransform="{Binding PathAngleTransform}"/>
+                                                                                    <Path Grid.Row="2" Data="{DynamicResource arrow}" RenderTransform="{Binding PathAngleTransform}"/>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <Line Stroke="{DynamicResource MainColor100}" StrokeThickness="2" X2="{Binding CabinWidth}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
                         </Grid>
 
                         <ControlTemplate.Triggers>
@@ -223,6 +312,131 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="ScrollBarThumbVertical" TargetType="{x:Type Thumb}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Rectangle Margin="5, 0, -5,0 " x:Name="rectangle" Fill="{DynamicResource MainColor100}" RadiusX="4" RadiusY="4" Opacity="0.9" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ScrollBarThumbHorizontal" TargetType="{x:Type Thumb}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Rectangle Margin="0, 5, 0,-5 " x:Name="rectangle" Fill="{DynamicResource MainColor100}" RadiusX="4" RadiusY="4" Opacity="0.9" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ScrollBarButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1,0"/>
+            <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" SnapsToDevicePixels="true">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.02*"/>
+                                <RowDefinition Height="4*"/>
+                                <RowDefinition Height="0.02*"/>
+                            </Grid.RowDefinitions>
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Grid.Row="1"/>
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}" Grid.Row="1">
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource ScrollBarThumbVertical}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="Height" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+                    <Setter Property="MinHeight" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+                    <Setter Property="BorderThickness" Value="0,1"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                <Grid x:Name="Bg" SnapsToDevicePixels="true">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.02*"/>
+                                        <ColumnDefinition Width="4*"/>
+                                        <ColumnDefinition Width="0.02*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Track x:Name="PART_Track" Grid.Column="1" IsEnabled="{TemplateBinding IsMouseOver}">
+                                        <Track.Thumb>
+                                            <Thumb Style="{StaticResource ScrollBarThumbHorizontal}"/>
+                                        </Track.Thumb>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanHorizontallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" CanVerticallyScroll="False" Grid.Column="0" Content="{TemplateBinding Content}" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                            <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Page.Resources>
 
