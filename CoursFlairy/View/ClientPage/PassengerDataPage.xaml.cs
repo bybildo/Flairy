@@ -48,6 +48,10 @@ namespace CoursFlairy.View.ClientPage
         private bool _showQuickFillButtons = false;
         private bool _hasUsedQuickFill = false;
         private PassengerInfo _quickFilledPassenger = null;
+        private int _availablePoints;
+        private int _pointsToUse;
+        private decimal _finalAmount;
+        private bool _usePoints;
 
         public string DepartureCity { get => _departureCity; set { _departureCity = value; OnPropertyChanged(nameof(DepartureCity)); } }
         public string ArrivalCity { get => _arrivalCity; set { _arrivalCity = value; OnPropertyChanged(nameof(ArrivalCity)); } }
@@ -101,6 +105,57 @@ namespace CoursFlairy.View.ClientPage
             }
         }
 
+        public int AvailablePoints
+        {
+            get => _availablePoints;
+            set
+            {
+                _availablePoints = value;
+                OnPropertyChanged(nameof(AvailablePoints));
+            }
+        }
+
+        public int PointsToUse
+        {
+            get => _pointsToUse;
+            set
+            {
+                _pointsToUse = Math.Min(value, AvailablePoints);
+                _pointsToUse = Math.Min(_pointsToUse, (int)_totalSum);
+                OnPropertyChanged(nameof(PointsToUse));
+                OnPropertyChanged(nameof(FinalAmount));
+            }
+        }
+
+        public decimal FinalAmount
+        {
+            get => _totalSum - PointsToUse;
+            set
+            {
+                _finalAmount = value;
+                OnPropertyChanged(nameof(FinalAmount));
+            }
+        }
+
+        public bool UsePoints
+        {
+            get => _usePoints;
+            set
+            {
+                _usePoints = value;
+                OnPropertyChanged(nameof(UsePoints));
+                if (value)
+                {
+                    PointsToUse = Math.Min(AvailablePoints, (int)_totalSum);
+                }
+                else
+                {
+                    PointsToUse = 0;
+                }
+                OnPropertyChanged(nameof(FinalAmount));
+            }
+        }
+
         public PassengerDataPage(int flightId, List<Classes> passengerClasses)
         {
             InitializeComponent();
@@ -132,49 +187,54 @@ namespace CoursFlairy.View.ClientPage
                 {
                     var connection = DataBase.GetConnection();
                     var command = connection.CreateCommand();
-                    command.CommandText = "SELECT Email, Citizenship FROM [User] WHERE ID = @UserId";
+                    command.CommandText = "SELECT Email, Citizenship, Points FROM [User] WHERE ID = @UserId";
                     command.Parameters.AddWithValue("@UserId", CurrentAccount.id);
 
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            // Завантажуємо email
-                            if (!reader.IsDBNull(0))
-                            {
-                                Email = reader.GetString(0);
-                                _isUserLoggedIn = true;
-                                
-                                if (email != null)
-                                {
-                                    email.IsEnabled = false;
-                                    email.Text = Email;
-                                }
-                            }
+                            string userEmail = reader.IsDBNull(0) ? null : reader.GetString(0);
+                            int citizenship = reader.IsDBNull(1) ? -1 : reader.GetInt32(1);
+                            AvailablePoints = reader.IsDBNull(2) ? 0 : reader.GetInt32(2);
 
-                            // Перевіряємо наявність громадянства
-                            bool hasCitizenship = !reader.IsDBNull(1);
-                            ShowQuickFillButtons = hasCitizenship;
-                        }
-                        else
-                        {
-                            ShowQuickFillButtons = false;
+                            if (!string.IsNullOrEmpty(userEmail))
+                            {
+                                emailTextBox.Text = userEmail;
+                                emailTextBox.IsEnabled = false;
+                                _isUserLoggedIn = true;
+                                ShowQuickFillButtons = true;
+                                Email = userEmail;
+
+                                // Show points info if available
+                                pointsInfoPanel.Visibility = AvailablePoints > 0 ? 
+                                    Visibility.Visible : Visibility.Collapsed;
+                            }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    if (mainWindow != null)
-                    {
-                        mainWindow.GlobalMessage.Show($"Помилка завантаження email: {ex.Message}");
-                    }
-                    ShowQuickFillButtons = false;
+                    mainWindow?.GlobalMessage.Show($"Помилка завантаження даних користувача: {ex.Message}");
                 }
             }
             else
             {
                 ShowQuickFillButtons = false;
+                pointsInfoPanel.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void UsePointsCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            PointsToUse = Math.Min(AvailablePoints, (int)_totalSum);
+            OnPropertyChanged(nameof(FinalAmount));
+        }
+
+        private void UsePointsCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            PointsToUse = 0;
+            OnPropertyChanged(nameof(FinalAmount));
         }
 
         private void LoadFlightPrices()
@@ -376,8 +436,7 @@ namespace CoursFlairy.View.ClientPage
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             var selectPage = FindParent<SelectPage>(this);
 
-            selectPage.Clients = new List<PassportInfo>();
-            selectPage.HasBaggage = new List<bool>();
+            // Validate all passengers
             bool allPassengersValid = true;
             foreach (var passenger in Passengers)
             {
@@ -385,14 +444,6 @@ namespace CoursFlairy.View.ClientPage
                 {
                     allPassengersValid = false;
                     break;
-                }
-                else
-                {
-                    if (selectPage != null)
-                    {
-                        selectPage.Clients.Add(passenger.PassportData.GetPassportInfo());
-                        selectPage.HasBaggage.Add(passenger.HasBaggage);
-                    }
                 }
             }
 
@@ -417,10 +468,58 @@ namespace CoursFlairy.View.ClientPage
             if (selectPage != null)
             {
                 selectPage.Email = Email;
-                selectPage.Prices = Passengers.Select(p => p.CurrentPrice).ToList();
+                selectPage.Clients = Passengers.Select(p => p.PassportData.GetPassportInfo()).ToList();
+                selectPage.HasBaggage = Passengers.Select(p => p.HasBaggage).ToList();
                 selectPage.CurentPage = 5;
-                selectPage.PageManager.Navigate(new PaymentPage(TotalSum));
                 selectPage.FillPath(5);
+
+                // Create PaymentPage with points info
+                var paymentPage = new PaymentPage((double)FinalAmount);
+                
+                // Add points handling after successful payment
+                paymentPage.PaymentCompleted += async (s, success) => 
+                {
+                    if (success && CurrentAccount.id != -1 && CurrentAccount.accountType == AccountType.User)
+                    {
+                        try
+                        {
+                            using (var connection = DataBase.GetConnection())
+                            {
+                                // Якщо використовуються бали
+                                if (UsePoints && PointsToUse > 0)
+                                {
+                                    var deductPointsCommand = connection.CreateCommand();
+                                    deductPointsCommand.CommandText = @"
+                                        UPDATE [User] 
+                                        SET Points = Points - @PointsToUse 
+                                        WHERE ID = @UserId";
+                                    deductPointsCommand.Parameters.AddWithValue("@PointsToUse", PointsToUse);
+                                    deductPointsCommand.Parameters.AddWithValue("@UserId", CurrentAccount.id);
+                                    await deductPointsCommand.ExecuteNonQueryAsync();
+                                }
+
+                                // Додавання нових балів (1% від суми)
+                                var addPointsCommand = connection.CreateCommand();
+                                addPointsCommand.CommandText = @"
+                                    UPDATE [User] 
+                                    SET Points = Points + @NewPoints 
+                                    WHERE ID = @UserId";
+                                int newPoints = (int)(_totalSum * 0.01m);
+                                addPointsCommand.Parameters.AddWithValue("@NewPoints", newPoints);
+                                addPointsCommand.Parameters.AddWithValue("@UserId", CurrentAccount.id);
+                                await addPointsCommand.ExecuteNonQueryAsync();
+
+                                mainWindow.GlobalMessage.Show($"Додано {newPoints} балів за покупку!", 3);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            mainWindow.GlobalMessage.Show($"Помилка при обробці балів: {ex.Message}", 3);
+                        }
+                    }
+                };
+
+                selectPage.PageManager.Navigate(paymentPage);
             }
         }
 

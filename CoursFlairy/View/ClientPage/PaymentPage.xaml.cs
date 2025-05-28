@@ -39,10 +39,12 @@ namespace CoursFlairy.View.ClientPage
         private ICommand _payCommand;
         private ICommand _returnHomeCommand;
         private bool isFormatting = false;
+        public event EventHandler<bool> PaymentCompleted;
 
         public PaymentPage(double amount)
         {
             InitializeComponent();
+            _amount = (decimal)amount;
             Amount = (decimal)amount;
             PayCommand = new RelayCommand(ProcessPayment, _ => CanProcessPayment());
             ReturnHomeCommand = new RelayCommand(_ => { ReturnHome(); return Task.CompletedTask; });
@@ -159,6 +161,8 @@ namespace CoursFlairy.View.ClientPage
 
         private async Task ProcessPayment(object parameter)
         {
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+
             try
             {
                 // Показуємо процес обробки
@@ -187,9 +191,51 @@ namespace CoursFlairy.View.ClientPage
                 }
                 parent.TicketId = ticketId;
 
+                // Додаємо бали користувачу якщо він авторизований
+                if (CurrentAccount.id != -1 && CurrentAccount.accountType == AccountType.User)
+                {
+                    try
+                    {
+                        // Рахуємо 1% від загальної суми
+                        decimal pointsToAdd = Math.Floor(Amount * 0.01m);
+                        
+                        string updatePointsQuery = @"
+                            UPDATE [User] 
+                            SET Points = ISNULL(Points, 0) + @PointsToAdd 
+                            WHERE ID = @UserId;
+                            
+                            SELECT Points 
+                            FROM [User] 
+                            WHERE ID = @UserId;";
+
+                        using (SqlCommand command = new SqlCommand(updatePointsQuery, DataBase.GetConnection()))
+                        {
+                            command.Parameters.AddWithValue("@UserId", CurrentAccount.id);
+                            command.Parameters.AddWithValue("@PointsToAdd", pointsToAdd);
+
+                            using (var reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    int totalPoints = reader.GetInt32(0);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        mainWindow?.GlobalMessage.Show($"Помилка при нарахуванні балів: {ex.Message}", 3);
+                    }
+                }
+
                 parent.FillPath(6);
                 parent.CurentPage = 6;
                 parent.PageManager.Navigate(new TicketPage(parent.TicketId));
+
+                // Simulate successful payment
+                PaymentCompleted?.Invoke(this, true);
+                
+                mainWindow?.GlobalMessage.Show("Оплата пройшла успішно!", 3);
             }
             catch (Exception ex)
             {
