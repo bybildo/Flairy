@@ -198,7 +198,7 @@ namespace CoursFlairy.View.ClientPage
                     {
                         // Рахуємо 1% від загальної суми
                         decimal pointsToAdd = Math.Floor(Amount * 0.01m);
-                        
+
                         string updatePointsQuery = @"
                             UPDATE [User] 
                             SET Points = ISNULL(Points, 0) + @PointsToAdd 
@@ -234,8 +234,6 @@ namespace CoursFlairy.View.ClientPage
 
                 // Simulate successful payment
                 PaymentCompleted?.Invoke(this, true);
-                
-                mainWindow?.GlobalMessage.Show("Оплата пройшла успішно!", 3);
             }
             catch (Exception ex)
             {
@@ -394,10 +392,10 @@ namespace CoursFlairy.View.ClientPage
             var textBox = (TextBox)sender;
             var cursorPosition = textBox.CaretIndex;
             var currentText = textBox.Text;
-            
+
             // Видаляємо всі пробіли та залишаємо тільки цифри
             var digitsOnly = new string(currentText.Where(char.IsDigit).ToArray());
-            
+
             // Обмежуємо до 16 цифр
             if (digitsOnly.Length > 16)
             {
@@ -431,7 +429,7 @@ namespace CoursFlairy.View.ClientPage
                     digitsBeforeCursor++;
                 }
             }
-            
+
             // Знаходимо нову позицію курсора у форматованому тексті
             int newCursorPosition = 0;
             int digitCount = 0;
@@ -451,7 +449,7 @@ namespace CoursFlairy.View.ClientPage
                     newCursorPosition = i + 1;
                 }
             }
-            
+
             // Якщо курсор був в самому кінці, ставимо його в кінець
             if (cursorPosition >= currentText.Length)
             {
@@ -460,11 +458,11 @@ namespace CoursFlairy.View.ClientPage
 
             // Встановлюємо прапорець форматування
             isFormatting = true;
-            
+
             // Оновлюємо текст і позицію курсора
             textBox.Text = formattedText;
             textBox.CaretIndex = Math.Min(newCursorPosition, formattedText.Length);
-            
+
             // Знімаємо прапорець форматування  
             isFormatting = false;
 
@@ -527,7 +525,7 @@ namespace CoursFlairy.View.ClientPage
         {
             var textBox = (TextBox)sender;
             var currentTextWithoutSpaces = textBox.Text.Replace(" ", "");
-            
+
             // Заборонити пробіли та будь-які не-цифрові символи
             if (!new Regex("[0-9]").IsMatch(e.Text) || e.Text == " ")
             {
@@ -577,7 +575,7 @@ namespace CoursFlairy.View.ClientPage
         private void CvvValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             var textBox = (TextBox)sender;
-            
+
             // Заборонити пробіли та будь-які не-цифрові символи
             if (!new Regex("[0-9]").IsMatch(e.Text) || e.Text == " ")
             {

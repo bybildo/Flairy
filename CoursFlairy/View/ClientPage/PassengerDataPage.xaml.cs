@@ -266,7 +266,10 @@ namespace CoursFlairy.View.ClientPage
                         r.BackpackIncluded,
                         pe.Baggage as EconomyBaggage,
                         pb.Baggage as BusinessBaggage,
-                        pf.Baggage as FirstBaggage
+                        pf.Baggage as FirstBaggage,
+                        pe.BaggageIncluded as EconomyBaggageIncluded,
+                        pb.BaggageIncluded as BusinessBaggageIncluded,
+                        pf.BaggageIncluded as FirstBaggageIncluded
                     FROM Flight f
                     JOIN Route r ON f.RouteID = r.ID
                     JOIN Airport depAir ON r.DepartureID = depAir.ID
@@ -282,38 +285,41 @@ namespace CoursFlairy.View.ClientPage
                 {
                     if (reader.Read())
                     {
-                        DepartureTime = reader.GetDateTime(0);
-                        ArrivalTime = reader.GetDateTime(1);
-                        DepartureCity = reader.GetString(2);
-                        ArrivalCity = reader.GetString(3);
-                        DepartureIcao = reader.GetString(4);
-                        ArrivalIcao = reader.GetString(5);
+                        DepartureTime = !reader.IsDBNull(0) ? reader.GetDateTime(0) : DateTime.MinValue;
+                        ArrivalTime = !reader.IsDBNull(1) ? reader.GetDateTime(1) : DateTime.MinValue;
+                        DepartureCity = !reader.IsDBNull(2) ? reader.GetString(2) : string.Empty;
+                        ArrivalCity = !reader.IsDBNull(3) ? reader.GetString(3) : string.Empty;
+                        DepartureIcao = !reader.IsDBNull(4) ? reader.GetString(4) : string.Empty;
+                        ArrivalIcao = !reader.IsDBNull(5) ? reader.GetString(5) : string.Empty;
 
                         var economyPrices = new PriceCategories(
-                            reader.GetDecimal(6),
-                            reader.GetDecimal(7),
-                            reader.GetDecimal(8),
-                            reader.GetDecimal(9)
+                            !reader.IsDBNull(6) ? reader.GetDecimal(6) : 0,
+                            !reader.IsDBNull(7) ? reader.GetDecimal(7) : 0,
+                            !reader.IsDBNull(8) ? reader.GetDecimal(8) : 0,
+                            !reader.IsDBNull(9) ? reader.GetDecimal(9) : 0
                         );
 
                         var businessPrices = new PriceCategories(
-                            reader.GetDecimal(10),
-                            reader.GetDecimal(11),
-                            reader.GetDecimal(12),
-                            reader.GetDecimal(13)
+                            !reader.IsDBNull(10) ? reader.GetDecimal(10) : 0,
+                            !reader.IsDBNull(11) ? reader.GetDecimal(11) : 0,
+                            !reader.IsDBNull(12) ? reader.GetDecimal(12) : 0,
+                            !reader.IsDBNull(13) ? reader.GetDecimal(13) : 0
                         );
 
                         var firstPrices = new PriceCategories(
-                            reader.GetDecimal(14),
-                            reader.GetDecimal(15),
-                            reader.GetDecimal(16),
-                            reader.GetDecimal(17)
+                            !reader.IsDBNull(14) ? reader.GetDecimal(14) : 0,
+                            !reader.IsDBNull(15) ? reader.GetDecimal(15) : 0,
+                            !reader.IsDBNull(16) ? reader.GetDecimal(16) : 0,
+                            !reader.IsDBNull(17) ? reader.GetDecimal(17) : 0
                         );
 
-                        bool backpackIncluded = reader.GetBoolean(18);
+                        bool backpackIncluded = !reader.IsDBNull(18) && reader.GetBoolean(18);
                         decimal economyBaggage = !reader.IsDBNull(19) ? reader.GetDecimal(19) : 0;
                         decimal businessBaggage = !reader.IsDBNull(20) ? reader.GetDecimal(20) : 0;
                         decimal firstBaggage = !reader.IsDBNull(21) ? reader.GetDecimal(21) : 0;
+                        bool economyBaggageIncluded = !reader.IsDBNull(22) && reader.GetBoolean(22);
+                        bool businessBaggageIncluded = !reader.IsDBNull(23) && reader.GetBoolean(23);
+                        bool firstBaggageIncluded = !reader.IsDBNull(24) && reader.GetBoolean(24);
 
                         foreach (var passenger in Passengers)
                         {
@@ -322,17 +328,17 @@ namespace CoursFlairy.View.ClientPage
                                 case Classes.Econom:
                                     passenger.SetPrices(economyPrices);
                                     passenger.BaggagePrice = economyBaggage;
-                                    passenger.BaggageAvailable = economyBaggage > 0;
+                                    passenger.BaggageAvailable = economyBaggageIncluded;
                                     break;
                                 case Classes.Bussiness:
                                     passenger.SetPrices(businessPrices);
                                     passenger.BaggagePrice = businessBaggage;
-                                    passenger.BaggageAvailable = businessBaggage > 0;
+                                    passenger.BaggageAvailable = businessBaggageIncluded;
                                     break;
                                 case Classes.First:
                                     passenger.SetPrices(firstPrices);
                                     passenger.BaggagePrice = firstBaggage;
-                                    passenger.BaggageAvailable = firstBaggage > 0;
+                                    passenger.BaggageAvailable = firstBaggageIncluded;
                                     break;
                             }
                             passenger.BackpackIncluded = backpackIncluded;
@@ -813,7 +819,17 @@ namespace CoursFlairy.View.ClientPage
                 }
             }
 
-            public string FormattedBaggagePrice => BaggagePrice > 0 ? $"+ {BaggagePrice:N0} грн" : "Включено";
+            public string FormattedBaggagePrice
+            {
+                get
+                {
+                    if (!BaggageAvailable)
+                        return "Заборонено";
+                    if (BaggagePrice == 0)
+                        return "Безкоштовно";
+                    return $"+ {BaggagePrice:N0} грн";
+                }
+            }
 
             public UserPassportData PassportData
             {

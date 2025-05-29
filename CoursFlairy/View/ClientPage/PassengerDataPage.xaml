@@ -17,6 +17,7 @@
         <mainconverter:OpacityToVisiblityConverter x:Key="OpacityToVisiblityConverter"/>
         <businessconverter:BoolToVisiblityConverter x:Key="BoolToVisiblityConverter"/>
         <businessconverter:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+        <businessconverter:BoolToTextConverter x:Key="BoolToTextConverter"/>
     </Page.Resources>
 
     <ScrollViewer Grid.Column="1" VerticalAlignment="Top" VerticalScrollBarVisibility="Hidden" Focusable="False">
@@ -167,8 +168,7 @@
                                         <!-- Backpack Info -->
                                         <Border Background="#F8F9FA" 
                                                 CornerRadius="8" 
-                                                Padding="15,12"
-                                                Visibility="{Binding BackpackIncluded, Converter={StaticResource BoolToVisiblityConverter}}">
+                                                Padding="15,12">
                                             <StackPanel>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -179,18 +179,14 @@
                                                     <Border Width="40" Height="40" 
                                                             Background="{DynamicResource MainColor20}" 
                                                             CornerRadius="8">
-                                                        <TextBlock Text="✓" 
-                                                                 FontSize="20" 
-                                                                 Foreground="{DynamicResource MainColor100}"
-                                                                 HorizontalAlignment="Center"
-                                                                 VerticalAlignment="Center"/>
+                                                        <Path Stretch="Uniform" Fill="{DynamicResource MainColor100}"  Width="24" Height="24" Data="{DynamicResource backpack}"/>
                                                     </Border>
 
                                                     <StackPanel Grid.Column="1" Margin="15,0,0,0">
                                                         <TextBlock Text="Ручна поклажа" 
                                                                  FontSize="16" 
                                                                  FontWeight="SemiBold"/>
-                                                        <TextBlock Text="Включено у вартість квитка" 
+                                                        <TextBlock Text="{Binding BackpackIncluded, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Дозволено|Заборонено'}" 
                                                                  FontSize="14" 
                                                                  Foreground="#666666"
                                                                  Margin="0,4,0,0"/>
@@ -203,8 +199,7 @@
                                         <Border Background="#F8F9FA" 
                                                 CornerRadius="8" 
                                                 Padding="15,12"
-                                                Margin="0,10,0,0"
-                                                Visibility="{Binding BaggageAvailable, Converter={StaticResource BoolToVisiblityConverter}}">
+                                                Margin="0,10,0,0">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
@@ -215,12 +210,7 @@
                                                 <Border Width="40" Height="40" 
                                                         Background="{DynamicResource MainColor20}" 
                                                         CornerRadius="8">
-                                                    <Path Data="M20.5,6.5L21.5,7.5L16.5,12.5L21.5,17.5L20.5,18.5L15.5,13.5L10.5,18.5L9.5,17.5L14.5,12.5L9.5,7.5L10.5,6.5L15.5,11.5L20.5,6.5Z" 
-                                                          Fill="{DynamicResource MainColor100}"
-                                                          Width="24" Height="24"
-                                                          Stretch="Uniform"
-                                                          HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center"/>
+                                                    <Path Stretch="Uniform" Fill="{DynamicResource MainColor100}" Width="24" Height="24" Data="{DynamicResource big suitcase}"/>
                                                 </Border>
 
                                                 <StackPanel Grid.Column="1" Margin="15,0,0,0">
@@ -245,7 +235,8 @@
                                                              VerticalAlignment="Center"/>
                                                     
                                                     <CheckBox IsChecked="{Binding HasBaggage}"
-                                                              VerticalAlignment="Center">
+                                                              VerticalAlignment="Center"
+                                                              IsEnabled="{Binding BaggageAvailable}">
                                                         <CheckBox.Style>
                                                             <Style TargetType="CheckBox">
                                                                 <Setter Property="Template">
