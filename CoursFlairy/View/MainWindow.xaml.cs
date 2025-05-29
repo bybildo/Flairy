@@ -22,8 +22,14 @@ namespace CoursFlairy.View
         public MainWindow()
         {
             InitializeComponent();
+            this.Loaded += MainWindow_Loaded;
             AutoScreen();
             GlobalMessage.Visibility = Visibility.Visible;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await UpdateFlightStatusesAsync();
         }
 
         private async void Form1_Load(object sender, RoutedEventArgs e)
@@ -33,6 +39,8 @@ namespace CoursFlairy.View
 
             if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
                 PageManager.Navigate(new BussinessControlPage());
+            else if (CurrentAccount.accountType == Model.Enum.AccountType.Admin)
+                PageManager.Navigate(new Admin.AdminPage());
             else
             {
                 PageManager.Navigate(new SearchPage());
@@ -243,6 +251,8 @@ namespace CoursFlairy.View
 
             if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
                 PageManager.Navigate(new BussinessControlPage());
+            else if (CurrentAccount.accountType == Model.Enum.AccountType.Admin)
+                PageManager.Navigate(new Admin.AdminPage());
             else 
                 PageManager.Navigate(new SearchPage());
         }
@@ -253,6 +263,8 @@ namespace CoursFlairy.View
             {
                 if (CurrentAccount.accountType == Model.Enum.AccountType.Bussines)
                     PageManager.Navigate(new BussinessControlPage());
+                else if (CurrentAccount.accountType == Model.Enum.AccountType.Admin)
+                    PageManager.Navigate(new Admin.AdminPage());
                 else
                     PageManager.Navigate(new UserControlPage());
             }
@@ -271,5 +283,95 @@ namespace CoursFlairy.View
             this.WindowState = WindowState.Minimized;
         }
         #endregion
+
+        private async Task UpdateFlightStatusesAsync()
+        {
+            try
+            {
+                var connection = DataBase.GetConnection();
+
+                // 1. Scheduled (1) -> In progress (2)
+                string updateInProgress = @"
+                    UPDATE Flight
+                    SET Status = 2
+                    WHERE Status = 1 AND DTime <= @now
+                ";
+                using (var cmd = new Microsoft.Data.SqlClient.SqlCommand(updateInProgress, connection))
+                {
+                    cmd.Parameters.AddWithValue("@now", DateTime.Now);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                // 2. In progress (2) -> Completed (3)
+                // Спочатку вибираємо всі рейси, які треба оновити
+                string selectFlights = @"
+                    SELECT f.ID
+                    FROM Flight f
+                    INNER JOIN Route r ON f.RouteID = r.ID
+                    WHERE f.Status = 2 AND DATEADD(MINUTE, r.AmountTime, f.DTime) <= @now
+                ";
+                using (var selectCmd = new Microsoft.Data.SqlClient.SqlCommand(selectFlights, connection))
+                {
+                    selectCmd.Parameters.AddWithValue("@now", DateTime.Now);
+                    using (var reader = await selectCmd.ExecuteReaderAsync())
+                    {
+                        var idsToUpdate = new List<int>();
+                        while (await reader.ReadAsync())
+                        {
+                            idsToUpdate.Add(reader.GetInt32(0));
+                        }
+                        reader.Close();
+
+                        foreach (var id in idsToUpdate)
+                        {
+                            string updateCmdText = "UPDATE Flight SET Status = 3 WHERE ID = @id";
+                            using (var updateCmd = new Microsoft.Data.SqlClient.SqlCommand(updateCmdText, connection))
+                            {
+                                updateCmd.Parameters.AddWithValue("@id", id);
+                                await updateCmd.ExecuteNonQueryAsync();
+                            }
+                        }
+                    }
+                }
+
+                // 3. Check for flights with no tickets and update to cancelled (4)
+                string selectNoTicketsFlights = @"
+                    SELECT f.ID
+                    FROM Flight f
+                    LEFT JOIN Ticket t ON f.ID = t.FlightID
+                    WHERE f.Status IN (1, 2) -- Check only Scheduled or In Progress flights
+                    AND t.ID IS NULL -- No tickets sold
+                    AND DATEADD(DAY, -1, f.DTime) <= @now -- Check flights within 24 hours of departure
+                    GROUP BY f.ID";
+
+                using (var selectCmd = new Microsoft.Data.SqlClient.SqlCommand(selectNoTicketsFlights, connection))
+                {
+                    selectCmd.Parameters.AddWithValue("@now", DateTime.Now);
+                    using (var reader = await selectCmd.ExecuteReaderAsync())
+                    {
+                        var idsToCancel = new List<int>();
+                        while (await reader.ReadAsync())
+                        {
+                            idsToCancel.Add(reader.GetInt32(0));
+                        }
+                        reader.Close();
+
+                        foreach (var id in idsToCancel)
+                        {
+                            string updateCmdText = "UPDATE Flight SET Status = 4 WHERE ID = @id";
+                            using (var updateCmd = new Microsoft.Data.SqlClient.SqlCommand(updateCmdText, connection))
+                            {
+                                updateCmd.Parameters.AddWithValue("@id", id);
+                                await updateCmd.ExecuteNonQueryAsync();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 }

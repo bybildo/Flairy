@@ -50,6 +50,18 @@ namespace CoursFlairy.View.UI
         private void LoginProcces()
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
+
+            // Check for admin login
+            if (login.Text == "admin" && password.Password == "12345678")
+            {
+                CurrentAccount.Set(Model.Enum.AccountType.Admin, -1);
+                mainWindow.PageManager.Navigate(new Admin.AdminPage());
+                HideLogin();
+                login.Text = "";
+                password.Password = "";
+                return;
+            }
+
             string? forquery = null;
 
             if (Regex.IsMatch(login.Text, emailPattern))
