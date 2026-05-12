@@ -1,5 +1,64 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="1,-1" >
+        <LinearGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                <RotateTransform Angle="14.036" CenterX="0.5" CenterY="0.5"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </LinearGradientBrush.RelativeTransform>
+        <GradientStop Color="#FF0F39CE" Offset="-0.2"/>
+        <GradientStop Color="#FF116FF5" Offset="1"/>
+    </LinearGradientBrush>
+
+    <RadialGradientBrush x:Key="SearchPageGradient" GradientOrigin="0.5,0.7" Center="0.5,0.8" RadiusX="0.7" RadiusY="0.4" SpreadMethod="Pad" Opacity="1">
+        <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="3"/>
+                <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </RadialGradientBrush.RelativeTransform>
+        <GradientStop Color="#FF2F66B5" Offset="0.583"/>
+        <GradientStop Color="#FF78A4F3" Offset="0.035"/>
+        <GradientStop Color="#FF3A27B2" Offset="0.946"/>
+        <GradientStop Color="#FF35249E" Offset="1"/>
+    </RadialGradientBrush>
+
+    <Color x:Key="ForRegistrationGradient1">#253DD1</Color>
+    <SolidColorBrush x:Key="ForRegistrationGradient1Brush" Color="{StaticResource ForRegistrationGradient1}"/>
+    <Color x:Key="ForRegistrationGradient2">#6c8eb9</Color>
+    
+    <SolidColorBrush x:Key="Black" Color="Black"/>
+    <SolidColorBrush x:Key="White" Color="White"/>
+    <SolidColorBrush x:Key="MainColor100" Color="Navy"/>
+    <SolidColorBrush x:Key="MainColor50" Color="Blue"/>
+    <SolidColorBrush x:Key="MainColor30" Color="DeepSkyBlue"/>
+    <SolidColorBrush x:Key="MainColor20" Color="LightBlue"/>
+    <SolidColorBrush x:Key="MainColor10" Color="LightGray"/>
+    <SolidColorBrush x:Key="PriceBackgroundColor" Color="#F5F8FA"/>
+    <SolidColorBrush x:Key="PriceHoverColor" Color="#EDF1F5"/>
+    <SolidColorBrush x:Key="HighlightingSelectionMainWindow" Color="#25ADD8E6"/>
+    <SolidColorBrush x:Key="HintColor" Color="LightSlateGray"/>
+    <SolidColorBrush x:Key="DatePickerGray" Color="Gray"/>
+    <SolidColorBrush x:Key="DatePickerAdditionalBackground" Color="Lavender"/>
+    <SolidColorBrush x:Key="CloudColor" Color="#cce1f4"/>
+    
+    <SolidColorBrush x:Key="EconomColor" Color="DeepSkyBlue"/>
+    <SolidColorBrush x:Key="BussinessColor" Color="Blue"/>
+    <SolidColorBrush x:Key="FirstColor" Color="Navy"/>
+    <SolidColorBrush x:Key="EnterColor" Color="LimeGreen"/>
+    <SolidColorBrush x:Key="WCColor" Color="DarkSlateBlue"/>
+    <SolidColorBrush x:Key="EmptyColor" Color="#ebf5f7"/>
+    <SolidColorBrush x:Key="EmptyButtonColor" Color="#ccf7ff"/>
+    
+    <Color x:Key="Shadow">Black</Color>
+
+
     <!--
     
     <Style/> Style="{DunamicResource Name}"

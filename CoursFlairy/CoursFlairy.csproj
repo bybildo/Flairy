@@ -9,7 +9,39 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Images\CategoryOfPeople\**" />
+    <Compile Remove="Data\Images\Clouds\**" />
+    <EmbeddedResource Remove="Data\Images\CategoryOfPeople\**" />
+    <EmbeddedResource Remove="Data\Images\Clouds\**" />
+    <None Remove="Data\Images\CategoryOfPeople\**" />
+    <None Remove="Data\Images\Clouds\**" />
+    <Page Remove="Data\Images\CategoryOfPeople\**" />
+    <Page Remove="Data\Images\Clouds\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Images\adult 1.png" />
+    <None Remove="Data\Images\Arrow.svg" />
+    <None Remove="Data\Images\baby 1.png" />
+    <None Remove="Data\Images\child 1.png" />
+    <None Remove="Data\Images\pensioner 1.png" />
+    <None Remove="Themes\Fonts\0_BlackerSansProVariableGX.ttf" />
+    <None Remove="Themes\Fonts\BleekerCyrillic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Themes\Fonts\0_BlackerSansProVariableGX.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Themes\Fonts\BleekerCyrillic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.4.2" />
   </ItemGroup>
 
   <ItemGroup>

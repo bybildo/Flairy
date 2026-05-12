@@ -1,0 +1,94 @@
+﻿<Page x:Class="CoursFlairy.View.SelectPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
+      xmlns:local="clr-namespace:CoursFlairy.View"
+      mc:Ignorable="d" 
+      d:DesignHeight="850" d:DesignWidth="1600" 
+      Title="SelectPage">
+
+    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource MainColor100}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="FontFamily" Value="Bahnschrift"/>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="15*"/>
+        </Grid.RowDefinitions>
+
+        <Frame x:Name="PageManager" Grid.Row="1" NavigationUIVisibility="Hidden" Source="ClientPage/FlightPage.xaml"/>
+        <Grid Grid.Row="0">
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="9" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.1" />
+            </Grid.Effect>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+
+            <Path x:Name="Path1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Stretch="Fill" Data="{DynamicResource searchArrow start}" Fill="{DynamicResource White}" Stroke="{DynamicResource MainColor10}" StrokeThickness="1.7"/>
+            <Viewbox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-25,8,8,8">
+                <TextBlock x:Name="Text1" Text="Фільтри"/>
+            </Viewbox>
+            <Grid x:Name="ClickArea1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Background="Transparent" MouseLeftButtonDown="ClickArea_MouseLeftButtonDown" Cursor="Hand"/>
+
+            <Path x:Name="Path2" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Stretch="Fill" Data="{DynamicResource searchArrow}" Fill="{DynamicResource White}" Stroke="{DynamicResource MainColor10}" StrokeThickness="1.7"/>
+            <Viewbox Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8">
+                <TextBlock x:Name="Text2" Text="Рейси"/>
+            </Viewbox>
+            <Grid x:Name="ClickArea2" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Background="Transparent" MouseLeftButtonDown="ClickArea_MouseLeftButtonDown" Cursor="Hand"/>
+            
+            <Path x:Name="Path3" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="3" Stretch="Fill" Data="{DynamicResource searchArrow}" Fill="{DynamicResource White}" Stroke="{DynamicResource MainColor10}" StrokeThickness="1.7"/>
+            <Viewbox Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8">
+                <TextBlock x:Name="Text3" Text="Місця"/>
+            </Viewbox>
+            <Grid x:Name="ClickArea3" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="3" Background="Transparent" MouseLeftButtonDown="ClickArea_MouseLeftButtonDown" Cursor="Hand"/>
+            
+            <Path x:Name="Path4" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="3" Stretch="Fill" Data="{DynamicResource searchArrow}" Fill="{DynamicResource White}" Stroke="{DynamicResource MainColor10}" StrokeThickness="1.7"/>
+            <Viewbox Grid.Row="1" Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8">
+                <TextBlock x:Name="Text4" Text="Дані"/>
+            </Viewbox>
+            <Grid x:Name="ClickArea4" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="3" Background="Transparent" MouseLeftButtonDown="ClickArea_MouseLeftButtonDown" Cursor="Hand"/>
+
+            <Path x:Name="Path5" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="3" Stretch="Fill" Data="{DynamicResource searchArrow}" Fill="{DynamicResource White}" Stroke="{DynamicResource MainColor10}" StrokeThickness="1.7"/>
+            <Viewbox Grid.Row="1" Grid.Column="10" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8">
+                <TextBlock x:Name="Text5" Text="Оплата"/>
+            </Viewbox>
+            <Grid x:Name="ClickArea5" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="3" Background="Transparent" MouseLeftButtonDown="ClickArea_MouseLeftButtonDown" Cursor="Hand"/>
+            
+            <Path x:Name="Path6" Grid.Row="1" Grid.Column="11" Grid.ColumnSpan="3" Stretch="Fill" Data="{DynamicResource searchArrow}" Fill="{DynamicResource White}" Stroke="{DynamicResource MainColor10}" StrokeThickness="1.7"/>
+            <Viewbox Grid.Row="1" Grid.Column="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8">
+                <TextBlock x:Name="Text6" Text="Квиток"/>
+            </Viewbox>
+            <Grid x:Name="ClickArea6" Grid.Row="1" Grid.Column="11" Grid.ColumnSpan="3" Background="Transparent" MouseLeftButtonDown="ClickArea_MouseLeftButtonDown" Cursor="Hand"/>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,263 @@
+<Page x:Class="CoursFlairy.View.Admin.AdminPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Адміністрування аеропортів">
+
+    <Page.Resources>
+        <!-- Define effects first -->
+        <DropShadowEffect x:Key="MaterialShadow" 
+                         BlurRadius="10" 
+                         Direction="270" 
+                         ShadowDepth="2" 
+                         Color="#20000000"/>
+
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="2" Background="Transparent"/>
+                <Path Grid.Column="1" 
+                      Fill="#424242"
+                      Data="M0,0 L5,5 L10,0"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Stretch="Uniform"
+                      Width="10"
+                      Height="6"/>
+            </Grid>
+        </ControlTemplate>
+
+        <!-- Then define styles that might use those effects -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ModernGroupBox" TargetType="GroupBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border Background="White" 
+                                CornerRadius="8" 
+                                Padding="15"
+                                Margin="0,0,0,20"
+                                Effect="{StaticResource MaterialShadow}">
+                            <StackPanel>
+                                <TextBlock Text="{TemplateBinding Header}" 
+                                         FontSize="18" 
+                                         FontWeight="SemiBold" 
+                                         Margin="0,0,0,15"/>
+                                <ContentPresenter/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Кнопка виходу -->
+        <Button Content="Вийти з акаунту"
+                Grid.Row="0"
+                HorizontalAlignment="Right"
+                Style="{StaticResource ModernButton}"
+                Background="#dc3545"
+                Margin="0,0,0,20"
+                Click="LogoutButton_Click"/>
+
+        <!-- Форма додавання аеропорту -->
+        <GroupBox Header="Додати новий аеропорт" 
+                Grid.Row="1" 
+                Style="{StaticResource ModernGroupBox}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                    <TextBlock Text="Назва аеропорту" 
+                             Margin="0,0,0,8" 
+                             Foreground="#424242"/>
+                    <TextBox Text="{Binding NewAirportName, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBox}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="0,0,15,0">
+                    <TextBlock Text="Місто" 
+                             Margin="0,0,0,8" 
+                             Foreground="#424242"/>
+                    <TextBox Text="{Binding NewAirportCity, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBox}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Margin="0,0,15,0">
+                    <TextBlock Text="ICAO код" 
+                             Margin="0,0,0,8" 
+                             Foreground="#424242"/>
+                    <TextBox Text="{Binding NewAirportICAO, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBox}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3" Margin="0,0,15,0">
+                    <TextBlock Text="Країна" 
+                             Margin="0,0,0,8" 
+                             Foreground="#424242"/>
+                    <ComboBox ItemsSource="{Binding Countries}"
+                            SelectedItem="{Binding SelectedCountry}"
+                            DisplayMemberPath="Name"
+                            Height="35"
+                            Padding="8,5">
+                        <ComboBox.Resources>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ComboBox">
+                                            <Grid>
+                                                <Border Background="White"
+                                                        BorderBrush="#E0E0E0"
+                                                        BorderThickness="1"
+                                                        CornerRadius="4">
+                                                    <Grid>
+                                                        <ToggleButton IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                    Template="{StaticResource ComboBoxToggleButton}"/>
+                                                        <ContentPresenter IsHitTestVisible="False" 
+                                                                        Content="{TemplateBinding SelectionBoxItem}"
+                                                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                                        Margin="10,0,30,0"
+                                                                        VerticalAlignment="Center"/>
+                                                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                                               Placement="Bottom"
+                                                               PopupAnimation="Slide">
+                                                            <Grid MinWidth="{TemplateBinding ActualWidth}"
+                                                                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                                <Border Background="White"
+                                                                        BorderBrush="#E0E0E0"
+                                                                        BorderThickness="1"
+                                                                        CornerRadius="4"
+                                                                        Margin="0,4,0,0">
+                                                                    <ScrollViewer SnapsToDevicePixels="True">
+                                                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                                                    </ScrollViewer>
+                                                                </Border>
+                                                            </Grid>
+                                                        </Popup>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ComboBox.Resources>
+                    </ComboBox>
+                </StackPanel>
+
+                <Button Grid.Column="4" 
+                        Content="Додати" 
+                        Click="AddAirport_Click"
+                        Style="{StaticResource ModernButton}"
+                        VerticalAlignment="Bottom"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Список аеропортів -->
+        <GroupBox Header="Список аеропортів" 
+                Grid.Row="2" 
+                Style="{StaticResource ModernGroupBox}">
+            <DataGrid ItemsSource="{Binding Airports}" 
+                    AutoGenerateColumns="False" 
+                    IsReadOnly="True"
+                    GridLinesVisibility="None"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    RowBackground="White"
+                    AlternatingRowBackground="#F5F5F5">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Padding" Value="10,15"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Назва" 
+                                    Binding="{Binding Name}" 
+                                    Width="*"/>
+                    <DataGridTextColumn Header="Місто" 
+                                    Binding="{Binding City}" 
+                                    Width="*"/>
+                    <DataGridTextColumn Header="ICAO" 
+                                    Binding="{Binding ICAO}" 
+                                    Width="0.5*"/>
+                    <DataGridTextColumn Header="Країна" 
+                                    Binding="{Binding Country}" 
+                                    Width="*"/>
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Видалити"
+                                        Style="{StaticResource ModernButton}"
+                                        Background="#dc3545"
+                                        Click="DeleteAirport_Click"
+                                        Tag="{Binding Id}"
+                                        Margin="5"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</Page> 

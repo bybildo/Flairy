@@ -1,0 +1,157 @@
+﻿<Page x:Class="CoursFlairy.View.Bussiness.BussinessControlPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:converters="clr-namespace:CoursFlairy.ViewModel.Converter.Bussines"
+      xmlns:local="clr-namespace:CoursFlairy.View.Bussiness"
+      mc:Ignorable="d" d:DesignHeight="850" d:DesignWidth="1600"
+      Loaded="Page_Loaded"
+      Title="BussinessControlPage">
+
+    <Page.Resources>
+        <converters:PartOfGridHeightConverter x:Key="PartOfGridHeightConverter"/>
+    </Page.Resources>
+    
+    <Grid Background="{DynamicResource PanelGradient}">
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="15*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="MainGrid" Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="0.9*"/>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="3.5*"/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="25*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Background="{DynamicResource White}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="100" CornerRadius="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                </Border.Effect>
+            </Border>
+
+            <ScrollViewer Grid.Column="1" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{DynamicResource White}"/>
+                            <Setter Property="Height" Value="{Binding ElementName=MainGrid, Path=ActualHeight, Converter={StaticResource PartOfGridHeightConverter}}"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="2, 2, 2, 20"/>
+                            <Setter Property="CornerRadius" Value="8"/>
+                            <EventSetter Event="MouseDown" Handler="ChangeState"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetProperty="(Effect).(DropShadowEffect.Opacity)" To="0.6"/>
+                                                <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetProperty="(Effect).(DropShadowEffect.BlurRadius)" To="5"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetProperty="(Effect).(DropShadowEffect.Opacity)" To="0.35"/>
+                                                <DoubleAnimation Duration="0:0:0.25" Storyboard.TargetProperty="(Effect).(DropShadowEffect.BlurRadius)" To="4"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        
+                        <Style TargetType="Viewbox">
+                            <Setter Property="Margin" Value="0, 10, 0, 10"/>
+                        </Style>
+                        
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="FontFamily" Value="Bahnschrift"/>
+                            <Setter Property="Foreground" Value="{DynamicResource MainColor100}"/>
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <Border x:Name="ProfileBorder" Background="{DynamicResource MainColor100}">
+                        <Viewbox>
+                            <TextBlock Text="Профіль" FontFamily="Bahnschrift" Foreground="{DynamicResource White}"/>
+                        </Viewbox>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                        </Border.Effect>
+                    </Border>
+
+                    <Border x:Name="PlaneBorder">
+                        <Viewbox>
+                            <TextBlock Text="Літаки" FontFamily="Bahnschrift"/>
+                        </Viewbox>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                        </Border.Effect>
+                    </Border>
+
+                    <Border x:Name="RouteBorder">
+                        <Viewbox>
+                            <TextBlock Text="Маршрути" FontFamily="Bahnschrift"/>
+                        </Viewbox>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                        </Border.Effect>
+                    </Border>
+
+                    <Border x:Name="FlightBorder">
+                        <Viewbox>
+                            <TextBlock Text="Керування рейсами" FontFamily="Bahnschrift"/>
+                        </Viewbox>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                        </Border.Effect>
+                    </Border>
+
+                    <Border x:Name="ExitBorder" MouseDown="Exit">
+                        <Viewbox>
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{DynamicResource exit}" Fill="OrangeRed" Stretch="Uniform" Margin="0, 0 ,3, 0" Height="10" Width="10"/>
+                                <TextBlock Text="Вийти" FontFamily="Bahnschrift" Foreground="OrangeRed" />
+                            </StackPanel>
+                        </Viewbox>
+
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                        </Border.Effect>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Background="{DynamicResource White}" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" Grid.RowSpan="100" CornerRadius="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="0.8" Color="{DynamicResource Shadow}" Direction="270" Opacity="0.3" />
+                </Border.Effect>
+            </Border>
+            <Frame x:Name="PageManager" Margin="-5" Grid.Row="1" Grid.Column="5" Source="ProfilePage.xaml"/>
+        </Grid>
+    </Grid>
+</Page>

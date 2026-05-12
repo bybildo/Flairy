@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="CoursFlairy.View.ClientPage.FlightClientPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CoursFlairy.View.ClientPage"
+      xmlns:converters="clr-namespace:CoursFlairy.Model.Converters"
+      xmlns:convertersUI="clr-namespace:CoursFlairy.ViewModel.UI"
+      mc:Ignorable="d" d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
+      d:DesignHeight="450" d:DesignWidth="800" 
+      Title="FlightClientPage">
+
+    <Page.Resources>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <convertersUI:ShowMessageBorderWeightConverter x:Key="ShowMessageBorderWeightConverter"/>
+
+        <Style x:Key="FlightListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Grid Height="120" Margin="2, 1, 2, 30">
+                            <!-- Main Border -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Main Content Border -->
+                                <Border x:Name="MainBorder" 
+                                        Grid.Column="0"
+                                        CornerRadius="10" 
+                                        Background="{DynamicResource White}"
+                                        Margin="0,0,0,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Effect">
+                                                        <Setter.Value>
+                                                            <DropShadowEffect BlurRadius="5" 
+                                                                            ShadowDepth="0.2" 
+                                                                            Color="{DynamicResource Shadow}" 
+                                                                            Direction="270" 
+                                                                            Opacity="0.6" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect BlurRadius="3" 
+                                                                    ShadowDepth="0.2" 
+                                                                    Color="{DynamicResource Shadow}" 
+                                                                    Direction="270" 
+                                                                    Opacity="0.3" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <!-- Flight Info Content -->
+                                    <Grid Margin="20,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Left side - Departure -->
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DepartureTime}" FontSize="32" FontWeight="SemiBold" FontFamily="Bahnschrift" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding DepartureDate}" FontSize="16" FontFamily="Bahnschrift" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding DepartureCity}" FontSize="16" Foreground="#666666" FontFamily="Bahnschrift" TextAlignment="Center" Margin="0,5,0,0"/>
+                                        </StackPanel>
+
+                                        <!-- Middle - Flight info -->
+                                        <Grid Grid.Column="1" Margin="20,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Plane icon -->
+                                            <Path Grid.Column="0" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,0"
+                                                  Fill="{DynamicResource MainColor100}"
+                                                  Data="{DynamicResource plane}"/>
+
+                                            <!-- Flight duration and line -->
+                                            <Grid Grid.Column="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Left line -->
+                                                <Path Grid.Column="0" Height="2" Stretch="Fill" Margin="5,0"
+                                                      StrokeThickness="2" Stroke="{DynamicResource MainColor100}"
+                                                      StrokeDashArray="4 2"
+                                                      Data="M 0,0 L 1,0">
+                                                    <Path.RenderTransform>
+                                                        <ScaleTransform ScaleX="1"/>
+                                                    </Path.RenderTransform>
+                                                </Path>
+
+                                                <!-- Duration text -->
+                                                <TextBlock Grid.Column="1" Text="{Binding FlightDuration}"
+                                                         VerticalAlignment="Center" Margin="10,0"
+                                                         FontSize="14" Foreground="{DynamicResource MainColor100}"/>
+
+                                                <!-- Right line -->
+                                                <Path Grid.Column="2" Height="2" Stretch="Fill" Margin="5,0"
+                                                      StrokeThickness="2" Stroke="{DynamicResource MainColor100}"
+                                                      StrokeDashArray="4 2"
+                                                      Data="M 0,0 L 1,0">
+                                                    <Path.RenderTransform>
+                                                        <ScaleTransform ScaleX="1"/>
+                                                    </Path.RenderTransform>
+                                                </Path>
+                                            </Grid>
+
+                                            <!-- Location icon -->
+                                            <Path Grid.Column="2" Width="19" Height="19" Stretch="Uniform"
+                                                  Fill="{DynamicResource MainColor100}"
+                                                  Data="{DynamicResource location circle}"/>
+                                        </Grid>
+
+                                        <!-- Right side - Arrival -->
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding ArrivalTime}" FontSize="32" FontWeight="SemiBold" FontFamily="Bahnschrift" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding ArrivalDate}" FontSize="16" FontFamily="Bahnschrift" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding ArrivalCity}" FontSize="16" Foreground="#666666" FontFamily="Bahnschrift" TextAlignment="Center" Margin="0,5,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Price Info Border -->
+                                <Grid Grid.Column="1" Width="250" Margin="15,0,0,0" 
+                                      MouseLeftButtonDown="Price_MouseLeftButtonDown"
+                                      Cursor="Hand">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Effect">
+                                                        <Setter.Value>
+                                                            <DropShadowEffect BlurRadius="5" 
+                                         ShadowDepth="0.2" 
+                                         Color="{DynamicResource Shadow}" 
+                                         Direction="270" 
+                                         Opacity="0.6" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect BlurRadius="3" 
+                                 ShadowDepth="0.2" 
+                                 Color="{DynamicResource Shadow}" 
+                                 Direction="270" 
+                                 Opacity="0.3" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Border x:Name="PriceBorder"
+                                            CornerRadius="10" 
+                                            Background="{DynamicResource PriceBackgroundColor}"
+                                            VerticalAlignment="Stretch">
+                                    </Border>
+
+                                    <StackPanel VerticalAlignment="Center">
+                                        <!-- Декоративна лінія зверху -->
+                                        <Border Height="3" 
+                                                Background="{DynamicResource MainColor100}" 
+                                                CornerRadius="1.5"
+                                                Width="40"
+                                                Margin="0,10,0,10"
+                                                HorizontalAlignment="Center"
+                                                Opacity="0.7"/>
+
+                                        <TextBlock Text="{Binding CurrentClassDisplay}"
+                                                 FontSize="20" FontWeight="SemiBold" 
+                                                 Foreground="{DynamicResource MainColor100}"
+                                                 TextAlignment="Center"
+                                                 Margin="0,0,0,4"/>
+
+                                        <TextBlock Text="{Binding AdultPriceDisplay}"
+                                                 FontSize="25" FontWeight="Bold"
+                                                 Foreground="{DynamicResource MainColor100}"
+                                                 TextAlignment="Center"
+                                                 Margin="0,0,0,4"/>
+
+                                        <TextBlock Text="ціна за 1 дорослого"
+                                                 FontSize="14" 
+                                                 Foreground="{DynamicResource MainColor60}"
+                                                 TextAlignment="Center"
+                                                 Margin="0,0,0,4"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <!-- Removed old price shadow animations since we're using the same style as main content -->
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="Transparent" DataContext="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Page, Mode=FindAncestor}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.04*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="0.05*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.2*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.0*"/>
+            <ColumnDefinition Width="0.2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0, 0,0,0">
+            <Grid.Resources>
+                <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+            </Grid.Resources>
+
+            <Border Height="220" Width="600" Margin="0, -300, 0, 0" Background="White" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                </Border.Effect>
+                <Border.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Visible" NonZeroValue="Collapsed"/>
+                        </Binding.Converter>
+                    </Binding>
+                </Border.Visibility>
+            </Border>
+
+            <Border  Background="White" CornerRadius="10" Margin="-30" Opacity="0100" Height="{Binding ElementName=ListView, Path=ActualHeight, Converter={StaticResource ShowMessageBorderWeightConverter}}">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="0.5" Color="{DynamicResource Shadow}" Direction="320" Opacity="0.3" />
+                </Border.Effect>
+                <Border.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Collapsed" NonZeroValue="Visible"/>
+                        </Binding.Converter>
+                    </Binding>
+                </Border.Visibility>
+            </Border>
+
+            <StackPanel Margin="0, -300, 0, 0" HorizontalAlignment="Center" 
+                      VerticalAlignment="Center"
+                      TextBlock.TextAlignment="Center">
+                <TextBlock Text="За вашими фільтрами не знайдено рейсів"
+                         FontSize="24"
+                         FontWeight="Medium"
+                         Foreground="{DynamicResource HintColor}"
+                         Margin="0,0,0,8"/>
+                <TextBlock Text="Спробуйте змінити параметри пошуку"
+                         FontSize="16"
+                         Foreground="{DynamicResource HintColor}"
+                         Opacity="0.8"/>
+                <Path Data="{DynamicResource plane}" 
+      Width="64" 
+      Height="64" 
+      HorizontalAlignment="Center"
+      Stretch="Uniform"
+      Fill="{DynamicResource HintColor}"
+      Opacity="0.6" RenderTransformOrigin="0.5, 0.5"               
+      Margin="0,20,0,0">
+                    <Path.RenderTransform>
+                        <RotateTransform Angle="45"/>
+                    </Path.RenderTransform>
+                </Path>
+                <StackPanel.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Visible" NonZeroValue="Collapsed"/>
+                        </Binding.Converter>
+                    </Binding>
+                </StackPanel.Visibility>
+            </StackPanel>
+
+            <ScrollViewer Name="ListView" VerticalScrollBarVisibility="Hidden"  
+                         PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                <ScrollViewer.Visibility>
+                    <Binding Path="FilteredFlights.Count">
+                        <Binding.Converter>
+                            <converters:IntToVisibilityConverter ZeroValue="Collapsed" NonZeroValue="Visible"/>
+                        </Binding.Converter>
+                    </Binding>
+                </ScrollViewer.Visibility>
+                
+                <ListBox ItemsSource="{Binding FilteredFlights}"
+                        ItemContainerStyle="{StaticResource FlightListBoxItemStyle}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                        Background="Transparent"
+                        BorderThickness="0"/>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>
